@@ -16,8 +16,17 @@
     "incremental": true,
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    "strictNullChecks": false
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "pages/dashboard/index.tsx",
+    "pages/_app.tsx",
+    "components/*.tsx",
+    "components/tablerows.js"
+  ],
   "exclude": ["node_modules"]
 }

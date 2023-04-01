@@ -9,14 +9,36 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@flaticon/flaticon-uicons": "^2.0.1",
+    "@nextui-org/react": "^1.0.0-beta.12",
     "@types/node": "18.15.7",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
+    "click-outside": "^2.0.2",
+    "date-fns": "^2.29.3",
     "eslint": "8.36.0",
     "eslint-config-next": "13.2.4",
+    "flatpickr": "^4.6.13",
     "next": "13.2.4",
     "react": "18.2.0",
+    "react-collapse": "^5.1.1",
     "react-dom": "18.2.0",
+    "react-flatpickr": "^3.10.13",
+    "react-icons": "^4.8.0",
+    "react-onclickoutside": "^6.13.0",
+    "react-select": "^5.7.2",
+    "react-table": "^7.8.0",
+    "react-toastify": "^9.1.2",
+    "smooth-scrollbar": "^8.8.3",
+    "tailwind-scrollbar": "^3.0.0",
     "typescript": "5.0.2"
+  },
+  "devDependencies": {
+    "@types/react-collapse": "^5.0.1",
+    "@types/react-flatpickr": "^3.8.8",
+    "@types/react-onclickoutside": "^6.7.4",
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.21",
+    "tailwindcss": "^3.2.7"
   }
 }
