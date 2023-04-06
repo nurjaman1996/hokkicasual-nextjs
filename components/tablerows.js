@@ -38,25 +38,27 @@ function TableRows({
               ref={(element) => {
                 editTools.current[index] = element;
               }}
-              className="flex w-auto bg-white border shadow-lg absolute -left-auto mr-7 rounded-lg hidden items-center gap-2 justify-center p-3"
+              className="hidden absolute"
             >
-              <button
-                className="border w-20 p-1 rounded border-green-600 text-green-600"
-                onClick={() => handleChange(index)}
-              >
-                Diskon
-              </button>
+              <div className="w-auto bg-white border shadow-lg  -left-auto mr-7 rounded-lg flex items-center gap-2 justify-center p-3">
+                <button
+                  className="border w-20 p-1 rounded border-green-600 text-green-600"
+                  onClick={() => handleChange(index)}
+                >
+                  Diskon
+                </button>
 
-              <button className="border w-20 p-1 rounded border-orange-400 text-orange-400">
-                Edit
-              </button>
+                <button className="border w-20 p-1 rounded border-orange-400 text-orange-400">
+                  Edit
+                </button>
 
-              <button
-                className="border p-1 w-20 rounded border-red-600 text-red-600"
-                onClick={() => deleteTableRows(index)}
-              >
-                Hapus
-              </button>
+                <button
+                  className="border p-1 w-20 rounded border-red-600 text-red-600"
+                  onClick={() => deleteTableRows(index)}
+                >
+                  Hapus
+                </button>
+              </div>
             </div>
             <button
               ref={(element) => {

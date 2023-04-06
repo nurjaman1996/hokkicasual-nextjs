@@ -50,10 +50,6 @@ const Layout = (props: PropsWithChildren) => {
                 setToggleMenu({ ...toggleMenu, activeObject: index });
             }
         }
-
-
-
-
     }
 
     function toogleActiveCollapse(index: any) {

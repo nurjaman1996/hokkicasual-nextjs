@@ -45,9 +45,15 @@ const Items = [
         "icon_item": "fi fi-rr-box",
         "path": "products",
         "children": [
+            // {
+            //     "title": "List Produk",
+            //     "href": "/products/list_product",
+            //     "icon_item": "fi fi-rr-box-alt",
+            //     "text": "List Produk"
+            // },
             {
                 "title": "Daftar Produk",
-                "href": "/products/list_product",
+                "href": "/products/daftar_produk",
                 "icon_item": "fi fi-rr-box-alt",
                 "text": "Daftar Produk"
             },

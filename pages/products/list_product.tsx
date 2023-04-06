@@ -6,250 +6,152 @@ import "flatpickr/dist/themes/dark.css";
 import React, { Component, useRef, useState } from "react";
 import { compareAsc, format } from "date-fns";
 import Link from "next/link";
+import DataTable, { ExpanderComponentProps } from 'react-data-table-component';
+import TableHeaderRow from "@nextui-org/react/types/table/table-header-row";
+import { Collapse } from "react-collapse";
+
+
+
 
 export default function ListProduk() {
-    const [date, setDate] = useState(format(new Date(), "dd/MM/yyyy"));
+    // const [date, setDate] = useState(format(new Date(), "dd/MM/yyyy"));
+
+    const columns: any = [
+        {
+            name: 'Image',
+            selector: (row: { img: any }) => row.img,
+            width: "10%",
+        },
+        {
+            name: 'Produk',
+            selector: (row: { produk: any }) => row.produk,
+            width: "35%",
+        },
+        {
+            name: 'Size',
+            selector: (row: { stok: any }) => row.stok,
+            width: "40%",
+        },
+        {
+            name: 'Action',
+            selector: (row: { action: any }) => row.action,
+            width: "10%",
+        },
+
+    ];
+
+    const data: any = [];
+
+    const [openSize, setopenSize] = useState(null);
+
+    function toogleActive(index: any) {
+        if (index === openSize) {
+            setopenSize(null);
+        } else {
+            setopenSize(index);
+        }
+    }
+
+    const size: any = [];
+
+    for (let index = 0; index < 10; index++) {
+        size.push(
+            <div key={index} className="py-1 px-2 rounded border border-gray-800 text-xs">{index + 34}=10</div>
+        )
+
+    }
+
+    for (let index = 0; index < 100; index++) {
+        data.push(
+            {
+                id: index,
+                img: (
+                    <div className="flex flex-wrap justify-center gap-1">
+                        <Image
+                            className="m-auto max-w-[90px] rounded-lg max-h-[90px]"
+                            src="/produk.jpg"
+                            alt="product-1"
+                            height="500"
+                            width="500"
+                            priority
+                        />
+                    </div>
+                ),
+                produk: (
+                    <div className="flex flex-col h-[150px] w-[300px] items-start justify-center gap-2">
+                        <div className="text-base">Adidas Broomfield Green</div>
+                        <div className="text-xs">Adidas | #22736289</div>
+                        <div>Rp550.000</div>
+                    </div>
+                ),
+                stok: (
+                    <div className="flex flex-col h-[150px] w-[100%] items-center justify-center gap-2">
+                        {/* <div className="grid grid-cols-4 auto-cols-auto gap-2 justify-center items-center content-center w-[80%]"> */}
+                        <div className="flex flex-wrap gap-2 justify-center items-center content-center w-[80%]">
+                            {size}
+                        </div>
+                        <div>Total Stock = {index + 210}</div>
+                    </div>
+                ),
+                action: (
+                    <div className="flex flex-warp gap-4">
+                        <button className="text-blue-500">
+                            <i className="fi fi-rr-edit text-center text-xl"></i>
+                        </button>
+                        <button className="text-red-500">
+                            <i className="fi fi-rr-trash text-center text-xl"></i>
+                        </button>
+                    </div>
+                ),
+            },
+        )
+    }
+
+    const CustomMaterialPagination = ({ rowsPerPage, rowCount, onChangePage, onChangeRowsPerPage, currentPage }: any) => (
+        <div>
+            asd
+        </div>
+    );
+
+    const handleChange = ({ selectedRows }: any) => {
+        // You can set state or dispatch with something like Redux so we can use the retrieved data
+        console.log('Selected Rows: ', selectedRows);
+    };
+
+    const [currentRow, setCurrentRow] = useState(null);
+
+    const ExpandedComponent: React.FC<ExpanderComponentProps<any>> = ({ data }) => {
+        return (
+            <>
+                <p>{data.produk}</p>
+                <p>{data.harga}</p>
+                <p>{data.sku}</p>
+            </>
+        );
+    };
     return (
         <>
             <div className="font-bold text-3xl border-b border-[#2125291A] h-16 mb-7">
                 Daftar Produk
             </div>
 
-            <div className="my-6">
-                <div className="grid grid-cols-2 gap-6 grow h-auto content-start">
-                    <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
-
-                        <div className="grid grid-rows-3 items-center">
-                            <div className="flex content-center items-center justify-start">
-                                <div className="grow">
-                                    <Image
-                                        className="w-[36px] h-[36px] max-w-full max-h-full"
-                                        src="/dashboard/artikel.png"
-                                        alt="Picture of the author"
-                                        width={100}
-                                        height={100}
-                                    />
-                                </div>
-
-                            </div>
-
-                            <div className="font-medium text-base text-gray-400">
-                                Artikel
-                            </div>
-
-                            <div className="font-bold text-xl text-black">
-                                958
-                            </div>
-                        </div>
-
-                    </a>
-
-                    <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
-
-                        <div className="grid grid-rows-3 items-center">
-                            <div className="flex content-center items-center justify-start">
-                                <div className="grow">
-                                    <Image
-                                        className="w-[36px] h-[36px] max-w-full max-h-full"
-                                        src="/dashboard/qty.png"
-                                        alt="Picture of the author"
-                                        width={100}
-                                        height={100}
-                                    />
-                                </div>
-
-                            </div>
-
-                            <div className="font-medium text-base text-gray-400">
-                                Qty
-                            </div>
-
-                            <div className="font-bold text-xl text-black">
-                                20206
-                            </div>
-                        </div>
-
-                    </a>
-
-                </div>
-
-                <div className="flex flex-nowrap gap-6 grow h-auto content-start mt-6">
-                    <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 grow group">
-                        <div className="grid grid-rows-3 items-center">
-
-                            <div className="font-bold text-base text-center text-black">
-                                GUDANG RUMAH
-                            </div>
-
-                            <div className="flex flex-wrap mt-2">
-                                <div className="text-ml text-gray-400 grow text-center ">
-                                    Artikel
-                                </div>
-                                <div className="text-ml text-gray-400 grow text-center">
-                                    Qty
-                                </div>
-                            </div>
-
-                            <div className="flex flex-wrap">
-                                <div className="text-ml font-bold text-black grow text-center ">
-                                    20206
-                                </div>
-                                <div className="text-ml font-bold text-black grow text-center">
-                                    20206
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 grow group">
-                        <div className="grid grid-rows-3 items-center">
-
-                            <div className="font-bold text-base text-center text-black">
-                                GUDANG RUMAH
-                            </div>
-
-                            <div className="flex flex-wrap mt-2">
-                                <div className="text-ml text-gray-400 grow text-center ">
-                                    Artikel
-                                </div>
-                                <div className="text-ml text-gray-400 grow text-center">
-                                    Qty
-                                </div>
-                            </div>
-
-                            <div className="flex flex-wrap">
-                                <div className="text-ml font-bold text-black grow text-center ">
-                                    20206
-                                </div>
-                                <div className="text-ml font-bold text-black grow text-center">
-                                    20206
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 grow group">
-                        <div className="grid grid-rows-3 items-center">
-
-                            <div className="font-bold text-base text-center text-black">
-                                GUDANG RUMAH
-                            </div>
-
-                            <div className="flex flex-wrap mt-2">
-                                <div className="text-ml text-gray-400 grow text-center ">
-                                    Artikel
-                                </div>
-                                <div className="text-ml text-gray-400 grow text-center">
-                                    Qty
-                                </div>
-                            </div>
-
-                            <div className="flex flex-wrap">
-                                <div className="text-ml font-bold text-black grow text-center ">
-                                    20206
-                                </div>
-                                <div className="text-ml font-bold text-black grow text-center">
-                                    20206
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 grow group">
-                        <div className="grid grid-rows-3 items-center">
-
-                            <div className="font-bold text-base text-center text-black">
-                                GUDANG RUMAH
-                            </div>
-
-                            <div className="flex flex-wrap mt-2">
-                                <div className="text-ml text-gray-400 grow text-center ">
-                                    Artikel
-                                </div>
-                                <div className="text-ml text-gray-400 grow text-center">
-                                    Qty
-                                </div>
-                            </div>
-
-                            <div className="flex flex-wrap">
-                                <div className="text-ml font-bold text-black grow text-center ">
-                                    20206
-                                </div>
-                                <div className="text-ml font-bold text-black grow text-center">
-                                    20206
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-
-                </div>
-            </div>
-
-            <div className="flex flex-wrap items-center content-center">
-                <div className="shadow rounded-lg w-auto flex flex-row text-center content-center">
-                    {/* <button
-                        type="button"
-                        className="rounded-l-lg bg-gray-200 hover:bg-gray-300 h-[50px] text-gray-700 font-medium px-4 flex flex-wrap gap-2 content-center"
-                    >
-                        <span>Order ID</span>
-                        <div className="my-auto">
-                            <fa.FaChevronDown size={10} className="text-gray-700" />
-                        </div>
-                    </button> */}
-
-                    <input
-                        className="h-[50px] border-0 w-[280px] py-2 px-3 text-gray-700 focus:outline-none rounded-l-lg"
-                        type="text"
-                        placeholder="Pencarian..."
-                    />
-
-                    <button
-                        type="button"
-                        className="rounded-r-lg bg-white hover:bg-gray-200 h-[50px] text-gray-700 font-medium px-5"
-                    >
-                        <div className="my-auto">
-                            <fa.FaSearch size={17} className="text-gray-700" />
-                        </div>
-                    </button>
-                </div>
-
-                <div className="rounded-lg ml-auto w-[290px] flex flex-row items-center justify-end">
-                    <button
-                        type="button"
-                        className="ml-3 shadow rounded-lg bg-blue-600 hover:bg-blue-800 h-[50px] text-white px-4 flex flex-wrap gap-2 content-center"
-                    >
-                        <Link href="/order/add_order">Tambah Order</Link>
-                        <div className="my-auto">
-                            <fa.FaPlus size={13} className="text-white" />
-                        </div>
-                    </button>
-                </div>
-
-            </div>
-
-            <div className="w-full mt-6 rounded-xl">
-                <table className="table-auto w-full order-collapse border border-slate-500">
-                    <thead>
-                        <tr>
-                            <th className="border border-slate-300">
-                                Produk & Harga
-                            </th>
-                            <th className="border border-slate-300">
-                                Stok
-                            </th>
-                            <th className="border border-slate-300">
-                                Varian
-                            </th>
-                            <th className="border border-slate-300">
-                                Kategori
-                            </th>
-                            <th className="border border-slate-300">
-                                Keterangan
-                            </th>
-                            <th className="border border-slate-300">
-                                Grosir
-                            </th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
+            <DataTable
+                className="h-fit scrollbar-none"
+                columns={columns}
+                data={data}
+                selectableRows
+                onSelectedRowsChange={handleChange}
+                // expandableRows
+                // expandableRowExpanded={(row) => (row === currentRow)}
+                // expandOnRowClicked
+                // onRowClicked={(row) => toogleActive(row)}
+                // onRowExpandToggled={(bool, row) => setCurrentRow(row)}
+                expandableRowsComponent={ExpandedComponent}
+                defaultSortFieldId={1}
+            // pagination
+            // paginationComponent={CustomMaterialPagination}
+            // fixedHeader={true}
+            />
 
         </>
     );
