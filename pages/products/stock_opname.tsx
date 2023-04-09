@@ -93,13 +93,12 @@ export default function StockOpname() {
 
                 <div className="ml-auto flex flex-row items-center justify-end">
                     <button type="button" className="ml-3 shadow rounded-lg bg-blue-600 hover:bg-blue-800 h-[45px] text-white px-4 flex flex-wrap gap-2 content-center">
-                        <Link href='/order/add_order'>Buat Stok Opname</Link>
+                        <Link href='/products/add_stok_opname'>Buat Stok Opname</Link>
                         <div className="my-auto">
                             <fa.FaPlus size={13} className="text-white" />
                         </div>
                     </button>
                 </div>
-
 
             </div>
 
