@@ -300,7 +300,7 @@ export default function AddOrder() {
                 </div>
 
             </div>
-            {JSON.stringify(rowsData) + date + "/" + totalamount}
+            {/* {JSON.stringify(rowsData) + date + "/" + totalamount} */}
             <ToastContainer className="mt-[50px]" />
 
             <div className="flex flex-wrap gap-8">
