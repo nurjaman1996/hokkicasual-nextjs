@@ -72,7 +72,7 @@ export default function StockOpname() {
             <div className="bg-white h-auto rounded-lg pb-6 mt-6 mb-6">
                 <div className="grid grid-cols-2">
                     <div className="py-6 px-6 font-bold text-[22px]">Informasi Stok Opname</div>
-                    <button className="py-6 px-6 text-blue-500 text-[12px] text-right" type="button">Tambah baris <i class="fi fi-rr-add"></i></button>
+                    <button className="py-6 px-6 text-blue-500 text-[12px] text-right" type="button">Tambah baris <i className="fi fi-rr-add"></i></button>
                 </div>
                 <div className="mx-6">
                     <hr />

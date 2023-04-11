@@ -4,6 +4,7 @@ function TableRows({
   rowsData,
   deleteTableRows,
   handleChange,
+  handleChange2,
   editTools,
   editToolsButton,
   editButton,
@@ -30,7 +31,19 @@ function TableRows({
         <td className="py-3">{size}</td>
         <td className="py-3 text-start">{qty}</td>
         <td className="py-3">Rp{harga}</td>
-        <td className="py-3">Rp{discount_item}</td>
+        <td className="py-3">
+          <div className="flex ">
+            <div>Rp</div>
+            <div className="grow">
+              <input
+                className="w-full focus:outline-none"
+                value={discount_item}
+                onChange={(e) => handleChange(index, e)}
+                onBlur={(e) => handleChange2(index, e)}
+              />
+            </div>
+          </div>
+        </td>
         <td className="py-3 text-end">Rp{subtotal}</td>
         <td className="py-3 px-3 text-end w-[7%]">
           <div className="flex flex-wrap items-center justify-end relative">
@@ -41,12 +54,12 @@ function TableRows({
               className="hidden absolute"
             >
               <div className="w-auto bg-white border shadow-lg  -left-auto mr-7 rounded-lg flex items-center gap-2 justify-center p-3">
-                <button
+                {/* <button
                   className="border w-20 p-1 rounded border-green-600 text-green-600"
                   onClick={() => handleChange(index)}
                 >
                   Diskon
-                </button>
+                </button> */}
 
                 <button className="border w-20 p-1 rounded border-orange-400 text-orange-400">
                   Edit

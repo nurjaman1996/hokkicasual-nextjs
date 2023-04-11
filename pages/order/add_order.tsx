@@ -4,13 +4,15 @@ import * as fa from "react-icons/fa";
 import Flatpickr from "react-flatpickr";
 import "flatpickr/dist/themes/dark.css";
 import React, { Component, useRef, useState, useEffect } from "react";
-import { compareAsc, format } from 'date-fns';
 import { useRouter } from "next/router";
 import Select from 'react-select';
 import { table } from "console";
 import TableRows from "../../components/tablerows";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { stringify } from "querystring";
+import { compareAsc, format } from 'date-fns';
+import { redirect } from "next/dist/server/api-utils";
 
 // export async function getServerSideProps() {
 //     const response = await fetch('https://dummyjson.com/products?limit=30&skip=0');
@@ -26,16 +28,24 @@ import 'react-toastify/dist/ReactToastify.css';
 // export default function AddOrder({ dataProducts: dataProduct_ }: any) {
 export default function AddOrder() {
     const [dataProduct, setData] = useState([]);
+    const [showModal, setShowModal] = React.useState(false);
 
     async function focusSearch(event: any) {
         if (event.target.value === '') {
             setLoading('standby');
         } else {
             setLoading('searching');
-            const req = await fetch(`https://dummyjson.com/products/search?q=${event.target.value}`);
+            const req = await fetch(`https://api.inovasimediakreatif.site/products/${event.target.value}`,
+                {
+                    method: 'GET',
+                    headers: {
+                        'Access-Control-Allow-Origin': '*',
+                    },
+                }
+            );
             const newDataProduct = await req.json();
 
-            setData(newDataProduct.products);
+            setData(newDataProduct.product);
             setLoading('showing');
         }
     }
@@ -44,14 +54,14 @@ export default function AddOrder() {
 
     let productList: any = []
     {
-        dataProduct.map((product: any, index) => {
-            return (
+        dataProduct.map((product: any) => {
+            for (let index = 0; index <= product.variation.length - 1; index++) {
                 productList.push(
-                    <div key={product.id} className="flex flex-warp gap-5 items-center py-4 w-full hover:bg-gray-100 px-3">
+                    <div key={index} className="flex flex-warp gap-5 items-center py-4 w-full hover:bg-gray-100 px-3">
                         <div className="h-[70px] w-[70px] rounded-lg">
                             <Image
                                 className='m-auto max-w-[100%] max-h-[100%]'
-                                src={product.thumbnail}
+                                src={product.img}
                                 alt='product-1'
                                 height="500"
                                 width="500"
@@ -59,22 +69,45 @@ export default function AddOrder() {
                             />
                         </div>
                         <div className="h-auto grow w-fit text-sm grid grid-rows-2">
-                            <span>{product.title}</span>
-                            <div className="border border-blue-700 text-blue-700 w-fit px-2 py-1 rounded-lg font-medium">size {product.stock}</div>
-                            {/* <select ref={(element) => { size.current[index] = element; }} className="w-[70px] focus:outline-none rounded-lg px-1"> */}
+                            <span>{product.produk}</span>
+                            <div className="border border-blue-700 text-blue-700 w-fit px-2 py-1 rounded-lg font-medium">size {product.variation[index].size}</div>
                         </div>
                         <div className="text-end">
-                            <button className="py-2 px-3 rounded-lg bg-blue-700 text-white text-xs" onClick={() => addProduk(index, product.title, product.id, product.stock, product.price, product.thumbnail)}>
-                                Tambahkan
-                            </button>
+                            {(function () {
+                                if (product.variation[index].qty < 1) {
+                                    return (
+                                        <button className="py-2 px-3 rounded-lg bg-gray-500 text-white text-xs" disabled>
+                                            Stok Kosong
+                                        </button>
+                                    )
+                                } else {
+                                    return (
+                                        <button className="py-2 px-3 rounded-lg bg-blue-700 text-white text-xs"
+                                            onClick={() => addProduk(
+                                                index,
+                                                product.produk,
+                                                product.id_produk,
+                                                product.variation[index].size,
+                                                product.n_price,
+                                                product.img,
+                                                product.id_brand,
+                                                product.quality,
+                                            )}>
+                                            Tambahkan
+                                        </button>
+                                    )
+                                }
+                            })()}
+
                         </div>
                     </div>
                 )
-            )
+
+            }
         })
     }
 
-    const [date, setDate] = useState(format(new Date(), 'dd/MM/yyyy'));
+    const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
     const router = useRouter();
 
     const [showProduct_, setshowProduct_] = useState(false);
@@ -87,11 +120,14 @@ export default function AddOrder() {
     const inputRef = useRef(null);
     const searchInput = useRef(null);
 
+    const id_pesanan = useRef(null);
+    const id_store = useRef(null);
+    const customer = useRef(null);
+    const catatan = useRef(null);
+
     const [rowsData, setRowsData] = useState([]);
 
     const [idEdit, setidEdit] = useState(null);
-
-    const totalInvoice = (rowsData.reduce((total, currentItem) => total = total + currentItem.subtotal, 0));
 
     const [totalQty, settotalQty] = useState(0);
 
@@ -109,12 +145,20 @@ export default function AddOrder() {
         }
     }
 
-    function addProduk(index: any, produk: any, idproduk: any, size: any, harga: any, img: any) {
+    function addProduk(index: any, produk: any, idproduk: any, size: any, harga: any, img: any, id_brand: any, quality: any) {
         if (!rowsData.find(item => item.idproduk === idproduk && item.size === size)) {
+            // if (stok < 1) {
+            //     toast.warning("Maaf, Stok Size " + size + " Tidak Tersedia", {
+            //         position: toast.POSITION.TOP_RIGHT,
+            //         pauseOnHover: false,
+            //         autoClose: 2000,
+            //     });
+            // } else {
             const rowsInput = {
                 produk: produk,
                 idproduk: idproduk,
-                // size: size.current[index].value,
+                quality: quality,
+                id_brand: id_brand,
                 size: size,
                 harga: harga,
                 discount_item: 0,
@@ -128,6 +172,7 @@ export default function AddOrder() {
             setLoading('standby');
 
             settotalQty(totalQty + 1);
+            // }
         } else {
             toast.info("Produk dengan size yang sama telah ditambahkan sebelumnya", {
                 position: toast.POSITION.TOP_RIGHT,
@@ -150,13 +195,22 @@ export default function AddOrder() {
         editTools.current[index].classList.add('hidden');
     }
 
-    const handleChange = (index: any) => {
+    const handleChange = (index: any, e: any) => {
         const rowsInput = [...rowsData];
-        rowsData[index].discount_item = 100000;
+        rowsData[index].discount_item = e.target.value;
+        setRowsData(rowsInput);
+    }
+
+    const handleChange2 = (index: any, e: any) => {
+        const rowsInput = [...rowsData];
+        rowsData[index].subtotal = (rowsData[index].harga * rowsData[index].qty) - e.target.value;
         setRowsData(rowsInput);
 
-        editTools.current[index].classList.remove('block');
-        editTools.current[index].classList.add('hidden');
+        toast.success("Discount Update", {
+            position: toast.POSITION.TOP_RIGHT,
+            pauseOnHover: false,
+            autoClose: 2000,
+        });
     }
 
     useEffect(() => {
@@ -184,8 +238,59 @@ export default function AddOrder() {
 
     })
 
+    const totalInvoice = (rowsData.reduce((total, currentItem) => total = total + currentItem.subtotal, 0));
+
+    const [discountNota, setdiscountNota] = useState(0);
+    const [biayaLainnya, setbiayaLainnya] = useState(0);
+
+    const totalamount = totalInvoice - discountNota - biayaLainnya;
+
+    function DiskonNota(value: any) {
+        setdiscountNota(value);
+    }
+
+    function BiayaLain(value: any) {
+        setbiayaLainnya(value);
+    }
+
+
+    async function saveSales() {
+        let res = await fetch("https://api.inovasimediakreatif.site/saveSales", {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                data: rowsData,
+                id_pesanan: id_pesanan.current.value,
+                tanggal: date,
+                id_store: id_store.current.value,
+                customer: customer.current.value,
+                diskon_nota: discountNota,
+                biaya_lainnya: biayaLainnya,
+                total_amount: totalamount,
+                catatan: catatan.current.value,
+            }),
+        });
+        let resJson = await res.json();
+
+        toast.success("Penjualan telah disimpan", {
+            position: toast.POSITION.TOP_RIGHT,
+            pauseOnHover: false,
+            autoClose: 2000,
+        });
+        setRowsData([]);
+        setDate(format(new Date(), 'yyyy-MM-dd'));
+        id_store.current.value = "";
+        customer.current.value = "";
+        catatan.current.value = "";
+        id_pesanan.current.value = "";
+        setdiscountNota(0);
+        setbiayaLainnya(0);
+        settotalQty(0);
+        router.replace("/order/all_order");
+    }
+
     return (
-        <>
+        <div>
             <div className="border-b border-[#2125291A] h-16 mb-7">
                 <div className="flex flex-wrap items-center">
                     <button className="bg-gray-200 p-4 rounded-lg mr-6 " onClick={() => router.back()}>
@@ -193,27 +298,28 @@ export default function AddOrder() {
                     </button>
                     <span className="font-bold text-3xl">Tambah Order</span>
                 </div>
-            </div>
 
+            </div>
+            {JSON.stringify(rowsData) + date + "/" + totalamount}
             <ToastContainer className="mt-[50px]" />
 
             <div className="flex flex-wrap gap-8">
                 <div className="bg-white h-fit w-[32%] rounded-lg p-5">
                     <div className="mb-3">
                         <span className="font-bold">Nama Penerima</span>
-                        <input className="h-auto rounded-lg focus:bg-white w-full bg-zinc-100 py-2 px-5 mt-2 text-gray-700 focus:outline-none border text-base " type="text" placeholder="Nama Penerima" />
+                        <input ref={customer} className="h-auto rounded-lg focus:bg-white w-full bg-zinc-100 py-2 px-5 mt-2 text-gray-700 focus:outline-none border text-base " type="text" placeholder="Nama Penerima" />
                     </div>
 
                     <div className="mb-3">
                         <span className="font-bold">ID Pesanan</span>
-                        <input className="h-auto rounded-lg w-full focus:bg-white bg-zinc-100 py-2 px-5 mt-2 text-gray-700 focus:outline-none border text-base " type="text" placeholder="Masukan ID Pesanan" />
+                        <input ref={id_pesanan} className="h-auto rounded-lg w-full focus:bg-white bg-zinc-100 py-2 px-5 mt-2 text-gray-700 focus:outline-none border text-base " type="text" placeholder="Masukan ID Pesanan" />
                     </div>
 
                     <div className="mb-3">
                         <span className="font-bold">Store Channel</span>
                         {/* <input className="h-auto rounded-lg w-full bg-zinc-100 py-2 px-5 mt-2 text-gray-700 focus:outline-none border text-base " type="text" placeholder="Pilih Store" /> */}
                         <div className="flex flex-wrap items-center mt-2 justify-end">
-                            <select name="" id="" className="appearance-none h-auto cursor-pointer rounded-lg w-full bg-zinc-100 py-2 px-5 focus:outline-none border text-base" placeholder="Pilih Store">
+                            <select ref={id_store} className="appearance-none h-auto cursor-pointer rounded-lg w-full bg-zinc-100 py-2 px-5 focus:outline-none border text-base" placeholder="Pilih Store">
                                 <option value="">Pilih Store Channel</option>
                                 <option value="Shopee">Shopee</option>
                                 <option value="Tokopedia">Tokopedia</option>
@@ -229,11 +335,11 @@ export default function AddOrder() {
                         <div className="rounded-lg ml-auto w-full mt-2 flex flex-row items-center justify-end">
                             <Flatpickr
                                 className="text-start h-full rounded-lg w-full bg-zinc-100 py-2.5 px-5 text-gray-700 focus:outline-none border"
-                                // value={date}
+                                value={date}
                                 placeholder="Pilih Tanggal Order"
                                 options={{
                                     mode: "single",
-                                    dateFormat: "d/m/Y",
+                                    dateFormat: "Y-m-d",
                                     enableTime: false,
                                     // disable: [
                                     //   function (date) {
@@ -241,6 +347,7 @@ export default function AddOrder() {
                                     //   }
                                     // ]
                                     onClose: function (selectedDates, dateStr, instance) {
+                                        setDate(dateStr);
                                     },
                                 }}
                             />
@@ -251,7 +358,7 @@ export default function AddOrder() {
 
                     <div className="mb-3">
                         <span className="font-bold">Note</span>
-                        <textarea name="" id="" rows={5} className="resize-none focus:bg-white h-auto rounded-lg w-full bg-zinc-100 py-3 px-5 mt-2 text-gray-700 focus:outline-none border text-base "></textarea>
+                        <textarea ref={catatan} rows={5} className="resize-none focus:bg-white h-auto rounded-lg w-full bg-zinc-100 py-3 px-5 mt-2 text-gray-700 focus:outline-none border text-base "></textarea>
                     </div>
                 </div>
 
@@ -321,7 +428,7 @@ export default function AddOrder() {
                                 <tbody className="text-black font-medium text-sm">
 
                                     {rowsData.length > 0 ?
-                                        <TableRows editButton={editButton} rowsData={rowsData} deleteTableRows={deleteTableRows} handleChange={handleChange} editTools={editTools} editToolsButton={editToolsButton} />
+                                        <TableRows handleChange2={handleChange2} editButton={editButton} rowsData={rowsData} deleteTableRows={deleteTableRows} handleChange={handleChange} editTools={editTools} editToolsButton={editToolsButton} />
                                         :
                                         <tr className="h-[200px]">
                                             <td colSpan={7}>
@@ -370,7 +477,15 @@ export default function AddOrder() {
                                             <span className="">Diskon Nota</span>
                                         </td>
                                         <td className="py-2.5 text-end">
-                                            <span className="text-red-500 font-bold">(Rp{totalInvoice})</span>
+                                            <input
+                                                className="w-full focus:outline-none"
+                                                value={discountNota}
+                                                type="number"
+                                                min={0}
+                                                onChange={(e) => DiskonNota(parseInt(e.target.value))}
+                                            // onBlur={(e) => handleChange2(e)}
+                                            />
+                                            {/* <span className="text-red-500 font-bold">(Rp{totalInvoice})</span> */}
                                         </td>
                                         <td className="py-2.5 px-3 text-end">
                                             <button className="">
@@ -386,7 +501,15 @@ export default function AddOrder() {
                                             <span className="">Biaya Lainnya</span>
                                         </td>
                                         <td className="py-2.5 text-end">
-                                            <span className="">Rp{totalInvoice}</span>
+                                            <input
+                                                className="w-full focus:outline-none"
+                                                value={biayaLainnya}
+                                                type="number"
+                                                min={0}
+                                                onChange={(e) => BiayaLain(parseInt(e.target.value))}
+                                            // onBlur={(e) => handleChange2(e)}
+                                            />
+                                            {/* <span className="">Rp{totalInvoice}</span> */}
                                         </td>
                                         <td className="py-2.5 px-3 text-end">
                                             <button className="">
@@ -401,7 +524,7 @@ export default function AddOrder() {
                                             <span className="font-bold">TOTAL PAYMENT</span>
                                         </td>
                                         <td className="py-5 text-end">
-                                            <span className="font-bold text-xl text-blue-600">Rp{totalInvoice}</span>
+                                            <span className="font-bold text-xl text-blue-600">Rp{totalamount}</span>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -418,12 +541,15 @@ export default function AddOrder() {
                             Simpan dan Tambah Order Baru
                         </button>
 
-                        <button className="bg-blue-700 text-white border-2 border-blue-700 hover:bg-blue-800 hover:border-blue-800 p-2 rounded-lg grow">
+                        <button className="bg-blue-700 text-white border-2 border-blue-700 hover:bg-blue-800 hover:border-blue-800 p-2 rounded-lg grow" onClick={saveSales}>
                             Simpan Order
                         </button>
                     </div>
                 </div>
+
+
+
             </div >
-        </>
+        </div>
     );
 }
