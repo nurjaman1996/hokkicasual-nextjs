@@ -110,7 +110,7 @@ const Layout = (props: PropsWithChildren) => {
                                 <li key={index} className="h-auto rounded-lg cursor-pointer">
                                     <div className="flex gap-3.5 items-center justify-start py-3 px-5" onClick={() => toogleActive(index)}>
                                         <i className={`${item.icon_item} w-5 h-5 text-center text-[1.25rem] leading-5 items-center`}></i>
-                                        <span className="text-base items-center font-normal grow">{item.text}</span>
+                                        <span className="text-sm items-center font-normal grow">{item.text}</span>
                                         <fa.FaChevronDown id={String(index)} className={`${validasiMenu ? "rotate-0" : "rotate-180"} p-1 w-5 h-5 transition duration-500`} />
                                     </div>
 
@@ -123,7 +123,7 @@ const Layout = (props: PropsWithChildren) => {
                                                     <li key={index} className={`${router.asPath == child.href ? "bg-gray-200 text-gray-700 font-bold" : "hover:bg-gray-100 font-normal"} h-auto rounded-lg cursor-pointer pl-3`}>
                                                         <a href={child.href} className="flex gap-3.5 items-center text-start py-3 px-5">
                                                             <i className={`${child.icon_item} w-5 h-5 text-center text-[1.25rem] leading-5 items-center m-0 pt-[1.9px]`}></i>
-                                                            <span className="text-base items-center grow">{child.text}</span>
+                                                            <span className="text-sm items-center grow">{child.text}</span>
                                                         </a>
                                                     </li>
                                                 )
@@ -137,7 +137,7 @@ const Layout = (props: PropsWithChildren) => {
                                 <li key={index} className={`${router.asPath == item.href ? "bg-gray-200 text-gray-700 font-bold" : "hover:bg-gray-100 font-normal"} "h-auto rounded-lg cursor-pointer`}>
                                     <a href={item.href} className="flex gap-3.5 items-center text-center justify-start py-3 px-5">
                                         <i className={`${item.icon_item} w-5 h-5 text-center text-[1.25rem] leading-5 items-center`}></i>
-                                        <span className="text-base items-center">{item.text}</span>
+                                        <span className="text-sm items-center">{item.text}</span>
                                     </a>
                                 </li>
                             )

@@ -286,7 +286,7 @@ export default function AddOrder() {
         setdiscountNota(0);
         setbiayaLainnya(0);
         settotalQty(0);
-        router.replace("/order/all_order");
+        // router.replace("/order/shipping");
     }
 
     return (
@@ -303,8 +303,8 @@ export default function AddOrder() {
             {/* {JSON.stringify(rowsData) + date + "/" + totalamount} */}
             <ToastContainer className="mt-[50px]" />
 
-            <div className="flex flex-wrap gap-8">
-                <div className="bg-white h-fit w-[32%] rounded-lg p-5">
+            <div className="flex flex-nowrap gap-5">
+                <div className="bg-white h-fit rounded-lg p-5">
                     <div className="mb-3">
                         <span className="font-bold">Nama Penerima</span>
                         <input ref={customer} className="h-auto rounded-lg focus:bg-white w-full bg-zinc-100 py-2 px-5 mt-2 text-gray-700 focus:outline-none border text-base " type="text" placeholder="Nama Penerima" />
@@ -413,7 +413,7 @@ export default function AddOrder() {
                     <div className="bg-white h-auto rounded-lg py-5 px-10">
                         <div className="mt-1 pb-5">
                             <span className="font-bold">Orderan</span>
-                            <table className="w-full mt-2 ">
+                            <table className="w-full mt-2">
                                 <thead className="">
                                     <tr>
                                         <th className=" text-gray-500 text-xs text-start py-2 w-auto">Nama</th>

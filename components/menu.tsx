@@ -13,17 +13,17 @@ const Items = [
         "icon_item": "fi fi-rr-bags-shopping",
         "path": "order",
         "children": [
+            // {
+            //     "title": "Semua Order",
+            //     "href": "/order/all_order",
+            //     "icon_item": "fi fi-rr-database",
+            //     "text": "Semua Order"
+            // },
             {
-                "title": "Semua Order",
-                "href": "/order/all_order",
-                "icon_item": "fi fi-rr-database",
-                "text": "Semua Order"
-            },
-            {
-                "title": "Sedang Dikirim",
+                "title": "Pesanan Dikirim",
                 "href": "/order/shipping",
                 "icon_item": "fi fi-rs-truck-side",
-                "text": "Sedang Dikirim"
+                "text": "Pesanan Dikirim"
             },
             {
                 "title": "Pesanan Selesai",
@@ -32,10 +32,10 @@ const Items = [
                 "text": "Pesanan Selesai"
             },
             {
-                "title": "Cancel Order",
+                "title": "Pesanan Cancel",
                 "href": "/order/cancel_order",
                 "icon_item": "fi fi-rr-time-delete",
-                "text": "Cancel Order",
+                "text": "Pesanan Cancel",
             }
         ]
     }, {
@@ -50,6 +50,12 @@ const Items = [
                 "href": "/products/daftar_produk",
                 "icon_item": "fi fi-rr-box-alt",
                 "text": "Daftar Produk"
+            },
+            {
+                "title": "Nota Barang",
+                "href": "/products/nota_barang",
+                "icon_item": "fi fi-rr-file-invoice",
+                "text": "Nota Barang"
             },
             {
                 "title": "Stok Opname",
@@ -105,7 +111,13 @@ const Items = [
                 "href": "/datamaster/category",
                 "icon_item": "fi fi-rr-cube",
                 "text": "Category",
-            }
+            },
+            {
+                "title": "Supplier",
+                "href": "/datamaster/supplier",
+                "icon_item": "fi fi-rr-package",
+                "text": "Supplier",
+            },
         ]
     }, {
         "title": "Report",

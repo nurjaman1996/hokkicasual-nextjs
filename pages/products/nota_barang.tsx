@@ -20,13 +20,13 @@ const fetcher = (url: string) => fetch(url).then(res => res.json());
 //     };
 // }
 
-export default function DaftarProduk() {
+export default function NotaBarang() {
     // const [dataProduct, setData] = useState(dataProduct_.product);
     const [date, setDate] = useState(format(new Date(), "dd/MM/yyyy"));
 
     const [Query, setQuery] = useState("all");
 
-    const { data, error, isLoading } = useSWR(`https://api.inovasimediakreatif.site/products/${Query}`, fetcher);
+    const { data, error, isLoading } = useSWR(`https://api.inovasimediakreatif.site/notabarang/${Query}`, fetcher);
 
     const [openSize, setopenSize] = useState(null);
 
@@ -41,7 +41,7 @@ export default function DaftarProduk() {
     const list_produk: any = [];
 
     if (!isLoading && !error) {
-        data.product.map((data_produk: any, index: any) => {
+        data.data_notabarang.map((data_produk: any, index: any) => {
             return (
                 list_produk.push(
                     <tbody key={index} className="group hover:shadow-lg rounded-lg">
@@ -61,21 +61,22 @@ export default function DaftarProduk() {
                                         width="500"
                                         priority
                                     />
-                                    <div className="flex flex-col">
-                                        <div className="text-xs">#{data_produk.id_produk} | {data_produk.id_brand}</div>
+                                    <div className="flex flex-col justify-center">
+                                        <div className="text-xs">{data_produk.id_produk} | {data_produk.brand[0].brand}</div>
                                         <div className="text-base">{data_produk.produk}</div>
-                                        <div className="text-xs">Rp{data_produk.n_price}</div>
+                                        <div className="text-xs">Harga Beli : Rp{data_produk.m_price}</div>
+                                        <div className="text-xs">Harga Jual : Rp{data_produk.selling_price}</div>
                                     </div>
                                 </div>
                             </td>
                             <td className="p-0 pt-4 h-full">
                                 <div className="flex flex-wrap justify-center items-center h-full bg-white pt-2 md:pt-4 md:pb-[15px] px-4 ">
-                                    <button className="cursor-pointer text-green-600 font-medium hover:underline focus:underline" onClick={() => toogleActive(index)}>{data_produk.variationcount[0].total_qty} in stock</button>
+                                    {data_produk.size}
                                 </div>
                             </td>
                             <td className="p-0 pt-4 h-full">
                                 <div className="flex flex-wrap justify-center items-center h-full bg-white pt-2 md:pt-4 md:pb-[15px] px-4">
-                                    {data_produk.variation.length}
+                                    {data_produk.qty}
                                 </div>
                             </td>
                             <td className="p-0 pt-4 h-full">
@@ -86,6 +87,11 @@ export default function DaftarProduk() {
                             <td className="p-0 pt-4 h-full">
                                 <div className="flex flex-wrap justify-center items-center h-full bg-white pt-2 md:pt-4 md:pb-[15px] px-4">
                                     {data_produk.warehouse[0].warehouse}
+                                </div>
+                            </td>
+                            <td className="p-0 pt-4 h-full">
+                                <div className="flex flex-wrap justify-center items-center h-full bg-white pt-2 md:pt-4 md:pb-[15px] px-4">
+                                    {data_produk.supplier[0].supplier}
                                 </div>
                             </td>
                             <td className="p-0 pt-4 h-full">
@@ -107,39 +113,6 @@ export default function DaftarProduk() {
 
                                 </div>
                             </td>
-                            <td className="p-0 h-full bg-white" colSpan={4}>
-                                <div className=" items-center h-full px-4">
-                                    <Collapse isOpened={openSize === index}>
-                                        <div className="pb-6">
-                                            <div className="h-[auto] w-[100%] border rounded-lg px-2 py-3">
-                                                <table className="w-full">
-                                                    <thead>
-                                                        <tr className="text-center">
-                                                            <th className="py-1">Varian</th>
-                                                            <th>Stock</th>
-                                                            <th>Harga Jual</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {(function (rows: any, i, len) {
-                                                            while (++i <= data_produk.variation.length) {
-                                                                rows.push(
-                                                                    <tr key={i} className="text-center">
-                                                                        <td className="py-1">{data_produk.variation[i - 1].size}</td>
-                                                                        <td>{data_produk.variation[i - 1].qty}</td>
-                                                                        <td>Rp{data_produk.n_price}</td>
-                                                                    </tr>
-                                                                )
-                                                            }
-                                                            return rows;
-                                                        })([], 0, index + 1)}
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </Collapse>
-                                </div>
-                            </td>
                             <td className="p-0 h-full">
                                 <div className="h-full bg-white">
                                 </div>
@@ -151,7 +124,7 @@ export default function DaftarProduk() {
                                 <div className="h-full bg-white px-4 rounded-bl-lg pb-7">
                                 </div>
                             </td>
-                            <td className="p-0 h-full" colSpan={6}>
+                            <td className="p-0 h-full" colSpan={7}>
                                 <div className="pr-6 bg-white rounded-br-lg ">
                                     <div className="flex items-center h-full pb-7 border-t">
 
@@ -171,7 +144,7 @@ export default function DaftarProduk() {
     return (
         <>
             <div className="font-bold text-3xl border-b border-[#2125291A] h-16 mb-7">
-                Daftar Produk
+                Daftar Nota Barang
             </div>
 
             <div className="flex flex-wrap items-center content-center mb-6">
@@ -208,16 +181,19 @@ export default function DaftarProduk() {
                             Produk & Harga
                         </th>
                         <th className="py-3">
-                            Stok
+                            Varian
                         </th>
                         <th className="py-3">
-                            Varian
+                            Stok
                         </th>
                         <th className="py-3">
                             Kategori
                         </th>
                         <th className="py-3">
                             Gudang
+                        </th>
+                        <th className="py-3">
+                            Supplier
                         </th>
                         <th className="py-3 rounded-r-lg">
                             Action

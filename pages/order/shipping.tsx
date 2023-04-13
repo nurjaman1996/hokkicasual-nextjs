@@ -5,129 +5,111 @@ import Flatpickr from "react-flatpickr";
 import "flatpickr/dist/themes/dark.css";
 import React, { Component, useRef, useState } from "react";
 import { compareAsc, format } from 'date-fns';
+import Link from "next/link";
+import { count } from "console";
+import DataTable, { ExpanderComponentProps } from 'react-data-table-component';
+import useSWR from 'swr';
+import styles from '../../styles/Table.module.css';
+
+const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 export default function Shipping() {
     // format(new Date(2014, 1, 11), 'yyyy-MM-dd')
+    const { data, error, isLoading } = useSWR(`https://api.inovasimediakreatif.site/orders/0/10/all`, fetcher);
 
-    const [date, setDate] = useState(format(new Date(), 'dd/MM/yyyy')
-    );
+    const [date, setDate] = useState(format(new Date(), 'dd/MM/yyyy'));
+    const [start, setStart] = useState(30);
+    const [hasMore, setHasMore] = useState(true);
 
-    const total_data = 17;
+    const list_order: any = [];
 
-
-    let data_order: any = [];
-    {
-        for (let index = 0; index < total_data; index++) {
-            data_order.push(
-                <div key={index} className="shadow-lg w-full h-auto bg-white rounded-lg p-6">
-
-                    <div className="flex flex-wrap content-end">
-                        <div className="grid grid-rows-2 gap-1 h-auto">
-                            <span className="text-blue-700 text-sm font-bold">#278LKANSDJN72U2S8</span>
-                            <span className="text-gray-400 text-sm">Selasa, 28 Mar 2023 23:50:21</span>
+    if (!isLoading && !error) {
+        data.orders.map((order: any, index: number) => {
+            return (
+                list_order.push(
+                    <div key={order.id} className="hover:shadow-md w-full h-auto bg-white rounded-lg text-sm">
+                        <div className="flex flex-1 w-full h-auto border-b py-4 px-4">
+                            <div className="grow">Cust. <b>{order.customer}</b> | {order.sales_channel}</div>
+                            <div className="text-start">No. Pesanan {order.id_pesanan}</div>
                         </div>
 
-                        <div className="grow flex flex-wrap justify-end items-center gap-3">
-                            <span className="font-bold text-orange-500">Sedang Dikirim</span>
-                            <Image
-                                className="w-[40px] h-auto"
-                                src="/delivery.png"
-                                alt="Picture of the author"
-                                width={100}
-                                height={100}
-                            />
-                        </div>
-                    </div>
-
-                    <hr className="border-t-2 border-basic-3 mt-2 mb-3"></hr>
-
-                    <div className="flex flex-wrap gap-7 h-auto">
-                        <div className="w-[300px]">
-                            <div className="grid grid-flow-row h-auto">
-                                <span className="text-gray-600 text-sm">Pemesan</span>
-                                <span className="text-black text-lg font-bold">HOKKICASUAL.ID</span>
-                                <span className="text-orange-500 text-lg font-bold">SHOPEE</span>
-
-                                <div className="flex flex-wrap h-auto mb-2">
-                                    <span className="text-gray-800 text-sm mt-6 text-start">Status Bayar & Total bayar</span>
-                                    <span className="text-blue-700 font-bold text-sm mt-6 text-end grow">Lihat Riwayat</span>
-                                </div>
-
-                                <div className="bg-white border-2 h-auto rounded-lg py-2 px-3 grid grid-flow-row w-[300px]">
-                                    <span className="text-black text-lg font-bold mb-2">Rp1.235.334</span>
-                                    <div className="flex flex-wrap gap-2 h-auto mb-1">
-                                        <span className="bg-green-500 p-1 px-3 text-sm text-white rounded-md">Paid</span>
-                                        <span className="bg-gray-800 p-1 px-3 text-sm text-white rounded-md">CASH (28-10-2039)</span>
-                                    </div>
-                                </div>
+                        <div className="h-auto p-4 py-6 items-center justify-start flex flex-wrap">
+                            <div className="w-[3%] ml-3">
+                                {index + 1}.
                             </div>
-                        </div>
-                        <div className="text-gray-600 text-sm grow">
-                            <span>Produk (total {index + 1 * 5} item)</span>
-                            <div className="mt-2">
-                                <table className="table-auto w-full text-center">
-                                    <thead>
-                                        <tr>
-                                            <th className="bg-blue-600 text-white py-2 border border-blue-600">No.</th>
-                                            <th className="bg-blue-600 text-white py-2 border border-blue-600">PRODUCT</th>
-                                            <th className="bg-blue-600 text-white py-2 border border-blue-600">ID PRODUCT</th>
-                                            <th className="bg-blue-600 text-white py-2 border border-blue-600">SIZE</th>
-                                            <th className="bg-blue-600 text-white py-2 border border-blue-600">QTY</th>
-                                            <th className="bg-blue-600 text-white py-2 border border-blue-600">PRICE</th>
-                                            <th className="bg-blue-600 text-white py-2 border border-blue-600">DISC ITEM</th>
-                                            <th className="bg-blue-600 text-white py-2 border border-blue-600">SUB TOTAL</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {(function (rows: any, i, len) {
-                                            while (++i <= len) {
-                                                rows.push(
-                                                    <tr key={i}>
-                                                        <td className="border py-2 border-gray-300">{i}</td>
-                                                        <td className="border py-2 border-gray-300">Nike Air Force 1 07 Triple White</td>
-                                                        <td className="border py-2 border-gray-300">125081399</td>
-                                                        <td className="border py-2 border-gray-300">38</td>
-                                                        <td className="border py-2 border-gray-300">2</td>
-                                                        <td className="border py-2 border-gray-300">Rp 750.000</td>
-                                                        <td className="border py-2 border-gray-300">Rp 0</td>
-                                                        <td className="border py-2 border-gray-300">Rp 750.000</td>
-                                                    </tr>
-                                                )
-                                            }
-                                            return rows;
-                                        })([], 0, index + 1 * 5)}
 
-                                    </tbody>
-                                </table>
+                            <div className="flex flex-col w-[36%] gap-2">
+                                {(function (rows: any, i, len) {
+                                    while (++i <= len) {
+                                        rows.push(
+                                            <div key={i} className="flex justify-start items-start gap-5">
+                                                <Image
+                                                    className="max-w-[50px] rounded-lg max-h-[50px]"
+                                                    src="/produk.jpg"
+                                                    alt="product-1"
+                                                    height="500"
+                                                    width="500"
+                                                    priority
+                                                />
+                                                <div className="flex flex-col gap-2">
+                                                    <span>{order.details_order[i - 1].produk}</span>
+                                                    <span>Variasi {order.details_order[i - 1].size}</span>
+                                                </div>
+
+                                                <div className="">
+                                                    <span>x{order.details_order[i - 1].qty}</span>
+                                                </div>
+                                            </div>
+                                        )
+                                    }
+                                    return rows;
+                                })([], 0, order.details_order.length)}
                             </div>
+
+                            <div className="text-start w-[20%] flex flex-col">
+                                <span>Rp{order.total_amount}</span>
+                                <span>{order.payment.length < 1 ? "Belum ada Pembayaran" : ""}</span>
+                            </div>
+
+                            <div className="w-[20%]">
+                                <span>{order.status_pesanan}</span>
+                            </div>
+
+                            <div className="w-[20%]">
+                                <span>{order.catatan}</span>
+                            </div>
+
                         </div>
+
+                        <div className="flex flex-wrap justify-end gap-3 p-4 border-t">
+                            <button className="bg-white border-2 border-blue-400 h-auto rounded-lg py-1.5 px-3 grid grid-flow-row">
+                                <span className="text-blue-500 text-sm font-medium">Selesaikan Pesanan</span>
+                            </button>
+                        </div>
+
                     </div>
-
-                    <hr className="border-t-2 border-basic-3 mt-5 mb-3"></hr>
-
-                    <div className="flex flex-wrap justify-end gap-3">
-                        <button className="bg-white border-2 border-blue-400 h-auto rounded-lg py-2 px-3 grid grid-flow-row">
-                            <span className="text-blue-500 text-sm font-medium">Print</span>
-                        </button>
-
-                        <button className="bg-white border-2 border-blue-400 h-auto rounded-lg py-2 px-3 grid grid-flow-row">
-                            <span className="text-blue-500 text-sm font-medium">Selesaikan Pesanan</span>
-                        </button>
-
-                        <button className="bg-white border-2 border-blue-400 h-auto rounded-lg py-2 px-3 grid grid-flow-row">
-                            <span className="text-blue-500 text-sm font-medium">Edit Pesanan</span>
-                        </button>
-                    </div>
-
-                </div>
+                )
             )
-        }
-
+        })
     }
 
+
+    const CustomMaterialPagination = ({ rowsPerPage, rowCount, onChangePage, onChangeRowsPerPage, currentPage }: any) => (
+        <div className="bg-white border-t px-3 py-2 flex flex-wrap justify-start h-14 items-center">
+            <div className="grow">
+                Menampilkan {String(currentPage)}-{String(Math.ceil(rowCount / 10))} dari {String(rowCount)} items
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+                <button className="bg-white border rounded-lg border-gray-300 p-2 text-sm font-normal" onClick={({ }) => onChangePage(currentPage === 1 ? currentPage : currentPage - 1)}>Back</button>
+                <button className="bg-white border rounded-lg border-gray-300 p-2 text-sm font-normal" onClick={({ }) => onChangePage(currentPage + 1)}>Next</button>
+            </div>
+        </div>
+    );
+
     return (
-        <>
-            <div className="font-bold text-3xl border-b border-[#2125291A] h-16 mb-7">Pesanan Sedang Dikirim</div>
+        <div>
+            <div className="font-bold text-3xl border-b border-[#2125291A] h-16 mb-7">Order</div>
 
             <div className="flex flex-wrap items-center content-center">
                 <div className="shadow rounded-lg w-auto flex flex-row text-center content-center">
@@ -171,20 +153,54 @@ export default function Shipping() {
                 </div>
 
                 <button type="button" className="ml-3 shadow rounded-lg bg-blue-600 hover:bg-blue-800 h-[50px] text-white px-4 flex flex-wrap gap-2 content-center">
-                    <span>Tambah Order</span>
+                    <Link href='/order/add_order'>Tambah Order</Link>
                     <div className="my-auto">
                         <fa.FaPlus size={13} className="text-white" />
                     </div>
                 </button>
             </div>
 
-            <div className="font-medium text-black py-5">
-                <span>{total_data} order ditampilkan</span>
+            <div className="font-medium text-black py-4">
+                <span>{list_order.length} order ditampilkan</span>
             </div>
 
+            <table className="table bg-transparent h-px mb-4 text-sm w-full">
+                <thead className="bg-white text-gray-800">
+                    <tr className="rounded-lg">
+                        <th className="pl-2 py-3 rounded-l-lg w-[5%] text-start">
+                            <span className="ml-3">No.</span>
+                        </th>
+                        <th className="pl-2 py-3 w-[35%] text-start">
+                            Produk
+                        </th>
+                        <th className="py-3 w-[20%] text-start">
+                            Total Pembayaran
+                        </th>
+                        <th className="py-3 w-[20%] text-start">
+                            Status
+                        </th>
+                        <th className="py-3 w-[20%] rounded-r-lg text-start">
+                            Catatan
+                        </th>
+                    </tr>
+                </thead>
+            </table>
+
             <div className="grid grid-cols-1 gap-4 w-full h-auto pb-10">
-                {data_order}
+                {list_order}
             </div>
-        </>
+
+            {/* <div className="mb-20">
+                <DataTable
+                    className="items-center"
+                    columns={columns}
+                    data={list_order}
+                    // selectableRows
+                    pagination
+                    paginationComponent={CustomMaterialPagination}
+                />
+            </div> */}
+
+        </div>
     );
 }
