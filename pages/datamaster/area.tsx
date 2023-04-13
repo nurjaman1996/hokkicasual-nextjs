@@ -9,6 +9,9 @@ import Link from "next/link";
 import TableHeaderRow from "@nextui-org/react/types/table/table-header-row";
 import { Collapse } from "react-collapse";
 import DataTable, { ExpanderComponentProps } from 'react-data-table-component';
+import useSWR from 'swr';
+
+const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 export default function Area() {
     const [date, setDate] = useState(format(new Date(), "dd/MM/yyyy"));
@@ -37,36 +40,43 @@ export default function Area() {
 
     ];
 
-    const data: any = [];
-    for (let index = 0; index < 5; index++) {
-        data.push(
-            {
-                id: index,
-                id_area: "AREA" + index,
-                provinsi: String(index + 10),
-                kota: "id",
-                up_price: "id",
-                action: (
-                    <div className="flex flex-warp gap-4">
-                        <button className="text-blue-500">
-                            <i className="fi fi-rr-edit text-center text-xl"></i>
-                        </button>
-                        <button className="text-red-500">
-                            <i className="fi fi-rr-trash text-center text-xl"></i>
-                        </button>
-                    </div>
-                ),
-            },
-        )
+    const list_area: any = [];
+
+    const { data, error, isLoading } = useSWR(`https://api.inovasimediakreatif.site/getarea`, fetcher);
+
+    if (!isLoading && !error) {
+        data.data_area.map((data_area: any, index: number) => {
+            return (
+                list_area.push(
+                    {
+                        id: index,
+                        id_area: data_area.id_area,
+                        provinsi: data_area.provinsi,
+                        kota: data_area.kota,
+                        up_price: data_area.up_price,
+                        action: (
+                            <div className="flex flex-warp gap-4">
+                                <button className="text-blue-500">
+                                    <i className="fi fi-rr-edit text-center text-xl"></i>
+                                </button>
+                                <button className="text-red-500">
+                                    <i className="fi fi-rr-trash text-center text-xl"></i>
+                                </button>
+                            </div>
+                        ),
+                    },
+                )
+            )
+        })
     }
 
     const [filterText, setFilterText] = React.useState("");
 
-    const filteredItems = data.filter((data: any) => {
+    const filteredItems = list_area.filter((list_area: any) => {
         return (
-            data.id_area.toLocaleLowerCase().includes(filterText.toLocaleLowerCase()) ||
-            data.kota.toLocaleLowerCase().includes(filterText.toLocaleLowerCase()) ||
-            data.provinsi.toLocaleLowerCase().includes(filterText.toLocaleLowerCase())
+            list_area.id_area.toLocaleLowerCase().includes(filterText.toLocaleLowerCase()) ||
+            list_area.kota.toLocaleLowerCase().includes(filterText.toLocaleLowerCase()) ||
+            list_area.provinsi.toLocaleLowerCase().includes(filterText.toLocaleLowerCase())
         );
     });
 
@@ -115,14 +125,17 @@ export default function Area() {
                 </div>
             </div>
 
-            <DataTable
-                className="items-center"
-                columns={columns}
-                data={filteredItems}
-                selectableRows
-                pagination
-                paginationComponent={CustomMaterialPagination}
-            />
+
+            <div className="mb-20">
+                <DataTable
+                    className="items-center"
+                    columns={columns}
+                    data={filteredItems}
+                    selectableRows
+                    pagination
+                    paginationComponent={CustomMaterialPagination}
+                />
+            </div>
 
             {showModal ? (
                 <>
