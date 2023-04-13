@@ -45,12 +45,6 @@ const Items = [
         "icon_item": "fi fi-rr-box",
         "path": "products",
         "children": [
-            // {
-            //     "title": "List Produk",
-            //     "href": "/products/list_product",
-            //     "icon_item": "fi fi-rr-box-alt",
-            //     "text": "List Produk"
-            // },
             {
                 "title": "Daftar Produk",
                 "href": "/products/daftar_produk",
@@ -62,6 +56,12 @@ const Items = [
                 "href": "/products/stock_opname",
                 "icon_item": "fi fi-rr-boxes",
                 "text": "Stok Opname",
+            },
+            {
+                "title": "History PO",
+                "href": "/products/historypo",
+                "icon_item": "fi fi-rr-time-past",
+                "text": "History PO"
             }
         ]
     }, {
@@ -69,6 +69,44 @@ const Items = [
         "href": "/expense",
         "text": "Expense",
         "icon_item": "fi fi-rr-label"
+    }, {
+        "title": "Data Master",
+        "href": "#",
+        "text": "Data Master",
+        "icon_item": "fi fi-rr-folder",
+        "path": "datamaster",
+        "children": [
+            {
+                "title": "Area",
+                "href": "/datamaster/area",
+                "icon_item": "fi fi-rs-map-marker",
+                "text": "Area",
+            },
+            {
+                "title": "Warehouse",
+                "href": "/datamaster/warehouse",
+                "icon_item": "fi fi-rr-garage",
+                "text": "Warehouse",
+            },
+            {
+                "title": "Store",
+                "href": "/datamaster/store",
+                "icon_item": "fi fi-rr-shop",
+                "text": "Store",
+            },
+            {
+                "title": "Brand",
+                "href": "/datamaster/brand",
+                "icon_item": "fi fi-rr-tags",
+                "text": "Brand",
+            },
+            {
+                "title": "Category",
+                "href": "/datamaster/category",
+                "icon_item": "fi fi-rr-cube",
+                "text": "Category",
+            }
+        ]
     }, {
         "title": "Report",
         "href": "/",

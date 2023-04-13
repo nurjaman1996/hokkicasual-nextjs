@@ -7,7 +7,7 @@
   transition: height 500ms;
 }
 
-.rdt_Table {
+/* .rdt_Table {
   background-color: transparent !important;
 }
 
@@ -29,9 +29,8 @@
 }
 
 .rdt_TableRow {
-  /* align-items: flex-start !important; */
   border-radius: 15px;
   margin-top: 10px;
   margin-bottom: 10px;
   height: auto;
-}
+} */

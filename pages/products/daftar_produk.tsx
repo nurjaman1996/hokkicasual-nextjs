@@ -9,7 +9,18 @@ import Link from "next/link";
 import TableHeaderRow from "@nextui-org/react/types/table/table-header-row";
 import { Collapse } from "react-collapse";
 
-export default function DaftarProduk() {
+export async function getServerSideProps() {
+    const response = await fetch('https://api.inovasimediakreatif.site/products/');
+    const dataProduct = await response.json();
+    return {
+        props: {
+            dataProduct
+        }
+    };
+}
+
+export default function DaftarProduk({ dataProduct: dataProduct_ }: any) {
+    const [dataProduct, setData] = useState(dataProduct_.product);
     const [date, setDate] = useState(format(new Date(), "dd/MM/yyyy"));
 
     const [openSize, setopenSize] = useState(null);
@@ -22,130 +33,131 @@ export default function DaftarProduk() {
         }
     }
 
-    const produk: any = [];
+    let produk: any = [];
 
-    for (let index = 0; index < 10; index++) {
-        produk.push(
-            <tbody key={index} className="group hover:shadow-lg rounded-lg">
-                <tr className="group-hover:drop-shadow-primary transition-filter rounded-lg">
-                    <td className="p-0 pt-4 h-full">
-                        <div className="flex flex-wrap justify-center items-center h-full bg-white pt-2 pl-5 rounded-tl-lg">
-                            {index + 1}
-                        </div>
-                    </td>
-                    <td className="p-0 pt-4 h-full">
-                        <div className="flex flex-row gap-4 items-center h-full bg-white pt-5 pb-3 pl-4">
-                            <Image
-                                className="max-w-[80px] max-h-[80px] rounded"
-                                src="/produk.jpg"
-                                alt="product-1"
-                                height="500"
-                                width="500"
-                                priority
-                            />
-                            <div className="flex flex-col">
-                                <div className="text-xs">#22736289 | Adidas</div>
-                                <div className="text-base">Adidas Broomfield Green</div>
-                                <div className="text-xs">Rp550.000</div>
+    dataProduct.map((data_produk: any, index: any) => {
+        return (
+            produk.push(
+                <tbody key={index} className="group hover:shadow-lg rounded-lg">
+                    <tr className="group-hover:drop-shadow-primary transition-filter rounded-lg">
+                        <td className="p-0 pt-4 h-full">
+                            <div className="flex flex-wrap justify-center items-center h-full bg-white pt-2 pl-5 rounded-tl-lg">
+                                {index + 1}
                             </div>
-                        </div>
-                    </td>
-                    <td className="p-0 pt-4 h-full">
-                        <div className="flex flex-wrap justify-center items-center h-full bg-white pt-2 md:pt-4 md:pb-[15px] px-4 ">
-                            <button className="cursor-pointer text-green-600 font-medium hover:underline focus:underline" onClick={() => toogleActive(index)}>30 in stock</button>
-                        </div>
-                    </td>
-                    <td className="p-0 pt-4 h-full">
-                        <div className="flex flex-wrap justify-center items-center h-full bg-white pt-2 md:pt-4 md:pb-[15px] px-4">
-                            10
-                        </div>
-                    </td>
-                    <td className="p-0 pt-4 h-full">
-                        <div className="flex flex-wrap justify-center items-center h-full bg-white pt-2 md:pt-4 md:pb-[15px] px-4">
-                            Sneakers
-                        </div>
-                    </td>
-                    <td className="p-0 pt-4 h-full">
-                        <div className="flex flex-wrap justify-center items-center h-full bg-white pt-2 md:pt-4 md:pb-[15px] px-4">
-                            Stok Sendiri
-                        </div>
-                    </td>
-                    <td className="p-0 pt-4 h-full">
-                        <div className="flex flex-warp gap-4 justify-center items-center h-full bg-white pt-2 md:pt-4 md:pb-[15px] px-4 rounded-tr-lg">
-                            <button className="text-blue-500">
-                                <i className="fi fi-rr-edit text-center text-lg"></i>
-                            </button>
-                            <button className="text-red-500">
-                                <i className="fi fi-rr-trash text-center text-lg"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
-
-
-                <tr className="group-hover:drop-shadow-primary transition-filter rounded-lg">
-                    <td className="p-0 h-full" colSpan={2}>
-                        <div className="flex items-center h-full bg-white px-4">
-
-                        </div>
-                    </td>
-                    <td className="p-0 h-full bg-white" colSpan={4}>
-                        <div className=" items-center h-full px-4">
-                            <Collapse isOpened={openSize === index}>
-                                <div className="pb-6">
-                                    <div className="h-[auto] w-[100%] border rounded-lg px-2 py-3">
-                                        <table className="w-full">
-                                            <thead>
-                                                <tr className="text-center">
-                                                    <th className="py-1">Varian</th>
-                                                    <th>Stock</th>
-                                                    <th>Harga Jual</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {(function (rows: any, i, len) {
-                                                    while (++i <= 10) {
-                                                        rows.push(
-                                                            <tr key={i} className="text-center">
-                                                                <td className="py-1">{i + 34}</td>
-                                                                <td>10</td>
-                                                                <td>Rp123.123</td>
-                                                            </tr>
-                                                        )
-                                                    }
-                                                    return rows;
-                                                })([], 0, index + 1)}
-                                            </tbody>
-                                        </table>
-                                    </div>
+                        </td>
+                        <td className="p-0 pt-4 h-full">
+                            <div className="flex flex-row gap-4 items-center h-full bg-white pt-5 pb-3 pl-4">
+                                <Image
+                                    className="max-w-[80px] max-h-[80px] rounded"
+                                    src={data_produk.img}
+                                    alt="product-1"
+                                    height="500"
+                                    width="500"
+                                    priority
+                                />
+                                <div className="flex flex-col">
+                                    <div className="text-xs">#{data_produk.id_produk} | {data_produk.id_brand}</div>
+                                    <div className="text-base">{data_produk.produk}</div>
+                                    <div className="text-xs">Rp{data_produk.n_price}</div>
                                 </div>
-                            </Collapse>
-                        </div>
-                    </td>
-                    <td className="p-0 h-full">
-                        <div className="h-full bg-white">
-                        </div>
-                    </td>
-                </tr>
+                            </div>
+                        </td>
+                        <td className="p-0 pt-4 h-full">
+                            <div className="flex flex-wrap justify-center items-center h-full bg-white pt-2 md:pt-4 md:pb-[15px] px-4 ">
+                                <button className="cursor-pointer text-green-600 font-medium hover:underline focus:underline" onClick={() => toogleActive(index)}>30 in stock</button>
+                            </div>
+                        </td>
+                        <td className="p-0 pt-4 h-full">
+                            <div className="flex flex-wrap justify-center items-center h-full bg-white pt-2 md:pt-4 md:pb-[15px] px-4">
+                                10
+                            </div>
+                        </td>
+                        <td className="p-0 pt-4 h-full">
+                            <div className="flex flex-wrap justify-center items-center h-full bg-white pt-2 md:pt-4 md:pb-[15px] px-4">
+                                {data_produk.id_category}
+                            </div>
+                        </td>
+                        <td className="p-0 pt-4 h-full">
+                            <div className="flex flex-wrap justify-center items-center h-full bg-white pt-2 md:pt-4 md:pb-[15px] px-4">
+                                Stok Sendiri
+                            </div>
+                        </td>
+                        <td className="p-0 pt-4 h-full">
+                            <div className="flex flex-warp gap-4 justify-center items-center h-full bg-white pt-2 md:pt-4 md:pb-[15px] px-4 rounded-tr-lg">
+                                <button className="text-blue-500">
+                                    <i className="fi fi-rr-edit text-center text-lg"></i>
+                                </button>
+                                <button className="text-red-500">
+                                    <i className="fi fi-rr-trash text-center text-lg"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
 
-                <tr className="group-hover:drop-shadow-primary transition-filter rounded-lg">
-                    <td className="p-0 h-full">
-                        <div className="h-full bg-white px-4 rounded-bl-lg pb-7">
-                        </div>
-                    </td>
-                    <td className="p-0 h-full" colSpan={6}>
-                        <div className="pr-6 bg-white rounded-br-lg ">
-                            <div className="flex items-center h-full pb-7 border-t">
+
+                    <tr className="group-hover:drop-shadow-primary transition-filter rounded-lg">
+                        <td className="p-0 h-full" colSpan={2}>
+                            <div className="flex items-center h-full bg-white px-4">
 
                             </div>
-                        </div>
+                        </td>
+                        <td className="p-0 h-full bg-white" colSpan={4}>
+                            <div className=" items-center h-full px-4">
+                                <Collapse isOpened={openSize === index}>
+                                    <div className="pb-6">
+                                        <div className="h-[auto] w-[100%] border rounded-lg px-2 py-3">
+                                            <table className="w-full">
+                                                <thead>
+                                                    <tr className="text-center">
+                                                        <th className="py-1">Varian</th>
+                                                        <th>Stock</th>
+                                                        <th>Harga Jual</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {(function (rows: any, i, len) {
+                                                        while (++i <= data_produk.variation.length) {
+                                                            rows.push(
+                                                                <tr key={i} className="text-center">
+                                                                    <td className="py-1">{data_produk.variation[i - 1].size}</td>
+                                                                    <td>{data_produk.variation[i - 1].qty}</td>
+                                                                    <td>Rp{data_produk.n_price}</td>
+                                                                </tr>
+                                                            )
+                                                        }
+                                                        return rows;
+                                                    })([], 0, index + 1)}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </Collapse>
+                            </div>
+                        </td>
+                        <td className="p-0 h-full">
+                            <div className="h-full bg-white">
+                            </div>
+                        </td>
+                    </tr>
 
-                    </td>
-                </tr>
-            </tbody>
+                    <tr className="group-hover:drop-shadow-primary transition-filter rounded-lg">
+                        <td className="p-0 h-full">
+                            <div className="h-full bg-white px-4 rounded-bl-lg pb-7">
+                            </div>
+                        </td>
+                        <td className="p-0 h-full" colSpan={6}>
+                            <div className="pr-6 bg-white rounded-br-lg ">
+                                <div className="flex items-center h-full pb-7 border-t">
+
+                                </div>
+                            </div>
+
+                        </td>
+                    </tr>
+                </tbody>
+            )
         )
-
-    }
+    })
 
     return (
         <>
@@ -166,7 +178,7 @@ export default function DaftarProduk() {
 
                 <div className="ml-auto flex flex-row items-center justify-end">
                     <button type="button" className="ml-3 shadow rounded-lg bg-blue-600 hover:bg-blue-800 h-[45px] text-white px-4 flex flex-wrap gap-2 content-center">
-                        <Link href='/order/add_order'>Tambah Order</Link>
+                        <Link href='/order/add_order'>Tambah Produk</Link>
                         <div className="my-auto">
                             <fa.FaPlus size={13} className="text-white" />
                         </div>

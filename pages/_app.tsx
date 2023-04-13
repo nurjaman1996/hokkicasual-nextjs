@@ -8,7 +8,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     <Layout>
       <Head>
         <title>Smart Apps | Hokki Casual</title>
-        <link rel="shortcut icon" href="./favicon.ico" />
+        <link rel="shortcut icon" href="../favicon.ico" />
       </Head>
       <Component {...pageProps} />
     </Layout>
