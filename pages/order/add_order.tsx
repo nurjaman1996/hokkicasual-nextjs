@@ -67,7 +67,7 @@ export default function AddOrder() {
 
     // const size = useRef([]);
 
-    let productList: any = []
+    let productList: any = [];
     {
         dataProduct.map((product: any) => {
             for (let index = 0; index <= product.variation.length - 1; index++) {
