@@ -12,7 +12,8 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { stringify } from "querystring";
 import { compareAsc, format } from 'date-fns';
-import { redirect } from "next/dist/server/api-utils";
+import { redirect } from "next/dist/server/api-utils"; import useSWR from 'swr';
+const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 // export async function getServerSideProps() {
 //     const response = await fetch('https://dummyjson.com/products?limit=30&skip=0');
@@ -30,11 +31,25 @@ export default function AddOrder() {
     const [dataProduct, setData] = useState([]);
     const [showModal, setShowModal] = React.useState(false);
 
+    const { data, error, isLoading } = useSWR(`https://api.inovasimediakreatif.site/getstore`, fetcher);
+
+    let list_store: any = [];
+
+    if (!isLoading && !error) {
+        data.data_store.map((store: any, index: number) => {
+            list_store.push(
+                <option key={index} value={store.id_store}>{store.store}</option>
+            )
+        })
+    } else {
+        var data_store: any = [];
+    }
+
     async function focusSearch(event: any) {
         if (event.target.value === '') {
-            setLoading('standby');
+            setLoadData('standby');
         } else {
-            setLoading('searching');
+            setLoadData('searching');
             const req = await fetch(`https://api.inovasimediakreatif.site/products/${event.target.value}`,
                 {
                     method: 'GET',
@@ -46,7 +61,7 @@ export default function AddOrder() {
             const newDataProduct = await req.json();
 
             setData(newDataProduct.product);
-            setLoading('showing');
+            setLoadData('showing');
         }
     }
 
@@ -111,7 +126,7 @@ export default function AddOrder() {
     const router = useRouter();
 
     const [showProduct_, setshowProduct_] = useState(false);
-    const [isLoading, setLoading] = useState('standby');
+    const [LoadData, setLoadData] = useState('standby');
 
     function showProduct() {
         setshowProduct_(true);
@@ -169,7 +184,7 @@ export default function AddOrder() {
             setRowsData([...rowsData, rowsInput]);
             searchInput.current.value = "";
             setshowProduct_(false);
-            setLoading('standby');
+            setLoadData('standby');
 
             settotalQty(totalQty + 1);
             // }
@@ -181,7 +196,7 @@ export default function AddOrder() {
             });
             searchInput.current.value = "";
             setshowProduct_(false);
-            setLoading('standby');
+            setLoadData('standby');
         }
     }
 
@@ -218,7 +233,7 @@ export default function AddOrder() {
             if (!inputRef.current.contains(e.target)) {
                 searchInput.current.value = "";
                 setshowProduct_(false);
-                setLoading('standby');
+                setLoadData('standby');
             }
 
             if (rowsData.length > 0 && idEdit != null) {
@@ -300,7 +315,7 @@ export default function AddOrder() {
                 </div>
 
             </div>
-            {/* {JSON.stringify(rowsData) + date + "/" + totalamount} */}
+            {JSON.stringify(rowsData) + date + "/" + totalamount}
             <ToastContainer className="mt-[50px]" />
 
             <div className="flex flex-nowrap gap-5">
@@ -321,9 +336,7 @@ export default function AddOrder() {
                         <div className="flex flex-wrap items-center mt-2 justify-end">
                             <select ref={id_store} className="appearance-none h-auto cursor-pointer rounded-lg w-full bg-zinc-100 py-2 px-5 focus:outline-none border text-base" placeholder="Pilih Store">
                                 <option value="">Pilih Store Channel</option>
-                                <option value="Shopee">Shopee</option>
-                                <option value="Tokopedia">Tokopedia</option>
-                                <option value="Lazada">Lazada</option>
+                                {list_store}
                             </select>
                             <i className="fi fi-rr-angle-small-down w-[1.12rem] h-[1.12rem] text-center text-gray-500 text-[1.12rem] leading-4 absolute mr-5"></i>
                         </div>
@@ -371,13 +384,13 @@ export default function AddOrder() {
                         </div>
                         <div className={`${showProduct_ ? 'block' : 'hidden'} w-full relative `}>
                             {(function () {
-                                if (isLoading === 'standby') {
+                                if (LoadData === 'standby') {
                                     return (
                                         <div className="p-4 h-auto bg-white absolute w-full rounded shadow overscroll-y-auto overflow-x-hidden">
                                             <span>Belum ada produk ditampilkan...</span>
                                         </div>
                                     );
-                                } else if (isLoading === 'searching') {
+                                } else if (LoadData === 'searching') {
                                     return (
                                         <div className="p-4 h-auto bg-white absolute w-full rounded shadow overscroll-y-auto overflow-x-hidden">
                                             <div className="animate-pulse flex flex-warp gap-5 items-center">
@@ -397,7 +410,7 @@ export default function AddOrder() {
                                             </div>
                                         </div>
                                     );
-                                } else if (isLoading === 'showing') {
+                                } else if (LoadData === 'showing') {
                                     return (
                                         <div className="h-auto max-h-[300px] bg-white  absolute w-full rounded shadow z-10 ">
                                             <div className="h-full max-h-[300px] overscroll-y-auto overflow-x-hidden scrollbar-none">

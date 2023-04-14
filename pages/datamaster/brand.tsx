@@ -9,7 +9,11 @@ import Link from "next/link";
 import TableHeaderRow from "@nextui-org/react/types/table/table-header-row";
 import { Collapse } from "react-collapse";
 import DataTable, { ExpanderComponentProps } from 'react-data-table-component';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useForm } from "react-hook-form";
 import useSWR from 'swr';
+import axios from 'axios';
 
 const fetcher = (url: string) => fetch(url).then(res => res.json())
 
@@ -17,6 +21,11 @@ export default function Brand() {
     const [date, setDate] = useState(format(new Date(), "dd/MM/yyyy"));
 
     const columns: any = [
+        // {
+        //     name: 'Image',
+        //     selector: (row: { img: any }) => row.img,
+        //     width: "10%",
+        // },
         {
             name: 'ID Brand',
             selector: (row: { id_brand: any }) => row.id_brand,
@@ -34,7 +43,86 @@ export default function Brand() {
 
     const list_brand: any = [];
 
-    const { data, error, isLoading } = useSWR(`https://api.inovasimediakreatif.site/getbrand`, fetcher);
+    const { data, error, isLoading, mutate } = useSWR(`https://api.inovasimediakreatif.site/getbrand`, fetcher);
+
+    const { register, resetField, setValue, handleSubmit, watch, formState: { errors } } = useForm({
+        defaultValues: {
+            img: '',
+            brand: '',
+            edit_brand: '',
+        }
+    });
+
+    const [showModal, setShowModal] = React.useState(false);
+    const [delModal, setdelModal] = React.useState(false);
+    const [editModal, seteditModal] = React.useState(false);
+    const [Brand, setBrand] = React.useState(null);
+    const [id, setid] = React.useState(null);
+
+    const onSubmit = async (data: any) => {
+        await axios.post("https://api.inovasimediakreatif.site/savebrand", {
+            data: data,
+        }).then(function (response) {
+            // console.log(response.data);
+            mutate();
+        });
+
+        toast.success("Data telah disimpan", {
+            position: toast.POSITION.TOP_RIGHT,
+            pauseOnHover: false,
+            autoClose: 2000,
+        });
+
+        resetField("brand");
+        setShowModal(false);
+    };
+
+    function showeditModal(id: any, brand: any, index: number) {
+        setid(id);
+        setValue("edit_brand", brand);
+        seteditModal(true);
+    }
+
+    const onSubmitUpdate = async (data: any) => {
+        await axios.post(`https://api.inovasimediakreatif.site/editbrand/${id}`, {
+            data: data,
+        }).then(function (response) {
+            console.log(response.data);
+            mutate();
+        });
+
+        toast.success("Data telah diupdate", {
+            position: toast.POSITION.TOP_RIGHT,
+            pauseOnHover: false,
+            autoClose: 2000,
+        });
+
+        seteditModal(false);
+    };
+
+    function showdeleteModal(id: any, index: number) {
+        setid(id)
+        setBrand(list_brand[index].brand)
+        setdelModal(true)
+    }
+
+    async function deleteData() {
+        await axios.post(`https://api.inovasimediakreatif.site/deletebrand/${id}`)
+            .then(function (response) {
+                // console.log(response.data);
+                mutate();
+            });
+
+        toast.success("Data berhasil dihapus", {
+            position: toast.POSITION.TOP_RIGHT,
+            pauseOnHover: false,
+            autoClose: 2000,
+        });
+
+        console.log(id)
+
+        setdelModal(false)
+    }
 
     if (!isLoading && !error) {
         data.data_brand.map((data_brand: any, index: number) => {
@@ -42,14 +130,26 @@ export default function Brand() {
                 list_brand.push(
                     {
                         id: index,
+                        // img: (
+                        //     <div className="flex flex-wrap justify-center gap-1 py-2">
+                        //         <Image
+                        //             className="m-auto max-w-[50px] rounded-lg max-h-[50px]"
+                        //             src={data_brand.img}
+                        //             alt="product-1"
+                        //             height="500"
+                        //             width="500"
+                        //             priority
+                        //         />
+                        //     </div>
+                        // ),
                         id_brand: data_brand.id_brand,
                         brand: data_brand.brand,
                         action: (
                             <div className="flex flex-warp gap-4">
-                                <button className="text-blue-500">
+                                <button className="text-blue-500" onClick={() => showeditModal(data_brand.id, data_brand.brand, index)}>
                                     <i className="fi fi-rr-edit text-center text-xl"></i>
                                 </button>
-                                <button className="text-red-500">
+                                <button className="text-red-500" onClick={() => showdeleteModal(data_brand.id, index)}>
                                     <i className="fi fi-rr-trash text-center text-xl"></i>
                                 </button>
                             </div>
@@ -82,17 +182,17 @@ export default function Brand() {
         </div>
     );
 
-    const [showModal, setShowModal] = React.useState(false);
-
     return (
         <>
             <div className="font-bold text-3xl border-b border-[#2125291A] h-16 mb-7">
                 Data Brand
             </div>
 
+            <ToastContainer className="mt-[50px]" />
+
             <div className="flex flex-wrap items-center content-center mb-6">
                 <div className="shadow rounded-lg w-auto flex flex-row text-center content-center">
-                    <input className="h-[45px] border-0 w-[300px] pr-3 pl-5  text-gray-700 focus:outline-none rounded-l-lg" type="text" placeholder="Cari data Area"
+                    <input className="h-[45px] border-0 w-[300px] pr-3 pl-5  text-gray-700 focus:outline-none rounded-l-lg" type="text" placeholder="Cari data Brand"
                         value={filterText}
                         onChange={(e) => setFilterText(e.target.value)}
                     />
@@ -135,48 +235,141 @@ export default function Brand() {
                                 {/*header*/}
                                 <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
                                     <span className="text-xl font-semibold">
-                                        Tambah Data Area
+                                        Tambah Data Brand
                                     </span>
                                 </div>
                                 {/*body*/}
                                 <div className="relative p-6 flex-auto">
-                                    <div className="">
-                                        <label htmlFor="first_name" className="block mb-2 text-sm font-medium text-black">Provinsi</label>
-                                        <input className="h-[45px] border w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg" type="text" placeholder="Masukan Provinsi"
-                                            value={filterText}
-                                            onChange={(e) => setFilterText(e.target.value)}
-                                        />
-                                    </div>
-                                    <div className="mt-6">
-                                        <label htmlFor="first_name" className="block mb-2 text-sm font-medium text-black">Kota</label>
-                                        <input className="h-[45px] border w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg" type="text" placeholder="Masukan Kota"
-                                            value={filterText}
-                                            onChange={(e) => setFilterText(e.target.value)}
-                                        />
-                                    </div>
-                                    <div className="mt-6">
-                                        <label htmlFor="first_name" className="block mb-2 text-sm font-medium text-black">Up Price</label>
-                                        <input className="h-[45px] border w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg" type="text" placeholder="Nilai Up Price"
-                                            value={filterText}
-                                            onChange={(e) => setFilterText(e.target.value)}
-                                        />
-                                    </div>
+                                    <form onSubmit={handleSubmit(onSubmit)}>
+                                        <div className="">
+                                            <label className="block mb-2 text-sm font-medium text-black">Brand</label>
+                                            <input
+                                                className={`${errors.brand ? "border-red-500 border-2" : "border"} h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
+                                                type="text"
+                                                placeholder="Masukan brand"
+                                                // ref={req_brand}
+                                                defaultValue="" {...register("brand", { required: true })}
+                                            />
+                                            {errors.brand && <div className="mt-1 text-sm italic">This field is required</div>}
+                                        </div>
+                                    </form>
                                 </div>
                                 {/*footer*/}
                                 <div className="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
                                     <button
                                         className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                                         type="button"
-                                        onClick={() => setShowModal(false)}
+                                        onClick={() => {
+                                            resetField("brand");
+                                            setShowModal(false);
+                                        }}
                                     >
                                         Close
                                     </button>
                                     <button
                                         className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                                         type="button"
-                                        onClick={() => setShowModal(false)}
+                                        onClick={handleSubmit(onSubmit)}
                                     >
                                         Save Changes
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+                </>
+            ) : null}
+
+            {editModal ? (
+                <>
+                    <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+                        <div className="relative w-auto my-6 mx-auto max-w-3xl ">
+                            {/*content*/}
+                            <div className="border-0 rounded-lg shadow-lg relative flex flex-col bg-white outline-none focus:outline-none w-[500px]">
+                                {/*header*/}
+                                <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
+                                    <span className="text-xl font-semibold">
+                                        Edit Data Brand
+                                    </span>
+                                </div>
+                                {/*body*/}
+                                <div className="relative p-6 flex-auto">
+                                    <form onSubmit={handleSubmit(onSubmitUpdate)}>
+                                        <div className="">
+                                            <label className="block mb-2 text-sm font-medium text-black">Brand</label>
+                                            <input
+                                                className={`${errors.edit_brand ? "border-red-500 border-2" : "border"} h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
+                                                type="text"
+                                                placeholder="Masukan Brand"
+                                                // ref={req_Warehouse}
+                                                {...register("edit_brand", { required: true })}
+                                            />
+                                            {errors.edit_brand && <div className="mt-1 text-sm italic">This field is required</div>}
+                                        </div>
+                                    </form>
+                                </div>
+                                {/*footer*/}
+                                <div className="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
+                                    <button
+                                        className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                                        type="button"
+                                        onClick={() => {
+                                            seteditModal(false);
+                                        }}
+                                    >
+                                        Close
+                                    </button>
+                                    <button
+                                        className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                                        type="button"
+                                        onClick={handleSubmit(onSubmitUpdate)}
+                                    >
+                                        Save Changes
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+                </>
+            ) : null}
+
+            {delModal ? (
+                <>
+                    <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+                        <div className="relative w-auto my-6 mx-auto max-w-3xl ">
+                            {/*content*/}
+                            <div className="border-0 rounded-lg shadow-lg relative flex flex-col bg-white outline-none focus:outline-none w-[500px]">
+                                {/*header*/}
+                                <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
+                                    <span className="text-sm font-semibold">
+                                        Warning
+                                    </span>
+                                </div>
+                                {/*body*/}
+                                <div className="relative p-6 flex-auto">
+                                    <span className="text-sm font-semibold">
+                                        Brand {Brand} akan dihapus?
+                                    </span>
+                                </div>
+                                {/*footer*/}
+                                <div className="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
+                                    <button
+                                        className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1"
+                                        type="button"
+                                        onClick={() => {
+                                            setdelModal(false);
+                                        }}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        className="bg-red-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+                                        type="button"
+                                        onClick={() => deleteData()}
+                                    >
+                                        Delete
                                     </button>
                                 </div>
                             </div>
