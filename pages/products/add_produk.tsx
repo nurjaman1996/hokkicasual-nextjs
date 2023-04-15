@@ -154,19 +154,14 @@ export default function AddProduk() {
                 "Content-Type": "multipart/form-data",
             },
         }).then(function (response) {
-            console.log(response.data);
+            toast.success("Data telah disimpan", {
+                position: toast.POSITION.TOP_RIGHT,
+                pauseOnHover: false,
+                autoClose: 2000,
+                onClose: () => router.back(),
+            });
+
         });
-
-        console.log(selectedImage);
-
-        toast.success("Data telah disimpan", {
-            position: toast.POSITION.TOP_RIGHT,
-            pauseOnHover: false,
-            autoClose: 2000,
-        });
-
-        // console.log(data);
-        // console.log(selectedImage['name']);
     };
 
     const inputRef = useRef(null);

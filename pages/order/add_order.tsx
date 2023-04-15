@@ -297,6 +297,7 @@ export default function AddOrder() {
             position: toast.POSITION.TOP_RIGHT,
             pauseOnHover: false,
             autoClose: 2000,
+            onClose: () => router.back(),
         });
         setRowsData([]);
         setDate(format(new Date(), 'yyyy-MM-dd'));
@@ -307,7 +308,6 @@ export default function AddOrder() {
         setdiscountNota(0);
         setbiayaLainnya(0);
         settotalQty(0);
-        // router.replace("/order/shipping");
     }
 
     return (

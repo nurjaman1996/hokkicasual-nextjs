@@ -133,7 +133,7 @@ export default function Shipping() {
                         </div>
                     </button> */}
 
-                    <input onChange={(e) => querySet(e)} className="h-[50px] border-0 w-[280px] py-2 px-3 text-gray-700 focus:outline-none rounded-l-lg" type="text" placeholder="Pencarian..." />
+                    <input onChange={(e) => querySet(e)} className="h-[50px] border-0 w-[280px] py-2 pl-5 pr-3 text-gray-700 focus:outline-none rounded-l-lg" type="text" placeholder="Pencarian..." />
 
                     <button type="button" className="rounded-r-lg bg-white hover:bg-gray-200 h-[50px] text-gray-700 font-medium px-5">
                         <div className="my-auto">
