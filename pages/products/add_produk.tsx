@@ -11,7 +11,7 @@ import TableHeaderRow from "@nextui-org/react/types/table/table-header-row";
 import { Collapse } from "react-collapse";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import useSWR from 'swr';
 import axios from 'axios';
 const fetcher = (url: string) => fetch(url).then(res => res.json());
@@ -70,6 +70,26 @@ export default function AddProduk() {
 
     const [Count, setCount] = useState(1);
 
+    const { register, control, resetField, setValue, trigger, handleSubmit, watch, formState: { errors } } = useForm({
+        // defaultValues: {
+        //     produk: '',
+        //     brand: '',
+        //     warehouse: '',
+        //     supplier: '',
+        //     harga_beli: '',
+        //     harga_jual: '',
+        //     quality: '',
+        //     kategori: '',
+        //     deskripsi: '',
+        //     img: '',
+        // }
+    });
+
+    const { fields, append, remove } = useFieldArray({
+        control,
+        name: "variasi"
+    });
+
     let list_variasi: any = [];
     {
         for (let index = 0; index < Count; index++) {
@@ -77,13 +97,13 @@ export default function AddProduk() {
                 <tr key={index} className="rounded-lg h-auto mt-7">
                     <td className="pt-4 p-0">
                         <div className="h-[46px] flex flex-wrap justify-center items-center rounded-l-lg">
-                            <input className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="text" placeholder="Size"
+                            <input {...register(`size.${index}`)} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="text" placeholder="Size"
                             />
                         </div>
                     </td>
                     <td className="pt-4 p-0">
                         <div className="h-[46px] flex flex-wrap justify-center items-center rounded-l-lg">
-                            <input className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="text" placeholder="Stok"
+                            <input {...register(`stok.${index}`)} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="number" placeholder="Size"
                             />
                         </div>
                     </td>
@@ -113,23 +133,39 @@ export default function AddProduk() {
         }
     }
 
+    const onSubmit = (data: any) => {
+        // await axios.post("https://api.inovasimediakreatif.site/savestore", {
+        //     data: data,
+        // }).then(function (response) {
+        //     // console.log(response.data);
+        //     mutate();
+        // });
+
+        toast.success("Data telah disimpan", {
+            position: toast.POSITION.TOP_RIGHT,
+            pauseOnHover: false,
+            autoClose: 2000,
+        });
+
+        console.log(data);
+        console.log(selectedImage);
+    };
+
     const inputRef = useRef(null);
 
-    const handleClick = () => {
-        // 👇️ open file input box on click of another element
+    const handleClick = async () => {
         inputRef.current.click();
+        // await trigger();
     };
 
     const [selectedImage, setSelectedImage] = useState(null);
 
-    // This function will be triggered when the file field change
     const imageChange = (e: any) => {
         if (e.target.files && e.target.files.length > 0) {
             setSelectedImage(e.target.files[0]);
         }
     };
 
-    // This function will be triggered when the "Remove This Image" button is clicked
     const removeSelectedImage = () => {
         setSelectedImage(null);
     };
@@ -143,6 +179,10 @@ export default function AddProduk() {
                     </button>
                     <span className="font-bold text-3xl">Tambah Produk</span>
                 </div>
+
+                <span>
+                    {JSON.stringify(watch())}
+                </span>
             </div>
 
             <div className="w-full h-[auto] pb-5 gap-5">
@@ -179,110 +219,122 @@ export default function AddProduk() {
                         </div>
 
                         <div className="grow">
-                            <div className="grid grid-cols-2 gap-5 justify-center content-center items-center">
-                                <div>
-                                    <div className="mb-3">Nama Produk</div>
-                                    <input
-                                        className={`border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
-                                        type="text"
-                                        placeholder="Masukan Deskripsi"
-                                    />
-                                </div>
-                                <div>
-                                    <div className="mb-3">Harga Beli</div>
-                                    <input
-                                        className={`border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
-                                        type="text"
-                                        placeholder="Masukan Deskripsi"
-                                    />
-                                </div>
+                            <form onSubmit={handleSubmit(onSubmit)}>
+                                <div className="grid grid-cols-2 gap-5 justify-center content-center items-center">
+                                    <div>
+                                        <div className="mb-3">Nama Produk</div>
+                                        <input
+                                            className={`border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
+                                            type="text"
+                                            placeholder="Masukan Produk"
+                                            {...register("produk", { required: true })}
+                                        />
+                                    </div>
+                                    <div>
+                                        <div className="mb-3">Harga Beli</div>
+                                        <input
+                                            className={`border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
+                                            type="number"
+                                            placeholder="Masukan Harga Beli"
+                                            {...register("harga_beli", { required: true })}
+                                        />
+                                    </div>
 
-                                <div>
-                                    <div className="mb-3">Brand</div>
-                                    <select className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
-                                        <option value="">Pilih Brand</option>
-                                        {list_brand}
-                                    </select>
-                                </div>
-                                <div>
-                                    <div className="mb-3">Harga Jual</div>
-                                    <input
-                                        className={`border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
-                                        type="text"
-                                        placeholder="Masukan Deskripsi"
-                                    />
-                                </div>
+                                    <div>
+                                        <div className="mb-3">Brand</div>
+                                        <select {...register("brand", { required: true })} className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
+                                            <option value="">Pilih Brand</option>
+                                            {list_brand}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <div className="mb-3">Harga Jual</div>
+                                        <input
+                                            className={`border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
+                                            type="number"
+                                            placeholder="Masukan Harga Jual"
+                                            {...register("harga_jual", { required: true })}
+                                        />
+                                    </div>
 
-                                <div>
-                                    <div className="mb-3">Warehouse</div>
-                                    <select className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
-                                        <option value="">Pilih Warehouse</option>
-                                        {list_warehouse}
-                                    </select>
-                                </div>
-                                <div>
-                                    <div className="mb-3">Quality</div>
-                                    <select className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
-                                        <option value="">Pilih Quality</option>
-                                        <option value="IMPORT">IMPORT</option>
-                                        <option value="LOKAL">LOKAL</option>
-                                        <option value="ORIGINAL">ORIGINAL</option>
-                                    </select>
-                                </div>
+                                    <div>
+                                        <div className="mb-3">Warehouse</div>
+                                        <select {...register("warehouse", { required: true })} className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
+                                            <option value="">Pilih Warehouse</option>
+                                            {list_warehouse}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <div className="mb-3">Quality</div>
+                                        <select {...register("quality", { required: true })} className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
+                                            <option value="">Pilih Quality</option>
+                                            <option value="IMPORT">IMPORT</option>
+                                            <option value="LOKAL">LOKAL</option>
+                                            <option value="ORIGINAL">ORIGINAL</option>
+                                        </select>
+                                    </div>
 
-                                <div>
-                                    <div className="mb-3">Supplier</div>
-                                    <select className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
-                                        <option value="">Pilih Supplier</option>
-                                        {list_supplier}
-                                    </select>
-                                </div>
+                                    <div>
+                                        <div className="mb-3">Supplier</div>
+                                        <select {...register("supplier", { required: true })} className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
+                                            <option value="">Pilih Supplier</option>
+                                            {list_supplier}
+                                        </select>
+                                    </div>
 
-                                <div>
-                                    <div className="mb-3">Kategori</div>
-                                    <select className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
-                                        <option value="">Pilih Kategori</option>
-                                        {list_category}
-                                    </select>
+                                    <div>
+                                        <div className="mb-3">Kategori</div>
+                                        <select {...register("kategori", { required: true })} className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
+                                            <option value="">Pilih Kategori</option>
+                                            {list_category}
+                                        </select>
+                                    </div>
                                 </div>
-
-                            </div>
+                            </form>
                         </div>
                     </div>
 
                 </div>
 
                 <div className="bg-white p-8 pb-14 rounded-lg gap-3 mt-5">
-                    <div className="flex flex-1 gap-5">
-                        <div className="w-[500px]">
-                            <table className="table table-auto bg-transparent text-sm w-full">
+                    <form onSubmit={handleSubmit(onSubmit)}>
+                        <div className="flex flex-1 gap-5">
+                            <div className="w-[500px]">
+                                <table className="table table-auto bg-transparent text-sm w-full">
 
-                                <thead className="bg-[#DDE4F0] text-gray-800">
-                                    <tr className="">
-                                        <th className="py-3 rounded-l-lg">
-                                            Size
-                                        </th>
-                                        <th className="py-3">
-                                            Stok
-                                        </th>
-                                        <th className="py-3 rounded-r-lg">
-                                            Aksi
-                                        </th>
-                                    </tr>
-                                </thead>
+                                    <thead className="bg-[#DDE4F0] text-gray-800">
+                                        <tr className="">
+                                            <th className="py-3 rounded-l-lg">
+                                                Size
+                                            </th>
+                                            <th className="py-3">
+                                                Stok
+                                            </th>
+                                            <th className="py-3 rounded-r-lg">
+                                                Aksi
+                                            </th>
+                                        </tr>
+                                    </thead>
 
-                                <tbody className="group rounded-lg">
-                                    {list_variasi}
-                                </tbody>
-                            </table>
+                                    <tbody className="group rounded-lg">
+                                        {list_variasi}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div className="grow">
+                                <div className="text-base mb-3">Deskripsi</div>
+                                <textarea {...register("deskripsi", { required: false })} rows={5} className="resize-none bg-white h-[140px] rounded-lg w-full py-3 px-5 text-gray-700 focus:outline-none border text-base "></textarea>
+                            </div>
                         </div>
-
-                        <div className="grow">
-                            <div className="text-base mb-3">Deskripsi</div>
-                            <textarea rows={5} className="resize-none bg-white h-[140px] rounded-lg w-full py-3 px-5 text-gray-700 focus:outline-none border text-base "></textarea>
-                        </div>
-                    </div>
+                    </form>
                 </div>
+
+                <div className="py-5 rounded-lg flex justify-end">
+                    <button onClick={handleSubmit(onSubmit)} className="cursor-pointer rounded-lg bg-blue-600 hover:bg-blue-800 h-[45px] text-white px-4 flex flex-wrap gap-2 content-center">
+                        Simpan Produk
+                    </button>
+                </div>
+
             </div>
 
             {/* <div className="grid grid-cols-3 gap-5 pb-10 justify-center">
