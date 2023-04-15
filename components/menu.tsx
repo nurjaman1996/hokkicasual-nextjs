@@ -7,6 +7,56 @@ const Items = [
         "text": "Dashboard",
         "icon_item": "fi fi-rr-layout-fluid"
     }, {
+        "title": "Data Master",
+        "href": "#",
+        "text": "Data Master",
+        "icon_item": "fi fi-rr-folder",
+        "path": "datamaster",
+        "children": [
+            {
+                "title": "Area",
+                "href": "/datamaster/area",
+                "icon_item": "fi fi-rs-map-marker",
+                "text": "Area",
+            },
+            {
+                "title": "Warehouse",
+                "href": "/datamaster/warehouse",
+                "icon_item": "fi fi-rr-garage",
+                "text": "Warehouse",
+            },
+            {
+                "title": "Store",
+                "href": "/datamaster/store",
+                "icon_item": "fi fi-rr-shop",
+                "text": "Store",
+            },
+            {
+                "title": "Brand",
+                "href": "/datamaster/brand",
+                "icon_item": "fi fi-rr-tags",
+                "text": "Brand",
+            },
+            {
+                "title": "Category",
+                "href": "/datamaster/category",
+                "icon_item": "fi fi-rr-cube",
+                "text": "Category",
+            },
+            {
+                "title": "Supplier",
+                "href": "/datamaster/supplier",
+                "icon_item": "fi fi-rr-package",
+                "text": "Supplier",
+            },
+            {
+                "title": "Karyawan",
+                "href": "/datamaster/karyawan",
+                "icon_item": "fi fi-rr-user",
+                "text": "Karyawan",
+            },
+        ]
+    }, {
         "title": "Orders",
         "href": "#",
         "text": "Orders",
@@ -75,50 +125,6 @@ const Items = [
         "href": "/expense",
         "text": "Expense",
         "icon_item": "fi fi-rr-label"
-    }, {
-        "title": "Data Master",
-        "href": "#",
-        "text": "Data Master",
-        "icon_item": "fi fi-rr-folder",
-        "path": "datamaster",
-        "children": [
-            {
-                "title": "Area",
-                "href": "/datamaster/area",
-                "icon_item": "fi fi-rs-map-marker",
-                "text": "Area",
-            },
-            {
-                "title": "Warehouse",
-                "href": "/datamaster/warehouse",
-                "icon_item": "fi fi-rr-garage",
-                "text": "Warehouse",
-            },
-            {
-                "title": "Store",
-                "href": "/datamaster/store",
-                "icon_item": "fi fi-rr-shop",
-                "text": "Store",
-            },
-            {
-                "title": "Brand",
-                "href": "/datamaster/brand",
-                "icon_item": "fi fi-rr-tags",
-                "text": "Brand",
-            },
-            {
-                "title": "Category",
-                "href": "/datamaster/category",
-                "icon_item": "fi fi-rr-cube",
-                "text": "Category",
-            },
-            {
-                "title": "Supplier",
-                "href": "/datamaster/supplier",
-                "icon_item": "fi fi-rr-package",
-                "text": "Supplier",
-            },
-        ]
     }, {
         "title": "Report",
         "href": "/",
