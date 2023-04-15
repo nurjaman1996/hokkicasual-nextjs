@@ -15,23 +15,61 @@ import useSWR from 'swr';
 import axios from 'axios';
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
-// export async function getServerSideProps() {
-//     const response = await fetch('https://api.inovasimediakreatif.site/products/');
-//     const dataProduct = await response.json();
-//     return {
-//         props: {
-//             dataProduct
-//         }
-//     };
-// }
-
 export default function NotaBarang() {
     // const [dataProduct, setData] = useState(dataProduct_.product);
     const [date, setDate] = useState(format(new Date(), "dd/MM/yyyy"));
 
     const [Query, setQuery] = useState("all");
 
-    const { data, error, isLoading } = useSWR(`https://api.inovasimediakreatif.site/notabarang/${Query}`, fetcher);
+    const { data, error, isLoading, mutate } = useSWR(`https://api.inovasimediakreatif.site/notabarang/${Query}`, fetcher);
+
+    const { data: brand_data, error: brand_error, isLoading: brand_isLoading, mutate: brand_mutate } = useSWR(`https://api.inovasimediakreatif.site/getbrand`, fetcher);
+
+    const list_brand: any = [];
+
+    if (!brand_isLoading && !brand_error) {
+        brand_data.data_brand.map((area: any, index: number) => {
+            list_brand.push(
+                <option key={index} value={area.id_brand}>{area.brand}</option>
+            )
+        })
+    }
+
+    const { data: category_data, error: category_error, isLoading: category_isLoading, mutate: category_mutate } = useSWR(`https://api.inovasimediakreatif.site/getcategory`, fetcher);
+
+    const list_category: any = [];
+
+    if (!category_isLoading && !category_error) {
+        category_data.data_cat.map((area: any, index: number) => {
+            list_category.push(
+                <option key={index} value={area.id_category}>{area.category}</option>
+            )
+        })
+    }
+
+    const { data: supplier_data, error: supplier_error, isLoading: supplier_isLoading, mutate: supplier_mutate } = useSWR(`https://api.inovasimediakreatif.site/getsupplier`, fetcher);
+
+    const list_supplier: any = [];
+
+    if (!supplier_isLoading && !supplier_error) {
+        supplier_data.data_supplier.map((area: any, index: number) => {
+            list_supplier.push(
+                <option key={index} value={area.id_sup}>{area.supplier}</option>
+            )
+        })
+    }
+
+    const { data: warehouse_data, error: warehouse_error, isLoading: warehouse_isLoading, mutate: warehouse_mutate } = useSWR(`https://api.inovasimediakreatif.site/getwarehouse`, fetcher);
+
+    const list_warehouse: any = [];
+
+    if (!warehouse_isLoading && !warehouse_error) {
+        warehouse_data.data_ware.map((area: any, index: number) => {
+            list_warehouse.push(
+                <option key={index} value={area.id_ware}>{area.warehouse}</option>
+            )
+        })
+    }
 
     const [openSize, setopenSize] = useState(null);
 
@@ -44,16 +82,9 @@ export default function NotaBarang() {
     }
 
     const { register, resetField, setValue, handleSubmit, watch, formState: { errors } } = useForm({
-        defaultValues: {
-            deskripsi: '',
-            amount: '',
-            qty: '',
-            total_amount: '',
-            edit_deskripsi: '',
-            edit_amount: '',
-            edit_qty: '',
-            edit_total_amount: '',
-        }
+        // defaultValues: {
+
+        // }
     });
 
     const [showModal, setShowModal] = React.useState(false);
@@ -61,13 +92,12 @@ export default function NotaBarang() {
     const [editModal, seteditModal] = React.useState(false);
 
     const onSubmit = async (data: any) => {
-        // await axios.post("https://api.inovasimediakreatif.site/saveexpense", {
-        //     data: data,
-        //     tanggal: date
-        // }).then(function (response) {
-        //     // console.log(response.data);
-        //     mutate();
-        // });
+        await axios.post("https://api.inovasimediakreatif.site/savenota", {
+            data: data
+        }).then(function (response) {
+            // console.log(response.data);
+            mutate();
+        });
 
         console.log(data);
 
@@ -77,10 +107,19 @@ export default function NotaBarang() {
             autoClose: 2000,
         });
 
-        resetField("deskripsi");
-        resetField("amount");
-        resetField("qty");
-        resetField("total_amount");
+        resetField('produk');
+        resetField('harga_beli');
+        resetField('harga_jual');
+        resetField('warehouse');
+        resetField('quality');
+        resetField('supplier');
+        resetField('kategori');
+        resetField('size');
+        resetField('stok');
+        resetField('payment');
+        resetField('deskripsi');
+        resetField('brand');
+
         setShowModal(false);
     };
 
@@ -99,16 +138,16 @@ export default function NotaBarang() {
                             </td>
                             <td className="p-0 pt-4 h-full">
                                 <div className="flex flex-row gap-4 items-center h-full bg-white pt-5 pb-3 pl-4">
-                                    <Image
+                                    {/* <Image
                                         className="max-w-[80px] max-h-[80px] rounded"
                                         src={data_produk.img}
                                         alt="product-1"
                                         height="500"
                                         width="500"
                                         priority
-                                    />
+                                    /> */}
                                     <div className="flex flex-col justify-center">
-                                        <div className="text-xs">{data_produk.id_produk} | {data_produk.brand[0].brand}</div>
+                                        <div className="text-xs">{data_produk.id_nota} | {data_produk.brand[0].brand}</div>
                                         <div className="text-base">{data_produk.produk}</div>
                                         <div className="text-xs">Harga Beli : Rp{data_produk.m_price}</div>
                                         <div className="text-xs">Harga Jual : Rp{data_produk.selling_price}</div>
@@ -264,12 +303,114 @@ export default function NotaBarang() {
                                     </span>
                                 </div>
                                 {/*body*/}
-                                <div className="relative p-6 flex-auto bg-red-500">
+                                <div className="relative p-6 flex-auto">
                                     <form onSubmit={handleSubmit(onSubmit)}>
                                     </form>
-                                    <div className="bg-blue-400 h-[500px]">
+                                    <div className="pb-5 h-[auto]">
+                                        <div className="grid grid-cols-2 gap-5 justify-center content-center items-start">
+                                            <div>
+                                                <div className="mb-3">Nama Produk</div>
+                                                <input
+                                                    className={`border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
+                                                    type="text"
+                                                    placeholder="Masukan Produk"
+                                                    {...register("produk", { required: false })}
+                                                />
+                                            </div>
+                                            <div>
+                                                <div className="mb-3">Harga Beli</div>
+                                                <input
+                                                    className={`border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
+                                                    type="number"
+                                                    defaultValue={0}
+                                                    placeholder="Masukan Harga Beli"
+                                                    {...register("harga_beli", { required: false })}
+                                                />
+                                            </div>
 
+                                            <div>
+                                                <div className="mb-3">Brand</div>
+                                                <select {...register("brand", { required: false })} className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
+                                                    <option value="">Pilih Brand</option>
+                                                    {list_brand}
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <div className="mb-3">Harga Jual</div>
+                                                <input
+                                                    className={`border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
+                                                    type="number"
+                                                    defaultValue={0}
+                                                    placeholder="Masukan Harga Jual"
+                                                    {...register("harga_jual", { required: false })}
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <div className="mb-3">Warehouse</div>
+                                                <select {...register("warehouse", { required: false })} className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
+                                                    <option value="">Pilih Warehouse</option>
+                                                    {list_warehouse}
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <div className="mb-3">Quality</div>
+                                                <select {...register("quality", { required: false })} className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
+                                                    <option value="">Pilih Quality</option>
+                                                    <option value="IMPORT">IMPORT</option>
+                                                    <option value="LOKAL">LOKAL</option>
+                                                    <option value="ORIGINAL">ORIGINAL</option>
+                                                </select>
+                                            </div>
+
+                                            <div>
+                                                <div className="mb-3">Supplier</div>
+                                                <select {...register("supplier", { required: false })} className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
+                                                    <option value="">Pilih Supplier</option>
+                                                    {list_supplier}
+                                                </select>
+                                            </div>
+
+                                            <div>
+                                                <div className="mb-3">Kategori</div>
+                                                <select {...register("kategori", { required: false })} className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
+                                                    <option value="">Pilih Kategori</option>
+                                                    {list_category}
+                                                </select>
+                                            </div>
+
+                                            <div>
+                                                <div className="mb-3">Size</div>
+                                                <input {...register(`size`, { required: false })}
+                                                    className={`border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
+                                                    placeholder="Masukan Size"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <div className="mb-3">Qty</div>
+                                                <input defaultValue={0} {...register(`stok`, { required: false })}
+                                                    className={`border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`} type="number"
+                                                />
+                                            </div>
+
+                                            <div>
+                                                <div className="mb-3">Pembayaran</div>
+                                                <select {...register("payment", { required: false })} className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
+                                                    <option value="">Pilih Pembayaran</option>
+                                                    <option value="PENDING">PENDING</option>
+                                                    <option value="PAID">PAID</option>
+                                                </select>
+                                            </div>
+
+                                            <div>
+                                                <div className="text-base mb-3">Deskripsi</div>
+                                                <textarea {...register("deskripsi", { required: false })} rows={5} className="resize-none bg-white h-[140px] rounded-lg w-full py-3 px-5 text-gray-700 focus:outline-none border text-base "></textarea>
+                                            </div>
+
+                                        </div>
                                     </div>
+
                                 </div>
                                 {/*footer*/}
                                 <div className="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
@@ -277,10 +418,18 @@ export default function NotaBarang() {
                                         className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                                         type="button"
                                         onClick={() => {
-                                            resetField("deskripsi");
-                                            resetField("amount");
-                                            resetField("qty");
-                                            resetField("total_amount");
+                                            resetField('produk');
+                                            resetField('harga_beli');
+                                            resetField('harga_jual');
+                                            resetField('warehouse');
+                                            resetField('quality');
+                                            resetField('supplier');
+                                            resetField('kategori');
+                                            resetField('size');
+                                            resetField('stok');
+                                            resetField('payment');
+                                            resetField('deskripsi');
+                                            resetField('brand');
                                             setShowModal(false);
                                         }}
                                     >
@@ -299,7 +448,8 @@ export default function NotaBarang() {
                     </div>
                     <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
                 </>
-            ) : null}
+            ) : null
+            }
         </>
     );
 }
