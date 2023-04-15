@@ -45,7 +45,7 @@ export default function AllOrder() {
                                             <div className="flex justify-start items-start gap-5">
                                                 <Image
                                                     className="max-w-[50px] rounded-lg max-h-[50px]"
-                                                    src="/produk.jpg"
+                                                    src={`https://buwanais.co.id/apiupload/${order.details_order[i - 1].img}`}
                                                     alt="product-1"
                                                     height="500"
                                                     width="500"

@@ -15,6 +15,7 @@ import useSWR from 'swr';
 import axios from 'axios';
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
+
 export default function DaftarProduk() {
     // const [dataProduct, setData] = useState(dataProduct_.product);
     const [date, setDate] = useState(format(new Date(), "dd/MM/yyyy"));
@@ -91,7 +92,7 @@ export default function DaftarProduk() {
                                 <div className="flex flex-row gap-4 items-center h-full bg-white pt-5 pb-3 pl-4">
                                     <Image
                                         className="max-w-[80px] max-h-[80px] rounded"
-                                        src={data_produk.img}
+                                        src={`https://buwanais.co.id/apiupload/${data_produk.img}`}
                                         alt="product-1"
                                         height="500"
                                         width="500"

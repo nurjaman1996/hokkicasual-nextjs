@@ -13,7 +13,7 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "irppapercup.com",
+        hostname: "buwanais.co.id",
       },
     ],
     minimumCacheTTL: 1500000,

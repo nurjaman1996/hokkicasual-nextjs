@@ -14,6 +14,7 @@ import { stringify } from "querystring";
 import { compareAsc, format } from 'date-fns';
 import { redirect } from "next/dist/server/api-utils"; import useSWR from 'swr';
 const fetcher = (url: string) => fetch(url).then(res => res.json());
+import axios from 'axios';
 
 // export async function getServerSideProps() {
 //     const response = await fetch('https://dummyjson.com/products?limit=30&skip=0');
@@ -50,18 +51,23 @@ export default function AddOrder() {
             setLoadData('standby');
         } else {
             setLoadData('searching');
-            const req = await fetch(`https://api.inovasimediakreatif.site/products/${event.target.value}`,
-                {
-                    method: 'GET',
-                    headers: {
-                        'Access-Control-Allow-Origin': '*',
-                    },
-                }
-            );
-            const newDataProduct = await req.json();
+            await axios.get(`https://api.inovasimediakreatif.site/products/${event.target.value}`).then(function (response) {
+                // console.log(response.data);
+                const newDataProduct = response.data;
+                setData(newDataProduct.product);
+                setLoadData('showing');
+            });
+            // const req = await fetch(`https://api.inovasimediakreatif.site/products/${event.target.value}`,
+            //     {
+            //         method: 'GET',
+            //         headers: {
+            //             'Access-Control-Allow-Origin': '*',
+            //         },
+            //     }
+            // );
 
-            setData(newDataProduct.product);
-            setLoadData('showing');
+
+
         }
     }
 
@@ -72,11 +78,11 @@ export default function AddOrder() {
         dataProduct.map((product: any) => {
             for (let index = 0; index <= product.variation.length - 1; index++) {
                 productList.push(
-                    <div key={index} className="flex flex-warp gap-5 items-center py-4 w-full hover:bg-gray-100 px-3">
+                    <div key={product.id + product.variation[index].size} className="flex flex-warp gap-5 items-center py-4 w-full hover:bg-gray-100 px-3">
                         <div className="h-[70px] w-[70px] rounded-lg">
                             <Image
                                 className='m-auto max-w-[100%] max-h-[100%]'
-                                src={product.img}
+                                src={`https://buwanais.co.id/apiupload/${product.img}`}
                                 alt='product-1'
                                 height="500"
                                 width="500"
@@ -315,7 +321,7 @@ export default function AddOrder() {
                 </div>
 
             </div>
-            {JSON.stringify(rowsData) + date + "/" + totalamount}
+            {/* {JSON.stringify(rowsData) + date + "/" + totalamount} */}
             <ToastContainer className="mt-[50px]" />
 
             <div className="flex flex-nowrap gap-5">

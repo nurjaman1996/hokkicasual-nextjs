@@ -97,13 +97,13 @@ export default function AddProduk() {
                 <tr key={index} className="rounded-lg h-auto mt-7">
                     <td className="pt-4 p-0">
                         <div className="h-[46px] flex flex-wrap justify-center items-center rounded-l-lg">
-                            <input {...register(`size.${index}`)} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="text" placeholder="Size"
+                            <input {...register(`variasi.${index}.size`, { required: false })} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="text" placeholder="Size"
                             />
                         </div>
                     </td>
                     <td className="pt-4 p-0">
                         <div className="h-[46px] flex flex-wrap justify-center items-center rounded-l-lg">
-                            <input {...register(`stok.${index}`)} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="number" placeholder="Size"
+                            <input defaultValue={0} {...register(`variasi.${index}.stok`, { required: false })} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="number" placeholder="Size"
                             />
                         </div>
                     </td>
@@ -111,7 +111,11 @@ export default function AddProduk() {
                         {(function () {
                             if (index < 1) {
                                 return (
-                                    <button onClick={() => { setCount(Count + 1) }} type="button" className="mx-2 m-auto border-none rounded-lg bg-blue-600 hover:bg-blue-800 h-[45px] text-white px-4 flex flex-wrap gap-2 content-center">
+                                    <button onClick={() => {
+                                        append({ size: "", stok: 0 });
+                                        setCount(Count + 1);
+                                    }}
+                                        type="button" className="mx-2 m-auto border-none rounded-lg bg-blue-600 hover:bg-blue-800 h-[45px] text-white px-4 flex flex-wrap gap-2 content-center">
                                         <div className="my-auto">
                                             <fa.FaPlus size={13} className="text-white" />
                                         </div>
@@ -119,7 +123,13 @@ export default function AddProduk() {
                                 )
                             } else {
                                 return (
-                                    <button onClick={() => { setCount(Count - 1) }} type="button" className="mx-2 m-auto border-none rounded-lg bg-red-600 hover:bg-red-800 h-[45px] text-white px-4 flex flex-wrap gap-2 content-center">
+                                    <button
+                                        // onClick={() => { setCount(Count - 1) }}
+                                        onClick={() => {
+                                            remove(index)
+                                            setCount(Count - 1);
+                                        }}
+                                        type="button" className="mx-2 m-auto border-none rounded-lg bg-red-600 hover:bg-red-800 h-[45px] text-white px-4 flex flex-wrap gap-2 content-center">
                                         <div className="my-auto">
                                             <fa.FaMinus size={13} className="text-white" />
                                         </div>
@@ -128,18 +138,26 @@ export default function AddProduk() {
                             }
                         })()}
                     </td>
-                </tr>
+                </tr >
             )
         }
     }
 
-    const onSubmit = (data: any) => {
-        // await axios.post("https://api.inovasimediakreatif.site/savestore", {
-        //     data: data,
-        // }).then(function (response) {
-        //     // console.log(response.data);
-        //     mutate();
-        // });
+    const [selectedImage, setSelectedImage] = useState(null);
+
+    const onSubmit = async (data: any) => {
+        await axios.post("https://api.inovasimediakreatif.site/saveproduk", {
+            data: data,
+            image: !selectedImage ? null : selectedImage,
+        }, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        }).then(function (response) {
+            console.log(response.data);
+        });
+
+        console.log(selectedImage);
 
         toast.success("Data telah disimpan", {
             position: toast.POSITION.TOP_RIGHT,
@@ -147,8 +165,8 @@ export default function AddProduk() {
             autoClose: 2000,
         });
 
-        console.log(data);
-        console.log(selectedImage);
+        // console.log(data);
+        // console.log(selectedImage['name']);
     };
 
     const inputRef = useRef(null);
@@ -158,12 +176,12 @@ export default function AddProduk() {
         // await trigger();
     };
 
-    const [selectedImage, setSelectedImage] = useState(null);
-
     const imageChange = (e: any) => {
         if (e.target.files && e.target.files.length > 0) {
             setSelectedImage(e.target.files[0]);
         }
+
+
     };
 
     const removeSelectedImage = () => {
@@ -180,10 +198,12 @@ export default function AddProduk() {
                     <span className="font-bold text-3xl">Tambah Produk</span>
                 </div>
 
-                <span>
+                {/* <span>
                     {JSON.stringify(watch())}
-                </span>
+                </span> */}
             </div>
+
+            <ToastContainer className="mt-[50px]" />
 
             <div className="w-full h-[auto] pb-5 gap-5">
                 <div className="bg-white p-8 pb-14 rounded-lg gap-3">
@@ -198,6 +218,15 @@ export default function AddProduk() {
                                 onChange={imageChange}
                                 ref={inputRef}
                             />
+
+                            {/* <input
+                                accept="image/*"
+                                type="file"
+                                {...register("img", {
+                                    onChange: imageChange,
+                                    required: false
+                                })}
+                            /> */}
 
                             {selectedImage ? (
                                 <div className="">
@@ -227,7 +256,7 @@ export default function AddProduk() {
                                             className={`border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
                                             type="text"
                                             placeholder="Masukan Produk"
-                                            {...register("produk", { required: true })}
+                                            {...register("produk", { required: false })}
                                         />
                                     </div>
                                     <div>
@@ -236,13 +265,13 @@ export default function AddProduk() {
                                             className={`border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
                                             type="number"
                                             placeholder="Masukan Harga Beli"
-                                            {...register("harga_beli", { required: true })}
+                                            {...register("harga_beli", { required: false })}
                                         />
                                     </div>
 
                                     <div>
                                         <div className="mb-3">Brand</div>
-                                        <select {...register("brand", { required: true })} className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
+                                        <select {...register("brand", { required: false })} className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
                                             <option value="">Pilih Brand</option>
                                             {list_brand}
                                         </select>
@@ -253,20 +282,20 @@ export default function AddProduk() {
                                             className={`border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
                                             type="number"
                                             placeholder="Masukan Harga Jual"
-                                            {...register("harga_jual", { required: true })}
+                                            {...register("harga_jual", { required: false })}
                                         />
                                     </div>
 
                                     <div>
                                         <div className="mb-3">Warehouse</div>
-                                        <select {...register("warehouse", { required: true })} className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
+                                        <select {...register("warehouse", { required: false })} className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
                                             <option value="">Pilih Warehouse</option>
                                             {list_warehouse}
                                         </select>
                                     </div>
                                     <div>
                                         <div className="mb-3">Quality</div>
-                                        <select {...register("quality", { required: true })} className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
+                                        <select {...register("quality", { required: false })} className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
                                             <option value="">Pilih Quality</option>
                                             <option value="IMPORT">IMPORT</option>
                                             <option value="LOKAL">LOKAL</option>
@@ -276,7 +305,7 @@ export default function AddProduk() {
 
                                     <div>
                                         <div className="mb-3">Supplier</div>
-                                        <select {...register("supplier", { required: true })} className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
+                                        <select {...register("supplier", { required: false })} className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
                                             <option value="">Pilih Supplier</option>
                                             {list_supplier}
                                         </select>
@@ -284,7 +313,7 @@ export default function AddProduk() {
 
                                     <div>
                                         <div className="mb-3">Kategori</div>
-                                        <select {...register("kategori", { required: true })} className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
+                                        <select {...register("kategori", { required: false })} className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
                                             <option value="">Pilih Kategori</option>
                                             {list_category}
                                         </select>
