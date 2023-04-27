@@ -132,7 +132,7 @@ const Items = [
         "icon_item": "fi fi-rr-document-signed"
     }, {
         "title": "Settings",
-        "href": "/",
+        "href": "/settings/setting",
         "text": "Settings",
         "icon_item": "fi fi-rr-settings"
     },
