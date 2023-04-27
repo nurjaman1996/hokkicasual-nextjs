@@ -247,7 +247,6 @@ export default function Store() {
                     className="items-center"
                     columns={columns}
                     data={filteredItems}
-                    selectableRows
                     pagination
                     paginationComponent={CustomMaterialPagination}
                 />

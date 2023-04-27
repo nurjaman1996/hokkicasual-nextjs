@@ -220,7 +220,6 @@ export default function Brand() {
                     className="items-center"
                     columns={columns}
                     data={filteredItems}
-                    selectableRows
                     pagination
                     paginationComponent={CustomMaterialPagination}
                 />

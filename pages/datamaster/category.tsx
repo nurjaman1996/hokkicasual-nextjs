@@ -198,7 +198,6 @@ export default function Category() {
                     className="items-center"
                     columns={columns}
                     data={filteredItems}
-                    selectableRows
                     pagination
                     paginationComponent={CustomMaterialPagination}
                 />

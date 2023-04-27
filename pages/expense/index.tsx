@@ -233,7 +233,6 @@ export default function Expense() {
           className="items-center"
           columns={columns}
           data={filteredItems}
-          selectableRows
           pagination
           paginationComponent={CustomMaterialPagination}
         />

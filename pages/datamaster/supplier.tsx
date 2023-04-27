@@ -208,7 +208,6 @@ export default function Warehouse() {
                     className="items-center"
                     columns={columns}
                     data={filteredItems}
-                    selectableRows
                     pagination
                     paginationComponent={CustomMaterialPagination}
                 />
