@@ -130,6 +130,9 @@ export default function DaftarProduk() {
                                     <button className="text-blue-500">
                                         <i className="fi fi-rr-edit text-center text-lg"></i>
                                     </button>
+                                    <button className="text-green-500">
+                                        <i className="fi fi-rr-arrows-repeat text-center text-lg"></i>
+                                    </button>
                                     <button className="text-red-500">
                                         <i className="fi fi-rr-trash text-center text-lg"></i>
                                     </button>
