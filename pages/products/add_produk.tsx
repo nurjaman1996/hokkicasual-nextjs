@@ -175,8 +175,6 @@ export default function AddProduk() {
         if (e.target.files && e.target.files.length > 0) {
             setSelectedImage(e.target.files[0]);
         }
-
-
     };
 
     const removeSelectedImage = () => {
@@ -213,15 +211,6 @@ export default function AddProduk() {
                                 onChange={imageChange}
                                 ref={inputRef}
                             />
-
-                            {/* <input
-                                accept="image/*"
-                                type="file"
-                                {...register("img", {
-                                    onChange: imageChange,
-                                    required: false
-                                })}
-                            /> */}
 
                             {selectedImage ? (
                                 <div className="">
