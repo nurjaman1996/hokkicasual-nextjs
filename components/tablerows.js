@@ -3,6 +3,8 @@ import Image from "next/image";
 function TableRows({
   rowsData,
   deleteTableRows,
+  handleChangeharga,
+  handleChange2harga,
   handleChange,
   handleChange2,
   editTools,
@@ -30,7 +32,19 @@ function TableRows({
         </td>
         <td className="py-3">{size}</td>
         <td className="py-3 text-start">{qty}</td>
-        <td className="py-3">Rp{harga}</td>
+        <td className="py-3">
+          <div className="flex ">
+            <div>Rp</div>
+            <div className="grow">
+              <input
+                className="w-full focus:outline-none"
+                value={harga}
+                onChange={(e) => handleChangeharga(index, e)}
+                onBlur={(e) => handleChange2harga(index, e)}
+              />
+            </div>
+          </div>
+        </td>
         <td className="py-3">
           <div className="flex ">
             <div>Rp</div>

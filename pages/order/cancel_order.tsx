@@ -13,9 +13,21 @@ import styles from '../../styles/Table.module.css';
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
-export default function CancelOrder() {
+export default function Shipping() {
     // format(new Date(2014, 1, 11), 'yyyy-MM-dd')
-    const { data, error, isLoading } = useSWR(`https://api.inovasimediakreatif.site/orders/0/10/all`, fetcher);
+
+    const [Query, setQuery] = useState("all");
+
+    function querySet(e: any) {
+        if (e.target.value === "") {
+            setQuery("all");
+        } else {
+            setQuery(e.target.value);
+        }
+
+    }
+
+    const { data, error, isLoading } = useSWR(`https://api.inovasimediakreatif.site/orders/0/10/CANCEL/${Query}`, fetcher);
 
     const [date, setDate] = useState(format(new Date(), 'dd/MM/yyyy'));
     const [start, setStart] = useState(30);
@@ -42,21 +54,22 @@ export default function CancelOrder() {
                                 {(function (rows: any, i, len) {
                                     while (++i <= len) {
                                         rows.push(
-                                            <div key={i} className="flex justify-start items-start gap-5">
+                                            <div key={i} className="flex justify-start items-start gap-7">
                                                 <Image
-                                                    className="max-w-[50px] rounded-lg max-h-[50px]"
-                                                    src="/produk.jpg"
+                                                    className="max-w-[60px] rounded-lg max-h-[60px]"
+                                                    // src="/produk.jpg"
+                                                    src={`https://buwanais.co.id/apiupload/${order.details_order[i - 1].img}`}
                                                     alt="product-1"
                                                     height="500"
                                                     width="500"
                                                     priority
                                                 />
-                                                <div className="flex flex-col gap-2">
+                                                <div className="flex flex-col gap-2 grow">
                                                     <span>{order.details_order[i - 1].produk}</span>
-                                                    <span>Variasi {order.details_order[i - 1].size}</span>
+                                                    <span className="text-xs text-gray-500">Variasi {order.details_order[i - 1].size}</span>
                                                 </div>
 
-                                                <div className="">
+                                                <div className="mx-20">
                                                     <span>x{order.details_order[i - 1].qty}</span>
                                                 </div>
                                             </div>
@@ -109,18 +122,18 @@ export default function CancelOrder() {
 
     return (
         <div>
-            <div className="font-bold text-3xl border-b border-[#2125291A] h-16 mb-7">Order</div>
+            <div className="font-bold text-3xl border-b border-[#2125291A] h-16 mb-7">Order Cancel</div>
 
             <div className="flex flex-wrap items-center content-center">
                 <div className="shadow rounded-lg w-auto flex flex-row text-center content-center">
-                    <button type="button" className="rounded-l-lg bg-gray-200 hover:bg-gray-300 h-[50px] text-gray-700 font-medium px-4 flex flex-wrap gap-2 content-center">
+                    {/* <button type="button" className="rounded-l-lg bg-gray-200 hover:bg-gray-300 h-[50px] text-gray-700 font-medium px-4 flex flex-wrap gap-2 content-center">
                         <span>Order ID</span>
                         <div className="my-auto">
                             <fa.FaChevronDown size={10} className="text-gray-700" />
                         </div>
-                    </button>
+                    </button> */}
 
-                    <input className="h-[50px] border-0 w-[280px] py-2 px-3 text-gray-700 focus:outline-none " type="text" placeholder="Pencarian..." />
+                    <input onChange={(e) => querySet(e)} className="h-[50px] border-0 w-[280px] py-2 pl-5 pr-3 text-gray-700 focus:outline-none rounded-l-lg" type="text" placeholder="Pencarian..." />
 
                     <button type="button" className="rounded-r-lg bg-white hover:bg-gray-200 h-[50px] text-gray-700 font-medium px-5">
                         <div className="my-auto">
@@ -152,12 +165,12 @@ export default function CancelOrder() {
                     <i className="fi fi-rr-calendar w-[1.12rem] h-[1.12rem] text-center text-gray-500 text-[1.12rem] leading-4 absolute mr-4"></i>
                 </div>
 
-                {/* <button type="button" className="ml-3 shadow rounded-lg bg-blue-600 hover:bg-blue-800 h-[50px] text-white px-4 flex flex-wrap gap-2 content-center">
+                <button type="button" className="ml-3 shadow rounded-lg bg-blue-600 hover:bg-blue-800 h-[50px] text-white px-4 flex flex-wrap gap-2 content-center">
                     <Link href='/order/add_order'>Tambah Order</Link>
                     <div className="my-auto">
                         <fa.FaPlus size={13} className="text-white" />
                     </div>
-                </button> */}
+                </button>
             </div>
 
             <div className="font-medium text-black py-4">

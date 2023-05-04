@@ -260,7 +260,7 @@ export default function AddProduk() {
                                             {list_brand}
                                         </select>
                                     </div>
-                                    <div>
+                                    {/* <div>
                                         <div className="mb-3">Harga Jual</div>
                                         <input
                                             className={`border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
@@ -268,7 +268,7 @@ export default function AddProduk() {
                                             placeholder="Masukan Harga Jual"
                                             {...register("harga_jual", { required: false })}
                                         />
-                                    </div>
+                                    </div> */}
 
                                     <div>
                                         <div className="mb-3">Warehouse</div>

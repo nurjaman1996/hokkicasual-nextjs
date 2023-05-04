@@ -49,6 +49,18 @@ export default function DaftarProduk() {
         })
     }
 
+    const { data: supplier_data, error: supplier_error, isLoading: supplier_isLoading, mutate: supplier_mutate } = useSWR(`https://api.inovasimediakreatif.site/getsupplier`, fetcher);
+
+    const list_supplier: any = [];
+
+    if (!supplier_isLoading && !supplier_error) {
+        supplier_data.data_supplier.map((area: any, index: number) => {
+            list_supplier.push(
+                <option key={index} value={area.id_sup}>{area.supplier}</option>
+            )
+        })
+    }
+
     const { data: category_data, error: category_error, isLoading: category_isLoading, mutate: category_mutate } = useSWR(`https://api.inovasimediakreatif.site/getcategory`, fetcher);
 
 
@@ -133,6 +145,7 @@ export default function DaftarProduk() {
     };
 
     const [id, setid] = React.useState(null);
+    const [idware, setidware] = React.useState(null);
     const [img, setimg] = React.useState(null);
 
     function showeditModal(id: any, produk: any, brand: any, kategori: any, kualitas: any, harga: any, img: any, index: number) {
@@ -148,7 +161,10 @@ export default function DaftarProduk() {
     }
 
     const onSubmitUpdate = async (data: any) => {
-        await axios.post(`https://api.inovasimediakreatif.site/editproduk/${id}`, data).then(function (response) {
+        await axios.post(`https://api.inovasimediakreatif.site/editproduk/${id}`, {
+            data: data,
+            image: !selectedImage ? null : selectedImage,
+        }).then(function (response) {
             // console.log(response.data);
             mutate();
         });
@@ -167,7 +183,7 @@ export default function DaftarProduk() {
         setShowModal(false);
     };
 
-    function showtransferModal(id: any, produk: any, brand: any, kategori: any, kualitas: any, harga: any, img: any, variation: any, gudang_pengirim: any, ware: any, index: number) {
+    function showtransferModal(id: any, produk: any, id_produk: any, brand: any, kategori: any, kualitas: any, harga: any, img: any, variation: any, gudang_pengirim: any, ware: any, index: number) {
         setid(id);
         setValue("edit_produk", produk);
         setValue("edit_brand", brand);
@@ -175,6 +191,7 @@ export default function DaftarProduk() {
         setValue("edit_kualitas", kualitas);
         setValue("edit_harga", harga);
         setValue("id_gudang_pengirim", ware);
+        setValue("id_produk", id_produk);
         setValue("gudang_pengirim", gudang_pengirim);
         setnotwarehouse(ware);
         settransferModal(true);
@@ -184,13 +201,34 @@ export default function DaftarProduk() {
         setProduk(index);
     }
 
-    function showrepeatModal(id: any, produk: any, brand: any, kategori: any, kualitas: any, harga: any, img: any, variation: any, index: number) {
+    const onSubmitTransfer = async (data: any) => {
+        await axios.post(`https://api.inovasimediakreatif.site/transferstok`, {
+            data: data
+        }).then(function (response) {
+            console.log(response.data);
+            mutate();
+
+        });
+
+        toast.success("Repeat berhasil", {
+            position: toast.POSITION.TOP_RIGHT,
+            pauseOnHover: false,
+            autoClose: 2000,
+        });
+
+        // setrepeatModal(false)
+    };
+
+    function showrepeatModal(id: any, produk: any, id_produk: any, brand: any, kategori: any, kualitas: any, harga: any, img: any, variation: any, gudang_pengirim: any, ware: any, index: number) {
         setid(id);
         setValue("edit_produk", produk);
         setValue("edit_brand", brand);
+        setValue("id_produk", id_produk);
         setValue("edit_kategori", kategori);
         setValue("edit_kualitas", kualitas);
-        setValue("edit_harga", harga);
+        setValue("harga_beli", 0);
+        setValue("id_gudang_pengirim", ware);
+        setValue("gudang_pengirim", gudang_pengirim);
         setrepeatModal(true);
         setimg(`https://buwanais.co.id/apiupload/${img}`);
 
@@ -199,29 +237,47 @@ export default function DaftarProduk() {
     }
 
     const onSubmitRepeat = async (data: any) => {
-        console.log(data);
+        await axios.post(`https://api.inovasimediakreatif.site/repeatstok`, {
+            data: data
+        }).then(function (response) {
+            console.log(response.data);
+            mutate();
+            setValue("harga_beli", null);
+            batas = 0;
+            setCount(batas);
+            unregister('variasi');
+        });
+
+        toast.success("Repeat berhasil", {
+            position: toast.POSITION.TOP_RIGHT,
+            pauseOnHover: false,
+            autoClose: 2000,
+        });
+
+        setrepeatModal(false)
     };
 
-    function showdeleteModal(id_produk: any, produk: any, index: number) {
+    function showdeleteModal(id_produk: any, produk: any, id_ware: any, index: number) {
         setid(id_produk);
+        setidware(id_ware);
         setproduk_name(produk);
         setdelModal(true);
     }
 
     async function deleteData() {
-        // await axios.post(`https://api.inovasimediakreatif.site/deletearea/${id}`)
-        //     .then(function (response) {
-        //         // console.log(response.data);
-        //         mutate();
-        //     });
+        await axios.post(`https://api.inovasimediakreatif.site/deleteproduk/${id}/${idware}`)
+            .then(function (response) {
+                // console.log(response.data);
+                mutate();
+            });
 
-        // toast.success("Data berhasil dihapus", {
-        //     position: toast.POSITION.TOP_RIGHT,
-        //     pauseOnHover: false,
-        //     autoClose: 2000,
-        // });
+        toast.success("Data berhasil dihapus", {
+            position: toast.POSITION.TOP_RIGHT,
+            pauseOnHover: false,
+            autoClose: 2000,
+        });
 
-        // setdelModal(false)
+        setdelModal(false)
     }
 
 
@@ -261,12 +317,28 @@ export default function DaftarProduk() {
                             </td>
                             <td className="p-0 pt-4 h-full">
                                 <div className="flex flex-wrap justify-center items-center h-full bg-white pt-2 md:pt-4 md:pb-[15px] px-4 ">
-                                    <button className="cursor-pointer text-green-600 font-medium hover:underline focus:underline" onClick={() => toogleActive(index)}>{data_produk.variationcount[0].total_qty} in stock</button>
+                                    <button className="cursor-pointer text-green-600 font-medium hover:underline focus:underline" onClick={() => toogleActive(index)}>
+                                        {(function (rows: number, i, len) {
+                                            while (++i <= data_produk.variation.length) {
+                                                if (data_produk.id_ware === data_produk.variation[i - 1].id_ware) {
+                                                    rows = rows + parseInt(data_produk.variation[i - 1].qty);
+                                                }
+                                            }
+                                            return rows + " in stock";
+                                        })(0, 0, index + 1)}
+                                    </button>
                                 </div>
                             </td>
                             <td className="p-0 pt-4 h-full">
                                 <div className="flex flex-wrap justify-center items-center h-full bg-white pt-2 md:pt-4 md:pb-[15px] px-4">
-                                    {data_produk.variation.length}
+                                    {(function (rows: number, i, len) {
+                                        while (++i <= data_produk.variation.length) {
+                                            if (data_produk.id_ware === data_produk.variation[i - 1].id_ware) {
+                                                rows = rows + 1;
+                                            }
+                                        }
+                                        return rows;
+                                    })(0, 0, index + 1)}
                                 </div>
                             </td>
                             <td className="p-0 pt-4 h-full">
@@ -281,13 +353,13 @@ export default function DaftarProduk() {
                             </td>
                             <td className="p-0 pt-4 h-full">
                                 <div className="flex flex-warp gap-4 justify-center items-center h-full bg-white pt-2 md:pt-4 md:pb-[15px] px-4 rounded-tr-lg">
-                                    <button className="text-green-500" onClick={() => showrepeatModal(data_produk.id, data_produk.produk, data_produk.id_brand, data_produk.id_category, data_produk.quality, data_produk.n_price, data_produk.img, data_produk.variation.length, index)}>
+                                    <button className="text-green-500" onClick={() => showrepeatModal(data_produk.id, data_produk.produk, data_produk.id_produk, data_produk.id_brand, data_produk.id_category, data_produk.quality, data_produk.n_price, data_produk.img, data_produk.variation.length, data_produk.warehouse[0].warehouse, data_produk.id_ware, index)}>
                                         <i className="fi fi-rr-arrows-repeat text-center text-lg"></i>
                                     </button>
                                     <button className="text-blue-500" onClick={() => showeditModal(data_produk.id, data_produk.produk, data_produk.id_brand, data_produk.id_category, data_produk.quality, data_produk.n_price, data_produk.img, index)} >
                                         <i className="fi fi-rr-edit text-center text-lg"></i>
                                     </button>
-                                    <button className="text-red-500" onClick={() => showdeleteModal(data_produk.id_produk, data_produk.produk, index)}>
+                                    <button className="text-red-500" onClick={() => showdeleteModal(data_produk.id_produk, data_produk.produk, data_produk.id_ware, index)}>
                                         <i className="fi fi-rr-trash text-center text-lg"></i>
                                     </button>
                                 </div>
@@ -311,19 +383,23 @@ export default function DaftarProduk() {
                                                         <tr className="text-center">
                                                             <th className="py-1">Varian</th>
                                                             <th>Stock</th>
-                                                            <th>Harga Jual</th>
+                                                            {/* <th>Harga Jual</th> */}
                                                         </tr>
                                                     </thead>
                                                     <tbody>
                                                         {(function (rows: any, i, len) {
                                                             while (++i <= data_produk.variation.length) {
-                                                                rows.push(
-                                                                    <tr key={i} className="text-center">
-                                                                        <td className="py-1">{data_produk.variation[i - 1].size}</td>
-                                                                        <td>{data_produk.variation[i - 1].qty}</td>
-                                                                        <td>Rp{data_produk.n_price}</td>
-                                                                    </tr>
-                                                                )
+                                                                if (data_produk.id_ware === data_produk.variation[i - 1].id_ware) {
+                                                                    rows.push(
+                                                                        <tr key={i} className="text-center">
+                                                                            <td className="py-1">{data_produk.variation[i - 1].size}</td>
+                                                                            <td>{data_produk.variation[i - 1].qty}</td>
+                                                                            {/* <td>Rp{data_produk.n_price}</td> */}
+                                                                        </tr>
+                                                                    )
+                                                                } else {
+
+                                                                }
                                                             }
                                                             return rows;
                                                         })([], 0, index + 1)}
@@ -332,7 +408,7 @@ export default function DaftarProduk() {
                                             </div>
                                             <div className="flex justify-center items-center">
                                                 <button className="text-white w-auto h-10 bg-blue-500 p-2 rounded-lg mr-6"
-                                                    onClick={() => showtransferModal(data_produk.id, data_produk.produk, data_produk.id_brand, data_produk.id_category, data_produk.quality, data_produk.n_price, data_produk.img, data_produk.variation.length, data_produk.warehouse[0].warehouse, data_produk.id_ware, index)}
+                                                    onClick={() => showtransferModal(data_produk.id, data_produk.produk, data_produk.id_produk, data_produk.id_brand, data_produk.id_category, data_produk.quality, data_produk.n_price, data_produk.img, data_produk.variation.length, data_produk.warehouse[0].warehouse, data_produk.id_ware, index)}
                                                 >
                                                     <span>Transfer Produk</span>
                                                 </button>
@@ -415,36 +491,33 @@ export default function DaftarProduk() {
                                     </>
                                 )
                             } else {
-                                return (
-                                    <>
-                                        <td className="pt-4 p-0">
-                                            <div className="h-[46px] flex flex-wrap justify-center items-center rounded-l-lg">
-                                                <input readOnly defaultValue={data.product[Produk].variation[index].size} {...register(`variasi.${index}.size`, { required: true })} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="text"
-                                                />
-                                            </div>
-                                        </td>
-                                        <td className="pt-4 p-0">
-                                            <div className="h-[46px] flex flex-wrap justify-center items-center rounded-l-lg">
-                                                <input readOnly defaultValue={data.product[Produk].variation[index].qty} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="number"
-                                                />
-                                            </div>
-                                        </td>
-                                        <td className="pt-4 p-0">
-                                            <div className="h-[46px] flex flex-wrap justify-center items-center rounded-l-lg">
-                                                <input defaultValue={0} {...register(`variasi.${index}.stok_baru`, { required: true })} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="number" placeholder="Size"
-                                                />
-                                            </div>
-                                        </td>
-                                    </>
-                                )
+                                if (data.product[Produk].id_ware === data.product[Produk].variation[index].id_ware) {
+                                    return (
+                                        <>
+                                            <td className="pt-4 p-0">
+                                                <div className="h-[46px] flex flex-wrap justify-center items-center rounded-l-lg">
+                                                    <input readOnly defaultValue={data.product[Produk].variation[index].size} {...register(`variasi.${index}.size`, { required: true })} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="text"
+                                                    />
+                                                </div>
+                                            </td>
+                                            <td className="pt-4 p-0">
+                                                <div className="h-[46px] flex flex-wrap justify-center items-center rounded-l-lg">
+                                                    <input readOnly defaultValue={data.product[Produk].variation[index].qty} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="number"
+                                                    />
+                                                </div>
+                                            </td>
+                                            <td className="pt-4 p-0">
+                                                <div className="h-[46px] flex flex-wrap justify-center items-center rounded-l-lg">
+                                                    <input defaultValue={0} {...register(`variasi.${index}.stok_baru`, { required: true })} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="number" placeholder="Size"
+                                                    />
+                                                </div>
+                                            </td>
+                                        </>
+                                    )
+                                }
                             }
                         })()}
-
-
-
                     </tr >
-
-
                 )
             }
         }
@@ -560,13 +633,13 @@ export default function DaftarProduk() {
                                                     <img
                                                         src={URL.createObjectURL(selectedImage)}
                                                         className="w-[20rem] h-[20rem] rounded-lg cursor-pointer"
-                                                        onClick={handleClick}
+                                                    // onClick={handleClick}
                                                     />
                                                 </div>
                                             ) : (
                                                 <div
                                                     className="aspect-square m-auto w-[20rem] h-[20rem] border rounded-lg cursor-pointer"
-                                                    onClick={handleClick}
+                                                // onClick={handleClick}
                                                 >
                                                     <img
                                                         src={img}
@@ -576,7 +649,7 @@ export default function DaftarProduk() {
                                             )}
                                         </div>
 
-                                        <div className="text-xs italic text-gray-500 text-center mt-3">*Klik Foto untuk merubah Foto</div>
+                                        {/* <div className="text-xs italic text-gray-500 text-center mt-3">*Klik Foto untuk merubah Foto</div> */}
                                     </div>
 
                                     <div className="grow">
@@ -619,7 +692,7 @@ export default function DaftarProduk() {
                                             {errors.edit_kualitas && <div className="mt-1 text-sm italic">This field is required</div>}
                                         </div>
 
-                                        <div className="mt-6">
+                                        {/* <div className="mt-6">
                                             <label className="block mb-2 text-sm font-medium text-black">Harga Jual</label>
                                             <input
                                                 className={`${errors.edit_produk ? "border-red-500 border-2" : "border"} h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
@@ -627,7 +700,7 @@ export default function DaftarProduk() {
                                                 defaultValue="" {...register("edit_harga", { required: true })}
                                             />
                                             {errors.edit_harga && <div className="mt-1 text-sm italic">This field is required</div>}
-                                        </div>
+                                        </div> */}
                                     </div>
                                 </div>
                                 {/*footer*/}
@@ -683,6 +756,48 @@ export default function DaftarProduk() {
                                         </div>
 
                                         <div className="mt-5">
+                                            <label className="block mb-2 text-sm font-medium text-black">ID Produk</label>
+                                            <input
+                                                className={`${errors.id_produk ? "border-red-500 border-2" : "border"} h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
+                                                type="text"
+                                                readOnly
+                                                defaultValue="" {...register("id_produk", { required: true })}
+                                            />
+                                            {errors.id_produk && <div className="mt-1 text-sm italic">This field is required</div>}
+                                        </div>
+
+                                        <div className="mt-5">
+                                            <label className="block mb-2 text-sm font-medium text-black">ID Gudang</label>
+                                            <input
+                                                className={`${errors.id_gudang_pengirim ? "border-red-500 border-2" : "border"} h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
+                                                type="text"
+                                                readOnly
+                                                defaultValue="" {...register("id_gudang_pengirim", { required: true })}
+                                            />
+                                            {errors.id_gudang_pengirim && <div className="mt-1 text-sm italic">This field is required</div>}
+                                        </div>
+
+                                        <div className="mt-5">
+                                            <label className="block mb-2 text-sm font-medium text-black">Gudang Pengirim</label>
+                                            <input
+                                                className={`${errors.gudang_pengirim ? "border-red-500 border-2" : "border"} h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
+                                                type="text"
+                                                readOnly
+                                                defaultValue="" {...register("gudang_pengirim", { required: true })}
+                                            />
+                                            {errors.gudang_pengirim && <div className="mt-1 text-sm italic">This field is required</div>}
+                                        </div>
+
+                                        <div className="mt-5">
+                                            <label className="block mb-2 text-sm font-medium text-black">Supplier</label>
+                                            <select {...register("supplier", { required: true })} className={`${errors.supplier ? "border-red-500 border-2" : "border"} appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
+                                                <option value="">Pilih Supplier</option>
+                                                {list_supplier}
+                                            </select>
+                                            {errors.supplier && <div className="mt-1 text-sm italic">This field is required</div>}
+                                        </div>
+
+                                        <div className="mt-5">
                                             <label className="block mb-2 text-sm font-medium text-black">Harga Beli</label>
                                             <input
                                                 className={`${errors.harga_beli ? "border-red-500 border-2" : "border"} h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
@@ -694,7 +809,7 @@ export default function DaftarProduk() {
                                     </div>
 
                                     <div className="grow">
-                                        <table className="table table-auto bg-transparent text-sm w-full">
+                                        <table className="table table-auto bg-transparent text-sm w-[400px]">
 
                                             <thead className="bg-[#DDE4F0] text-gray-800">
                                                 <tr className="">
@@ -785,6 +900,17 @@ export default function DaftarProduk() {
                                         </div>
 
                                         <div className="mt-5">
+                                            <label className="block mb-2 text-sm font-medium text-black">ID Produk</label>
+                                            <input
+                                                className={`${errors.id_produk ? "border-red-500 border-2" : "border"} h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
+                                                type="text"
+                                                readOnly
+                                                defaultValue="" {...register("id_produk", { required: true })}
+                                            />
+                                            {errors.id_produk && <div className="mt-1 text-sm italic">This field is required</div>}
+                                        </div>
+
+                                        <div className="mt-5">
                                             <label className="block mb-2 text-sm font-medium text-black">ID Gudang</label>
                                             <input
                                                 className={`${errors.id_gudang_pengirim ? "border-red-500 border-2" : "border"} h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
@@ -857,7 +983,7 @@ export default function DaftarProduk() {
                                     <button
                                         className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                                         type="button"
-                                        onClick={handleSubmit(onSubmitRepeat)}
+                                        onClick={handleSubmit(onSubmitTransfer)}
                                     >
                                         Save Changes
                                     </button>

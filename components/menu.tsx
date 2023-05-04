@@ -63,12 +63,12 @@ const Items = [
                 "icon_item": "fi fi-rr-boxes",
                 "text": "Stok Opname",
             },
-            {
-                "title": "History PO",
-                "href": "/products/historypo",
-                "icon_item": "fi fi-rr-time-past",
-                "text": "History PO"
-            }
+            // {
+            //     "title": "History Produk",
+            //     "href": "/products/historypo",
+            //     "icon_item": "fi fi-rr-time-past",
+            //     "text": "History Produk"
+            // }
         ]
     }, {
         "title": "Data Master",
@@ -125,12 +125,14 @@ const Items = [
         "href": "/expense",
         "text": "Expense",
         "icon_item": "fi fi-rr-label"
-    }, {
-        "title": "Report",
-        "href": "/",
-        "text": "Report",
-        "icon_item": "fi fi-rr-document-signed"
-    }, {
+    },
+    // {
+    //     "title": "Report",
+    //     "href": "/",
+    //     "text": "Report",
+    //     "icon_item": "fi fi-rr-document-signed"
+    // }, 
+    {
         "title": "Settings",
         "href": "/settings/setting",
         "text": "Settings",

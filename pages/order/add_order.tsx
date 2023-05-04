@@ -51,7 +51,7 @@ export default function AddOrder() {
             setLoadData('standby');
         } else {
             setLoadData('searching');
-            await axios.get(`https://api.inovasimediakreatif.site/products/${event.target.value}`).then(function (response) {
+            await axios.get(`https://api.inovasimediakreatif.site/products_sales/${event.target.value}`).then(function (response) {
                 // console.log(response.data);
                 const newDataProduct = response.data;
                 setData(newDataProduct.product);
@@ -76,9 +76,9 @@ export default function AddOrder() {
     let productList: any = [];
     {
         dataProduct.map((product: any) => {
-            for (let index = 0; index <= product.variation.length - 1; index++) {
+            for (let index = 0; index <= product.variation_sales.length - 1; index++) {
                 productList.push(
-                    <div key={product.id + product.variation[index].size} className="flex flex-warp gap-5 items-center py-4 w-full hover:bg-gray-100 px-3">
+                    <div key={product.id + product.variation_sales[index].size} className="flex flex-warp gap-5 items-center py-4 w-full hover:bg-gray-100 px-3">
                         <div className="h-[70px] w-[70px] rounded-lg">
                             <Image
                                 className='m-auto max-w-[100%] max-h-[100%]'
@@ -91,11 +91,19 @@ export default function AddOrder() {
                         </div>
                         <div className="h-auto grow w-fit text-sm grid grid-rows-2">
                             <span>{product.produk}</span>
-                            <div className="border border-blue-700 text-blue-700 w-fit px-2 py-1 rounded-lg font-medium">size {product.variation[index].size}</div>
+                            <div className="flex flex-wrap gap-2">
+                                <div className="border border-blue-700 text-blue-700 w-fit px-2 py-1 rounded-lg font-medium">
+                                    size {product.variation_sales[index].size}
+                                </div>
+
+                                <div className={`${product.stok === 'Internal' ? "border-green-700 text-green-700" : "border-orange-700 text-orange-700"} border w-fit px-2 py-1 rounded-lg font-medium`}>
+                                    {product.stok}
+                                </div>
+                            </div>
                         </div>
                         <div className="text-end">
                             {(function () {
-                                if (product.variation[index].qty < 1) {
+                                if (product.variation_sales[index].qty < 1) {
                                     return (
                                         <button className="py-2 px-3 rounded-lg bg-gray-500 text-white text-xs" disabled>
                                             Stok Kosong
@@ -108,7 +116,7 @@ export default function AddOrder() {
                                                 index,
                                                 product.produk,
                                                 product.id_produk,
-                                                product.variation[index].size,
+                                                product.variation_sales[index].size,
                                                 product.n_price,
                                                 product.img,
                                                 product.id_brand,
@@ -140,6 +148,7 @@ export default function AddOrder() {
 
     const inputRef = useRef(null);
     const searchInput = useRef(null);
+    const total_penjualan = useRef(null);
 
     const id_pesanan = useRef(null);
     const id_store = useRef(null);
@@ -234,6 +243,24 @@ export default function AddOrder() {
         });
     }
 
+    const handleChangeharga = (index: any, e: any) => {
+        const rowsInput = [...rowsData];
+        rowsData[index].harga = e.target.value;
+        setRowsData(rowsInput);
+    }
+
+    const handleChange2harga = (index: any, e: any) => {
+        const rowsInput = [...rowsData];
+        rowsData[index].subtotal = (e.target.value * rowsData[index].qty) - rowsData[index].discount_item;
+        setRowsData(rowsInput);
+
+        toast.success("Harga Update", {
+            position: toast.POSITION.TOP_RIGHT,
+            pauseOnHover: false,
+            autoClose: 2000,
+        });
+    }
+
     useEffect(() => {
         let handler = (e: any) => {
             if (!inputRef.current.contains(e.target)) {
@@ -287,7 +314,7 @@ export default function AddOrder() {
                 customer: customer.current.value,
                 diskon_nota: discountNota,
                 biaya_lainnya: biayaLainnya,
-                total_amount: totalamount,
+                total_amount: total_penjualan.current.value,
                 catatan: catatan.current.value,
             }),
         });
@@ -321,7 +348,7 @@ export default function AddOrder() {
                 </div>
 
             </div>
-            {/* {JSON.stringify(rowsData) + date + "/" + totalamount} */}
+            {JSON.stringify(rowsData) + date + "/" + totalamount}
             <ToastContainer className="mt-[50px]" />
 
             <div className="flex flex-nowrap gap-5">
@@ -447,7 +474,17 @@ export default function AddOrder() {
                                 <tbody className="text-black font-medium text-sm">
 
                                     {rowsData.length > 0 ?
-                                        <TableRows handleChange2={handleChange2} editButton={editButton} rowsData={rowsData} deleteTableRows={deleteTableRows} handleChange={handleChange} editTools={editTools} editToolsButton={editToolsButton} />
+                                        <TableRows
+                                            handleChange2={handleChange2}
+                                            handleChangeharga={handleChangeharga}
+                                            handleChange2harga={handleChange2harga}
+                                            editButton={editButton}
+                                            rowsData={rowsData}
+                                            deleteTableRows={deleteTableRows}
+                                            handleChange={handleChange}
+                                            editTools={editTools}
+                                            editToolsButton={editToolsButton}
+                                        />
                                         :
                                         <tr className="h-[200px]">
                                             <td colSpan={7}>
@@ -540,10 +577,23 @@ export default function AddOrder() {
                                 <tbody className="text-black border-b border-[#2125291A] font-medium text-sm">
                                     <tr>
                                         <td className="py-5" colSpan={5}>
-                                            <span className="font-bold">TOTAL PAYMENT</span>
+                                            <span className="font-bold">TOTAL MODAL</span>
                                         </td>
                                         <td className="py-5 text-end">
                                             <span className="font-bold text-xl text-blue-600">Rp{totalamount}</span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tbody className="text-black border-b border-[#2125291A] font-medium text-sm">
+                                    <tr>
+                                        <td className="py-5" colSpan={4}>
+                                            <span className="font-bold">TOTAL PEMBAYARAN</span>
+                                        </td>
+                                        <td className="py-5 text-end" colSpan={3}>
+                                            <input ref={total_penjualan}
+                                                className="h-auto rounded-lg w-full focus:bg-white bg-zinc-100 py-2 px-5 mt-2 text-gray-700 focus:outline-none border text-base"
+                                                type="text"
+                                                placeholder="Total Pembayaran" />
                                         </td>
                                     </tr>
                                 </tbody>

@@ -10,6 +10,9 @@ import { count } from "console";
 import DataTable, { ExpanderComponentProps } from 'react-data-table-component';
 import useSWR from 'swr';
 import styles from '../../styles/Table.module.css';
+import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
@@ -27,7 +30,7 @@ export default function Shipping() {
 
     }
 
-    const { data, error, isLoading } = useSWR(`https://api.inovasimediakreatif.site/orders/0/10/${Query}`, fetcher);
+    const { data, error, isLoading, mutate } = useSWR(`https://api.inovasimediakreatif.site/orders/0/10/SEDANG DIKIRIM/${Query}`, fetcher);
 
     const [date, setDate] = useState(format(new Date(), 'dd/MM/yyyy'));
     const [start, setStart] = useState(30);
@@ -95,7 +98,11 @@ export default function Shipping() {
                         </div>
 
                         <div className="flex flex-wrap justify-end gap-3 p-4 border-t">
-                            <button className="bg-white border-2 border-blue-400 h-auto rounded-lg py-1.5 px-3 grid grid-flow-row">
+                            <button
+                                onClick={() => {
+                                    showdeleteModal(order.id_pesanan, index)
+                                }}
+                                className="bg-white border-2 border-blue-400 h-auto rounded-lg py-1.5 px-3 grid grid-flow-row">
                                 <span className="text-blue-500 text-sm font-medium">Selesaikan Pesanan</span>
                             </button>
                         </div>
@@ -120,9 +127,33 @@ export default function Shipping() {
         </div>
     );
 
+    const [updateorder, setupdateorder] = React.useState(false);
+    const [id_pesanan, setid_pesanan] = React.useState(null);
+
+    function showdeleteModal(id_pesanan: any, index: number) {
+        setid_pesanan(id_pesanan)
+        setupdateorder(true)
+    }
+
+    async function updateOrder() {
+        await axios.post(`https://api.inovasimediakreatif.site/selesai/${id_pesanan}`)
+            .then(function (response) {
+                // console.log(response.data);
+                mutate();
+            });
+
+        toast.success("Data berhasil dihapus", {
+            position: toast.POSITION.TOP_RIGHT,
+            pauseOnHover: false,
+            autoClose: 2000,
+        });
+
+        setupdateorder(false)
+    }
+
     return (
         <div>
-            <div className="font-bold text-3xl border-b border-[#2125291A] h-16 mb-7">Order</div>
+            <div className="font-bold text-3xl border-b border-[#2125291A] h-16 mb-7">Order Dikirim</div>
 
             <div className="flex flex-wrap items-center content-center">
                 <div className="shadow rounded-lg w-auto flex flex-row text-center content-center">
@@ -203,16 +234,49 @@ export default function Shipping() {
                 {list_order}
             </div>
 
-            {/* <div className="mb-20">
-                <DataTable
-                    className="items-center"
-                    columns={columns}
-                    data={list_order}
-                    // selectableRows
-                    pagination
-                    paginationComponent={CustomMaterialPagination}
-                />
-            </div> */}
+            {updateorder ? (
+                <>
+                    <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+                        <div className="relative w-auto my-6 mx-auto max-w-3xl ">
+                            {/*content*/}
+                            <div className="border-0 rounded-lg shadow-lg relative flex flex-col bg-white outline-none focus:outline-none w-[500px]">
+                                {/*header*/}
+                                <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
+                                    <span className="text-sm font-semibold">
+                                        Warning
+                                    </span>
+                                </div>
+                                {/*body*/}
+                                <div className="relative p-6 flex-auto">
+                                    <span className="text-sm font-semibold">
+                                        Selesaikan Pesanan {id_pesanan}?
+                                    </span>
+                                </div>
+                                {/*footer*/}
+                                <div className="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
+                                    <button
+                                        className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1"
+                                        type="button"
+                                        onClick={() => {
+                                            setupdateorder(false);
+                                        }}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        className="bg-red-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+                                        type="button"
+                                        onClick={() => updateOrder()}
+                                    >
+                                        Submit
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+                </>
+            ) : null}
 
         </div>
     );
