@@ -196,12 +196,14 @@ export default function Shipping() {
                     <i className="fi fi-rr-calendar w-[1.12rem] h-[1.12rem] text-center text-gray-500 text-[1.12rem] leading-4 absolute mr-4"></i>
                 </div>
 
-                <button type="button" className="ml-3 shadow rounded-lg bg-blue-600 hover:bg-blue-800 h-[50px] text-white px-4 flex flex-wrap gap-2 content-center">
-                    <Link href='/order/add_order'>Tambah Order</Link>
-                    <div className="my-auto">
-                        <fa.FaPlus size={13} className="text-white" />
-                    </div>
-                </button>
+                <Link href='/order/add_order'>
+                    <button type="button" className="ml-3 shadow rounded-lg bg-blue-600 hover:bg-blue-800 h-[50px] text-white px-4 flex flex-wrap gap-2 content-center">
+                        Tambah Order
+                        <div className="my-auto">
+                            <fa.FaPlus size={13} className="text-white" />
+                        </div>
+                    </button>
+                </Link>
             </div>
 
             <div className="font-medium text-black py-4">

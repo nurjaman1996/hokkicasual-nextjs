@@ -148,11 +148,11 @@ const Layout = (props: PropsWithChildren) => {
 
             {/* <div className="grid grid-cols-[16rem_1fr] h-full"> */}
             <div className="h-screen pt-[60px]" >
-                <div className={`${toggleViewMode ? "grid-cols-[15rem_1fr]" : "grid-cols-[0rem_1fr]"} grid h-full duration-200`}>
+                <div className={`${toggleViewMode ? "grid-cols-[15.3rem_1fr]" : "grid-cols-[0rem_1fr]"} grid h-full duration-200`}>
                     <div className="h-full bg-[#F4F4F4] pt-5 px-4 ">
                     </div>
 
-                    <main className={`${toggleViewMode ? "px-20" : "px-40"} h-full bg-[#F4F4F4] pt-[2.3rem] duration-200`}>
+                    <main className={`${toggleViewMode ? "px-0" : "px-32"} h-full bg-[#F4F4F4] duration-200`}>
                         {props.children}
                     </main>
                 </div>
