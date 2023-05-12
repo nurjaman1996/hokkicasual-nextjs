@@ -15,14 +15,14 @@ import { compareAsc, format } from 'date-fns';
 import { redirect } from "next/dist/server/api-utils"; import useSWR from 'swr';
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 import axios from 'axios';
-
+import { useForm, useFieldArray } from "react-hook-form";
 
 
 export default function AddOrder() {
     const router = useRouter();
     const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
 
-    const { data, error, isLoading } = useSWR(`https://api.inovasimediakreatif.site/getstore`, fetcher);
+    const { data, error, isLoading } = useSWR(`https://api.hokkiscasual.com/getstore`, fetcher);
     let list_store: any = [];
     if (!isLoading && !error) {
         data.data_store.map((store: any, index: number) => {
@@ -34,7 +34,7 @@ export default function AddOrder() {
         var data_store: any = [];
     }
 
-    const { data: warehouse_data, error: warehouse_error, isLoading: warehouse_isLoading, mutate: warehouse_mutate } = useSWR(`https://api.inovasimediakreatif.site/getwarehouse`, fetcher);
+    const { data: warehouse_data, error: warehouse_error, isLoading: warehouse_isLoading, mutate: warehouse_mutate } = useSWR(`https://api.hokkiscasual.com/getwarehouse`, fetcher);
     const list_warehouse: any = [];
     if (!warehouse_isLoading && !warehouse_error) {
         warehouse_data.data_ware.map((area: any, index: number) => {
@@ -44,7 +44,7 @@ export default function AddOrder() {
         })
     }
 
-    const { data: supplier_data, error: supplier_error, isLoading: supplier_isLoading, mutate: supplier_mutate } = useSWR(`https://api.inovasimediakreatif.site/getsupplier`, fetcher);
+    const { data: supplier_data, error: supplier_error, isLoading: supplier_isLoading, mutate: supplier_mutate } = useSWR(`https://api.hokkiscasual.com/getsupplier`, fetcher);
     const list_supplier: any = [];
     if (!supplier_isLoading && !supplier_error) {
         supplier_data.data_supplier.map((area: any, index: number) => {
@@ -55,6 +55,7 @@ export default function AddOrder() {
     }
 
     const [Query, setQuery] = useState("all");
+    const [QuerySearch, setQuerySearch] = useState("");
 
     function querySet(e: any) {
         if (e.target.value === "") {
@@ -65,11 +66,13 @@ export default function AddOrder() {
 
     }
 
-    const { data: data_product, error: error_product, isLoading: isLoading_product, mutate: product_mutate } = useSWR(`https://api.inovasimediakreatif.site/products/${Query}`, fetcher);
+    const { data: data_product, error: error_product, isLoading: isLoading_product, mutate: product_mutate } = useSWR(`https://api.hokkiscasual.com/products/${Query}`, fetcher);
 
     const [dataProduct, setData] = useState([]);
 
     const list_product: any = [];
+
+
 
     {
 
@@ -91,7 +94,7 @@ export default function AddOrder() {
                             />
 
                             <div className="text-xs px-2 my-2 pt-1 pb-1 flex flex-col gap-1">
-                                <div className="font-medium line-clamp-2">{data_produk.produk}</div>
+                                <div className="font-medium line-clamp-2 h-9">{data_produk.produk}</div>
                                 <div className="text-gray-500">{(function (rows: number, i, len) {
                                     while (++i <= data_produk.variation.length) {
                                         if (data_produk.id_ware === data_produk.variation[i - 1].id_ware) {
@@ -128,7 +131,7 @@ export default function AddOrder() {
         if (e.target.value === "") {
             setpilih_warehouse("close");
         } else {
-            await axios.post(`https://api.inovasimediakreatif.site/getsizesales`, {
+            await axios.post(`https://api.hokkiscasual.com/getsizesales`, {
                 idware: e.target.value,
                 idproduct: addmodal_idproduk,
             }).then(function (response) {
@@ -228,6 +231,43 @@ export default function AddOrder() {
         }
     }
 
+    function addProdukluar(produk: any, idproduk: any, size: any, harga_beli: any, img: any, qty: any, source: any, qty_ready: any, id_ware: any) {
+        if (produk === "" || size === "" || id_ware === "") {
+            toast.warning("Mohon Isi Data dengan Lengkap", {
+                position: toast.POSITION.TOP_RIGHT,
+                pauseOnHover: false,
+                autoClose: 2000,
+            });
+        } else {
+            const rowsInput = {
+                produk: produk,
+                idproduk: idproduk,
+                size: size,
+                harga_beli: harga_beli,
+                qty_ready: qty_ready,
+                qty: qty,
+                img: img,
+                source: source,
+                id_ware: id_ware
+            }
+            setRowsData([...rowsData, rowsInput]);
+            settotalQty(totalQty + qty);
+
+            toast.success("Produk Berhasil Ditambahkan", {
+                position: toast.POSITION.TOP_RIGHT,
+                pauseOnHover: false,
+                autoClose: 2000,
+            });
+
+            setaddproduk(false);
+            setaddproduk_produk("");
+            setaddproduk_size("");
+            setaddproduk_qty(1);
+            setaddproduk_supplier("");
+            setaddproduk_hargabeli("0");
+        }
+    }
+
     const deleteTableRows = (index: number, qty: any) => {
         const rows = [...rowsData];
         rows.splice(index, 1);
@@ -237,29 +277,82 @@ export default function AddOrder() {
 
     const table_product: any = [];
 
+    function setQttable(type: any, index: any) {
+        if (type === "plus") {
+            if (rowsData[index].qty_ready != "nolimit") {
+                if (rowsData[index].qty < rowsData[index].qty_ready) {
+                    const rowsInput = [...rowsData];
+                    rowsData[index].qty = rowsData[index].qty + 1;
+                    setRowsData(rowsInput);
+                    settotalQty(totalQty + 1);
+                }
+            } else {
+                const rowsInput = [...rowsData];
+                rowsData[index].qty = rowsData[index].qty + 1;
+                setRowsData(rowsInput);
+                settotalQty(totalQty + 1);
+            }
+        } else if (type === "min") {
+            if (rowsData[index].qty > 1) {
+                const rowsInput = [...rowsData];
+                rowsData[index].qty = rowsData[index].qty - 1;
+                setRowsData(rowsInput);
+                settotalQty(totalQty - 1);
+            }
+        }
+    }
+
     {
         for (let index = 0; index < rowsData.length; index++) {
             table_product.push(
                 <div key={index} className="flex flex-wrap gap-3 p-3 border-b">
-                    <div className="bg-blue-500 w-24 rounded-lg">
-                        <Image
-                            className="w-[100%] h-auto m-auto rounded-lg"
-                            src={`https://buwanais.co.id/apiupload/${rowsData[index].img}`}
-                            alt="Picture of the author"
-                            width={100}
-                            height={100}
-                            placeholder="blur"
-                            blurDataURL={'/open-box.png'}
-                        />
-                    </div>
-
-                    <div className="grow grid grid-rows-3">
+                    {(function () {
+                        if (rowsData[index].source === "Barang Luar") {
+                            return (
+                                <div className="w-[20%] rounded-lg border p-5">
+                                    <Image
+                                        className="w-[100%] h-auto m-auto rounded-lg"
+                                        src={`/open-box.png`}
+                                        alt="Picture of the author"
+                                        width={200}
+                                        height={200}
+                                        placeholder="blur"
+                                        blurDataURL={'/open-box.png'}
+                                    />
+                                </div>
+                            )
+                        } else {
+                            return (
+                                <div className="w-[20%] rounded-lg">
+                                    <Image
+                                        className="w-[100%] h-auto m-auto rounded-lg"
+                                        src={`https://buwanais.co.id/apiupload/${rowsData[index].img}`}
+                                        alt="Picture of the author"
+                                        width={200}
+                                        height={200}
+                                        placeholder="blur"
+                                        blurDataURL={'/open-box.png'}
+                                    />
+                                </div>
+                            )
+                        }
+                    }
+                    )()}
+                    <div className="grow flex flex-col items-start justify-center gap-2">
                         <span className="text-sm font-bold">{rowsData[index].produk}</span>
                         <span className="text-xs">Variant : <span className="font-bold">{rowsData[index].size}</span> | {rowsData[index].source}</span>
-                        <div className="text-sm flex flex-wrap items-center">
-                            <button className="w-8 py-1 border border-blue-300 rounded font-bold text-blue-500 hover:bg-blue-500 hover:text-white">-</button>
-                            <div className="font-bold py-1 w-8 text-center border rounded mx-2">{rowsData[index].qty}</div>
-                            <button className="w-8 py-1 border border-blue-300 rounded font-bold text-blue-500 hover:bg-blue-500 hover:text-white">+</button>
+                        <div className="text-xs flex flex-wrap items-center">
+                            <button
+                                onClick={() => {
+                                    setQttable("min", index)
+                                }}
+                                className="w-7 py-1 border border-blue-300 rounded font-bold text-blue-500 hover:bg-blue-500 hover:text-white">-</button>
+                            <div className="font-bold py-1 w-7 text-center border rounded mx-2">{rowsData[index].qty}</div>
+                            <button
+                                onClick={() => {
+                                    setQttable("plus", index)
+                                }}
+                                className="w-7 py-1 border border-blue-300 rounded font-bold text-blue-500 hover:bg-blue-500 hover:text-white">+</button>
                         </div>
                     </div>
 
@@ -288,6 +381,22 @@ export default function AddOrder() {
 
     const [addproduk, setaddproduk] = React.useState(false);
 
+    const [addproduk_produk, setaddproduk_produk] = React.useState("");
+    const [addproduk_size, setaddproduk_size] = React.useState("");
+    const [addproduk_qty, setaddproduk_qty] = React.useState(1);
+    const [addproduk_supplier, setaddproduk_supplier] = React.useState("");
+    const [addproduk_hargabeli, setaddproduk_hargabeli] = React.useState("0");
+
+    function setQtymanual(type: any) {
+        if (type === "plus") {
+            setaddproduk_qty(addproduk_qty + 1)
+        } else if (type === "min") {
+            if (addproduk_qty > 1) {
+                setaddproduk_qty(addproduk_qty - 1)
+            }
+        }
+    }
+
     function openaddmodal(img: any, produk: any, idproduk: any) {
         setaddmodal_img(img);
         setaddmodal_produk(produk);
@@ -299,10 +408,43 @@ export default function AddOrder() {
         setaddmodal(true);
     }
 
+    const { register, control, resetField, setValue, trigger, handleSubmit, watch, formState: { errors } } = useForm({
+
+    });
+
+
+    const [TotalPembayaran, setTotalPembayaran] = React.useState(0);
+    const [TombolTambahOrder, setTombolTambahOrder] = React.useState(false);
+
+    const onSavesales = async (data: any) => {
+        if (rowsData.length < 1) {
+            toast.warning("Produk Belum Ditambahkan", {
+                position: toast.POSITION.TOP_RIGHT,
+                pauseOnHover: false,
+                autoClose: 2000,
+            });
+        } else if (TotalPembayaran < 1) {
+            toast.warning("Mohon isi Nominal Pembayaran", {
+                position: toast.POSITION.TOP_RIGHT,
+                pauseOnHover: false,
+                autoClose: 2000,
+            });
+        } else {
+            toast.success("Order Ditambahkan", {
+                position: toast.POSITION.TOP_RIGHT,
+                pauseOnHover: false,
+                autoClose: 2000,
+                onClose: () => router.back(),
+            });
+
+            setTombolTambahOrder(true);
+        }
+    };
+
     return (
         <>
             <ToastContainer className="mt-[50px]" />
-            {JSON.stringify(rowsData)}
+            {/* {JSON.stringify(rowsData)} */}
             <div className="grid grid-cols-[1fr_33%] h-full w-full">
                 <div className="h-full flex flex-col">
                     {addmodal ? (
@@ -422,24 +564,16 @@ export default function AddOrder() {
                         <div
                             className="w-full bg-[#7c7c7c46] h-full z-10 fixed grid grid-cols-[1fr_43%]">
                             <div className="mt-[10%] mx-auto w-[70%] h-fit bg-white rounded-lg">
-                                {/* <div className="p-5">
-                                <div>
-                                    <Image
-                                        className="w-[100%] h-auto m-auto rounded-lg"
-                                        src="/produks.jpg"
-                                        alt="Picture of the author"
-                                        width={300}
-                                        height={300}
-                                    />
-                                </div>
-
-                            </div> */}
 
                                 <div className="flex flex-col gap-2 border-l p-5 mt-2">
 
                                     <div className="text-sm">
                                         <label>Nama Produk</label>
                                         <input
+                                            onChange={(e) => {
+                                                setaddproduk_produk(e.target.value);
+                                            }}
+                                            value={addproduk_produk}
                                             className="h-auto rounded-lg w-full bg-white py-2 px-5 mt-2 text-gray-700 focus:outline-none border"
                                             type="text"
                                             placeholder="Masukan Nama Produk" />
@@ -449,6 +583,10 @@ export default function AddOrder() {
                                         <div className="text-sm">
                                             <label>Size</label>
                                             <input
+                                                onChange={(e) => {
+                                                    setaddproduk_size(e.target.value);
+                                                }}
+                                                value={addproduk_size}
                                                 className="h-auto rounded-lg w-full bg-white py-2 px-5 mt-2 text-gray-700 focus:outline-none border"
                                                 type="text"
                                                 placeholder="Masukan Size" />
@@ -457,16 +595,28 @@ export default function AddOrder() {
                                         <div className="text-sm">
                                             <div className="mb-2">Qty:</div>
                                             <div className="text-sm flex flex-wrap items-center">
-                                                <button className="w-10 py-2 border border-blue-300 rounded font-bold text-blue-500 hover:bg-blue-500 hover:text-white">-</button>
-                                                <div className="font-bold py-2 grow text-center border rounded mx-2">1</div>
-                                                <button className="w-10 py-2 border border-blue-300 rounded font-bold text-blue-500 hover:bg-blue-500 hover:text-white">+</button>
+                                                <button
+                                                    onClick={() => {
+                                                        setQtymanual("min")
+                                                    }}
+                                                    className="w-10 py-2 border border-blue-300 rounded font-bold text-blue-500 hover:bg-blue-500 hover:text-white">-</button>
+                                                <div className="font-bold py-2 grow text-center border rounded mx-2">{addproduk_qty}</div>
+                                                <button
+                                                    onClick={() => {
+                                                        setQtymanual("plus")
+                                                    }}
+                                                    className="w-10 py-2 border border-blue-300 rounded font-bold text-blue-500 hover:bg-blue-500 hover:text-white">+</button>
                                             </div>
                                         </div>
 
                                         <div className="text-sm">
                                             <label>Supplier</label>
                                             <div className="mt-2 flex flex-wrap items-center justify-end">
-                                                <select className="appearance-none h-auto cursor-pointer rounded-lg w-full bg-white py-2 px-5 focus:outline-none border text-sm" placeholder="Pilih Store">
+                                                <select
+                                                    onChange={(e) => {
+                                                        setaddproduk_supplier(e.target.value)
+                                                    }}
+                                                    className="appearance-none h-auto cursor-pointer rounded-lg w-full bg-white py-2 px-5 focus:outline-none border text-sm" placeholder="Pilih Store">
                                                     <option value="">Pilih Supplier</option>
                                                     {list_supplier}
                                                 </select>
@@ -477,6 +627,10 @@ export default function AddOrder() {
                                         <div className="text-sm">
                                             <label>Harga Beli (Opsional)</label>
                                             <input
+                                                onChange={(e) => {
+                                                    setaddproduk_hargabeli(e.target.value);
+                                                }}
+                                                value={addproduk_hargabeli}
                                                 className="h-auto rounded-lg w-full bg-white py-2 px-5 mt-2 text-gray-700 focus:outline-none border"
                                                 type="text"
                                                 placeholder="Masukan Harga Beli" />
@@ -490,7 +644,12 @@ export default function AddOrder() {
                                             Close
                                         </button>
 
-                                        <button type="button" className="rounded-lg bg-blue-600 hover:bg-blue-800 h-[45px] w-[100%] text-white ">
+                                        <button
+                                            onClick={() => {
+                                                addProdukluar(addproduk_produk, "NOTA", addproduk_size, addproduk_hargabeli, "default", addproduk_qty, "Barang Luar", "nolimit", addproduk_supplier)
+                                            }}
+                                            type="button"
+                                            className="rounded-lg bg-blue-600 hover:bg-blue-800 h-[45px] w-[100%] text-white ">
                                             Tambah Ke Keranjang
                                         </button>
                                     </div>
@@ -529,27 +688,61 @@ export default function AddOrder() {
 
                         <div>
                             {/* <span className="font-bold">ID Pesanan</span> */}
-                            <input className="h-auto rounded-lg w-full bg-white py-2 px-5 mt-2 text-gray-700 focus:outline-none border text-base " type="text" placeholder="Masukan ID Pesanan" />
+                            <input
+                                className={`${errors.id_pesanan ? "border-red-400" : ""} h-auto rounded-lg w-full bg-white py-2 px-5 mt-2 text-gray-700 focus:outline-none border text-base`}
+                                type="text"
+                                placeholder="Masukan ID Pesanan"
+                                autoComplete="off"
+                                {...register("id_pesanan", { required: true })}
+                            />
+                            {errors.id_pesanan && <div className="text-sm italic">This field is required</div>}
                         </div>
 
                         <div>
                             {/* <span className="font-bold">Store Channel</span> */}
                             <div className="flex flex-wrap items-center mt-2 justify-end">
-                                <select className="appearance-none h-auto cursor-pointer rounded-lg w-full bg-white py-2 px-5 focus:outline-none border text-base" placeholder="Pilih Store">
+                                <select
+                                    {...register("store", { required: true })}
+                                    className={`${errors.store ? "border-red-400" : ""} appearance-none h-auto cursor-pointer rounded-lg w-full bg-white py-2 px-5 focus:outline-none border text-base`}
+                                    placeholder="Pilih Store">
                                     <option value="">Pilih Store Channel</option>
                                     {list_store}
                                 </select>
                                 <i className="fi fi-rr-angle-small-down w-[1.12rem] h-[1.12rem] text-center text-gray-500 text-[1.12rem] leading-4 absolute mr-5"></i>
                             </div>
+                            {errors.store && <div className="text-sm italic">This field is required</div>}
 
                         </div>
                     </div>
 
-                    <div className="px-4 grid grid-cols-4 gap-3 mb-5 items-center">
+                    <div className="px-4 grid grid-cols-5 gap-3 mb-5 items-center">
                         <div className="col-span-3 flex flex-wrap items-center justify-end">
-                            <input className="h-auto bg-white rounded-lg w-full py-2 px-5 pr-12 text-gray-700 focus:outline-none border text-base" type="text" placeholder="Cari Produk" />
-                            <i className="fi fi-rr-barcode-read w-[1.12rem] h-[1.12rem] text-center text-gray-500 text-[1.12rem] leading-4 absolute mr-5"></i>
+                            <input
+                                value={QuerySearch}
+                                onChange={(e) => {
+                                    querySet(e);
+                                    setQuerySearch(e.target.value)
+                                }}
+                                className="h-auto bg-white rounded-lg w-full py-2 px-5 pr-12 text-gray-700 focus:outline-none border text-base" type="text" placeholder="Cari Produk" />
+                            {/* <i className="fi fi-rr-barcode-read w-[1.12rem] h-[1.12rem] text-center text-gray-500 text-[1.12rem] leading-4 absolute mr-5"></i> */}
+                            <button
+                                onClick={() => {
+                                    setQuerySearch("");
+                                    setQuery("all");
+                                }}
+                                className={`${Query === "all" || Query === "" ? "hidden" : "absolute mr-5 h-[1.12rem]"}`}>
+                                <i className="fi fi-rr-cross-small w-[1.12rem] h-[1.12rem] text-center text-gray-400 text-[1.12rem] leading-4"></i>
+                            </button>
                         </div>
+
+                        <button
+                            onClick={() => setaddproduk(true)}
+                            type="button" className="shadow rounded-lg bg-blue-600 hover:bg-blue-800 h-[40px] text-white px-4 flex flex-wrap gap-2 content-center justify-center">
+                            Tambah Produk
+                            <div className="my-auto">
+                                <fa.FaPlus size={13} className="text-white" />
+                            </div>
+                        </button>
 
                         <button
                             onClick={() => setaddproduk(true)}
@@ -561,9 +754,34 @@ export default function AddOrder() {
                         </button>
                     </div>
 
-                    <div className="px-4 h-[500px] grow grid grid-cols-4 content-start gap-3 overscroll-y-auto overflow-x-hidden scrollbar-none pb-20">
-                        {list_product}
-                    </div>
+                    {(function () {
+                        if (list_product.length > 0) {
+                            return (
+                                <div className="px-4 h-[500px] grow grid grid-cols-4 content-start gap-3 overscroll-y-auto overflow-x-hidden scrollbar-none pb-20">
+                                    {list_product}
+                                </div>
+                            )
+                        } else {
+                            return (
+                                <div className="mx-4 h-[500px] grow pb-20 flex items-center justify-center">
+                                    <div className="grid grid-flow-row auto-rows-max items-center justify-center text-center gap-1 m-auto">
+                                        <Image
+                                            className="w-[70px] h-auto m-auto"
+                                            src="/open-box.png"
+                                            alt="Picture of the author"
+                                            width={100}
+                                            height={100}
+                                            placeholder="blur"
+                                            blurDataURL={'/open-box.png'}
+                                        />
+                                        <span className="text-gray-400">Produk Tidak Ada</span>
+                                    </div>
+                                </div>
+                            )
+                        }
+                    }
+                    )()}
+
                 </div>
 
                 <div className="bg-white h-full py-5 px-4 flex flex-col gap-2 z-10">
@@ -572,10 +790,37 @@ export default function AddOrder() {
                     </div>
 
                     <div className="h-[100px] grow overscroll-y-auto overflow-x-hidden scrollbar-none">
-                        {table_product}
+                        {(function () {
+                            if (rowsData.length > 0) {
+                                return (
+                                    <>
+                                        {table_product}
+                                    </>
+                                )
+                            } else {
+                                return (
+                                    <div className="w-full h-full flex items-center justify-center">
+                                        <div className="grid grid-flow-row auto-rows-max items-center justify-center text-center gap-1">
+                                            <Image
+                                                className="w-[70px] h-auto m-auto"
+                                                src="/open-box.png"
+                                                alt="Picture of the author"
+                                                width={100}
+                                                height={100}
+                                                placeholder="blur"
+                                                blurDataURL={'/open-box.png'}
+                                            />
+                                            <span className="text-gray-400">Belum ada produk ditambahkan</span>
+                                        </div>
+                                    </div>
+                                )
+                            }
+                        }
+                        )()}
+
                     </div>
 
-                    <div className="h-[auto] py-3 flex flex-col gap-3 justify-end">
+                    <div className="h-[auto] flex flex-col gap-3 justify-end">
 
                         <div className="grid grid-cols-2 border-b pb-2">
                             <div className="my-auto">
@@ -604,16 +849,25 @@ export default function AddOrder() {
 
                             <div className="text-end">
                                 <label className="text-sm font-bold">Rp</label>
-                                <input className="text-sm font-bold h-auto bg-white w-[65%] py-2 px-5 text-black focus:outline-none border-b border-gray-300" type="text" />
+                                <input
+                                    onChange={(e) => {
+                                        setTotalPembayaran(parseInt(e.target.value));
+                                    }}
+                                    value={TotalPembayaran}
+                                    className="text-sm font-bold h-auto bg-white w-[65%] py-2 px-5 text-black focus:outline-none border-b border-gray-300"
+                                    type="number" />
                             </div>
 
                         </div>
 
-                        <button type="button" className="rounded-lg bg-blue-600 hover:bg-blue-800 h-[50px] w-[100%] text-white gap-2 content-center">
-                            Tambah Order
+                        <button onClick={handleSubmit(onSavesales)} disabled={TombolTambahOrder} type="button"
+                            className={`${TombolTambahOrder ? "bg-gray-600" : "bg-blue-600 hover:bg-blue-800"} rounded-lg  h-[50px] w-[100%] text-white gap-2 content-center`}>
+                            Checkout
                         </button>
 
-                        <button type="button" onClick={() => router.back()} className="rounded-lg bg-white hover:bg-gray-300 border-2 h-[50px] w-[100%] text-black gap-2 content-center">
+                        <button type="button" onClick={() => router.back()}
+                            disabled={TombolTambahOrder}
+                            className={`${TombolTambahOrder ? "bg-gray-200" : "bg-white hover:bg-gray-300"} rounded-lg  border-2 h-[50px] w-[100%] text-black gap-2 content-center`}>
                             Cancel
                         </button>
                     </div>

@@ -31,9 +31,9 @@ export default function DaftarProduk() {
 
     }
 
-    const { data, error, isLoading, mutate } = useSWR(`https://api.inovasimediakreatif.site/products/${Query}`, fetcher);
+    const { data, error, isLoading, mutate } = useSWR(`https://api.hokkiscasual.com/products/${Query}`, fetcher);
 
-    const { data: warehouse_data, error: warehouse_error, isLoading: warehouse_isLoading, mutate: warehouse_mutate } = useSWR(`https://api.inovasimediakreatif.site/getwarehouse`, fetcher);
+    const { data: warehouse_data, error: warehouse_error, isLoading: warehouse_isLoading, mutate: warehouse_mutate } = useSWR(`https://api.hokkiscasual.com/getwarehouse`, fetcher);
 
     const list_warehouse: any = [];
 
@@ -49,10 +49,8 @@ export default function DaftarProduk() {
         })
     }
 
-    const { data: supplier_data, error: supplier_error, isLoading: supplier_isLoading, mutate: supplier_mutate } = useSWR(`https://api.inovasimediakreatif.site/getsupplier`, fetcher);
-
+    const { data: supplier_data, error: supplier_error, isLoading: supplier_isLoading, mutate: supplier_mutate } = useSWR(`https://api.hokkiscasual.com/getsupplier`, fetcher);
     const list_supplier: any = [];
-
     if (!supplier_isLoading && !supplier_error) {
         supplier_data.data_supplier.map((area: any, index: number) => {
             list_supplier.push(
@@ -61,7 +59,17 @@ export default function DaftarProduk() {
         })
     }
 
-    const { data: category_data, error: category_error, isLoading: category_isLoading, mutate: category_mutate } = useSWR(`https://api.inovasimediakreatif.site/getcategory`, fetcher);
+    const { data: historipo_data, error: historipo_error, isLoading: historipo_isLoading, mutate: historipo_mutate } = useSWR(`https://api.hokkiscasual.com/gethistoripo`, fetcher);
+    const list_po: any = [];
+    if (!historipo_isLoading && !historipo_error) {
+        historipo_data.data_po.map((historipo: any, index: number) => {
+            list_po.push(
+                <option key={index} value={historipo.idpo}>{historipo.tanggal_receive} - {historipo.tipe_order} - {historipo.idpo}</option>
+            )
+        })
+    }
+
+    const { data: category_data, error: category_error, isLoading: category_isLoading, mutate: category_mutate } = useSWR(`https://api.hokkiscasual.com/getcategory`, fetcher);
 
 
     const list_category: any = [];
@@ -74,7 +82,7 @@ export default function DaftarProduk() {
         })
     }
 
-    const { data: brand_data, error: brand_error, isLoading: brand_isLoading, mutate: brand_mutate } = useSWR(`https://api.inovasimediakreatif.site/getbrand`, fetcher);
+    const { data: brand_data, error: brand_error, isLoading: brand_isLoading, mutate: brand_mutate } = useSWR(`https://api.hokkiscasual.com/getbrand`, fetcher);
 
     const list_brand: any = [];
 
@@ -96,7 +104,7 @@ export default function DaftarProduk() {
         }
     }
 
-    const { register, control, unregister, resetField, setValue, handleSubmit, watch, formState: { errors } } = useForm({
+    const { register, control, unregister, resetField, setValue, handleSubmit, watch, clearErrors, formState: { errors } } = useForm({
         // defaultValues: {
         //     edit_produk: '',
         //     edit_brand: '',
@@ -120,7 +128,7 @@ export default function DaftarProduk() {
     const [editModal, seteditModal] = React.useState(false);
 
     const onSubmit = async (data: any) => {
-        // await axios.post("https://api.inovasimediakreatif.site/saveexpense", {
+        // await axios.post("https://api.hokkiscasual.com/saveexpense", {
         //     data: data,
         //     tanggal: date
         // }).then(function (response) {
@@ -161,7 +169,7 @@ export default function DaftarProduk() {
     }
 
     const onSubmitUpdate = async (data: any) => {
-        await axios.post(`https://api.inovasimediakreatif.site/editproduk/${id}`, {
+        await axios.post(`https://api.hokkiscasual.com/editproduk/${id}`, {
             data: data,
             image: !selectedImage ? null : selectedImage,
         }).then(function (response) {
@@ -183,43 +191,77 @@ export default function DaftarProduk() {
         setShowModal(false);
     };
 
-    function showtransferModal(id: any, produk: any, id_produk: any, brand: any, kategori: any, kualitas: any, harga: any, img: any, variation: any, gudang_pengirim: any, ware: any, index: number) {
-        setid(id);
-        setValue("edit_produk", produk);
-        setValue("edit_brand", brand);
-        setValue("edit_kategori", kategori);
-        setValue("edit_kualitas", kualitas);
-        setValue("edit_harga", harga);
-        setValue("id_gudang_pengirim", ware);
-        setValue("id_produk", id_produk);
-        setValue("gudang_pengirim", gudang_pengirim);
-        setnotwarehouse(ware);
-        settransferModal(true);
-        setimg(`https://buwanais.co.id/apiupload/${img}`);
+    const [transferproduct, settransferproduct] = React.useState("");
+    const [idtransferproduct, setidtransferproduct] = React.useState("");
+    const [waretransferproduct, setwaretransferproduct] = React.useState("");
 
-        setCount(variation);
-        setProduk(index);
+    async function showtransferModal(id: any, produk: any, id_produk: any, brand: any, kategori: any, kualitas: any, harga: any, img: any, variation: any, gudang_pengirim: any, ware: any, index: number) {
+        settransferproduct(produk);
+        setidtransferproduct(id_produk);
+        setwaretransferproduct(ware);
+        setnotwarehouse(ware);
+
+        clearErrors();
+        setValue("transferwaretujuan", "");
+        setValue("gudangpengirim", gudang_pengirim);
+
+        await axios.post(`https://api.hokkiscasual.com/getsizesales`, {
+            idware: ware,
+            idproduct: id_produk,
+        }).then(function (response) {
+            unregister('variasitransfer');
+            setdatasize(response.data);
+            settransferModal(true);
+        });
     }
 
     const onSubmitTransfer = async (data: any) => {
-        await axios.post(`https://api.inovasimediakreatif.site/transferstok`, {
-            data: data
-        }).then(function (response) {
-            console.log(response.data);
-            mutate();
+        var qty_all = 0;
+        for (let index = 0; index < data.variasitransfer.length; index++) {
+            qty_all = qty_all + parseInt(data.variasitransfer[index].stok_baru);
+        }
 
-        });
+        if (qty_all < 1) {
+            toast.warning("Jumlah Total Quantity Tidak Boleh Kosong", {
+                position: toast.POSITION.TOP_RIGHT,
+                pauseOnHover: false,
+                autoClose: 2000,
+            });
+        } else {
+            // console.log(idtransferproduct)
+            // console.log(waretransferproduct)
+            // console.log(data.transferwaretujuan)
+            // console.log(data.variasitransfer)
 
-        toast.success("Repeat berhasil", {
-            position: toast.POSITION.TOP_RIGHT,
-            pauseOnHover: false,
-            autoClose: 2000,
-        });
+            await axios.post(`https://api.hokkiscasual.com/transferstok`, {
+                idproduk: idtransferproduct,
+                gudang_pengirim: waretransferproduct,
+                gudang_tujuan: data.transferwaretujuan,
+                variasitransfer: data.variasitransfer,
+            }).then(function (response) {
+                console.log(response.data);
+                mutate();
+            });
 
-        // setrepeatModal(false)
+            toast.success("Repeat berhasil", {
+                position: toast.POSITION.TOP_RIGHT,
+                pauseOnHover: false,
+                autoClose: 2000,
+            });
+
+            settransferModal(false)
+        }
+
+
     };
 
-    function showrepeatModal(id: any, produk: any, id_produk: any, brand: any, kategori: any, kualitas: any, harga: any, img: any, variation: any, gudang_pengirim: any, ware: any, index: number) {
+    const [repeatProduct, setrepeatProduct] = React.useState("");
+    const [datasize, setdatasize] = React.useState([]);
+    const [data_po, setdata_po]: any = React.useState([]);
+    const [tipepo, settipepo] = React.useState("");
+    const [gudang, setgudang] = React.useState(null);
+
+    async function showrepeatModal(id: any, produk: any, id_produk: any, brand: any, kategori: any, kualitas: any, harga: any, img: any, variation: any, gudang_pengirim: any, ware: any, index: number) {
         setid(id);
         setValue("edit_produk", produk);
         setValue("edit_brand", brand);
@@ -229,32 +271,72 @@ export default function DaftarProduk() {
         setValue("harga_beli", 0);
         setValue("id_gudang_pengirim", ware);
         setValue("gudang_pengirim", gudang_pengirim);
-        setrepeatModal(true);
         setimg(`https://buwanais.co.id/apiupload/${img}`);
 
-        setCount(variation);
+        clearErrors();
+        settipepo("")
+        setValue("tipe_po", "")
+        setValue("supplier_pobaru", "")
+
+        setgudang(gudang_pengirim);
+        setrepeatProduct(produk);
+
+        unregister('variasirestock');
+
+        await axios.post(`https://api.hokkiscasual.com/getsizesales`, {
+            idware: ware,
+            idproduct: id_produk,
+        }).then(function (response) {
+            unregister('variasirestock');
+            setdatasize(response.data);
+        });
+
+        await axios.post(`https://api.hokkiscasual.com/gethistoriposelected`, {
+            idware: ware,
+            idproduct: id_produk,
+        }).then(function (response) {
+            setdata_po(response.data);
+        });
+
+
+        setrepeatModal(true);
+
         setProduk(index);
     }
 
+
     const onSubmitRepeat = async (data: any) => {
-        await axios.post(`https://api.inovasimediakreatif.site/repeatstok`, {
-            data: data
-        }).then(function (response) {
-            console.log(response.data);
-            mutate();
-            setValue("harga_beli", null);
-            batas = 0;
-            setCount(batas);
-            unregister('variasi');
-        });
+        var qty_all = 0;
+        for (let index = 0; index < data.variasirestock.length; index++) {
+            qty_all = qty_all + parseInt(data.variasirestock[index].stok_baru);
+        }
 
-        toast.success("Repeat berhasil", {
-            position: toast.POSITION.TOP_RIGHT,
-            pauseOnHover: false,
-            autoClose: 2000,
-        });
+        if (qty_all < 1) {
+            toast.warning("Jumlah Total Quantity Tidak Boleh Kosong", {
+                position: toast.POSITION.TOP_RIGHT,
+                pauseOnHover: false,
+                autoClose: 2000,
+            });
+        } else {
+            await axios.post(`https://api.hokkiscasual.com/repeatstok`, {
+                data: data
+            }).then(function (response) {
+                console.log(response.data);
+                mutate();
+                setValue("harga_beli", null);
+                // batas = 0;
+                // setCount(batas);
+                unregister('variasirestock');
+            });
 
-        setrepeatModal(false)
+            toast.success("Repeat berhasil", {
+                position: toast.POSITION.TOP_RIGHT,
+                pauseOnHover: false,
+                autoClose: 2000,
+            });
+
+            setrepeatModal(false)
+        }
     };
 
     function showdeleteModal(id_produk: any, produk: any, id_ware: any, index: number) {
@@ -265,7 +347,7 @@ export default function DaftarProduk() {
     }
 
     async function deleteData() {
-        await axios.post(`https://api.inovasimediakreatif.site/deleteproduk/${id}/${idware}`)
+        await axios.post(`https://api.hokkiscasual.com/deleteproduk/${id}/${idware}`)
             .then(function (response) {
                 // console.log(response.data);
                 mutate();
@@ -285,7 +367,6 @@ export default function DaftarProduk() {
     const [Produk, setProduk] = useState(0);
     const [produk_name, setproduk_name] = useState(null);
     const list_produk: any = [];
-    let list_variasi: any = [];
 
     if (!isLoading && !error) {
         data.product.map((data_produk: any, index: any) => {
@@ -442,85 +523,6 @@ export default function DaftarProduk() {
                 )
             )
         })
-
-        if (data.product.length != 0) {
-            var batas: any = data.product[Produk].variation.length;
-        } else {
-            var batas: any = 0;
-        }
-
-        {
-            for (let index = 0; index < Count; index++) {
-                list_variasi.push(
-                    <tr key={index} className="rounded-lg h-auto mt-7">
-                        {(function () {
-
-                            if (index >= batas) {
-                                return (
-                                    <>
-                                        <td className="pt-4 p-0">
-                                            <div className="h-[46px] flex flex-wrap justify-center items-center rounded-l-lg">
-                                                <input placeholder="Size" {...register(`variasi.${index}.size`, { required: true })} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="text"
-                                                />
-                                            </div>
-                                        </td>
-                                        <td className="pt-4 p-0">
-                                            <div className="h-[46px] flex flex-wrap justify-center items-center rounded-l-lg">
-                                                <input readOnly defaultValue={0} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="number"
-                                                />
-                                            </div>
-                                        </td>
-                                        <td className="pt-4 p-0">
-                                            <div className="h-[46px] flex flex-wrap justify-center items-center rounded-l-lg">
-                                                <input defaultValue={0} {...register(`variasi.${index}.stok_baru`, { required: true })} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="number" placeholder="Size"
-                                                />
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <button
-                                                onClick={() => {
-                                                    remove(index)
-                                                    setCount(Count - 1);
-                                                }}
-                                                type="button" className="mt-4 mx-2 m-auto border-none rounded-lg bg-red-600 hover:bg-red-800 h-[45px] text-white px-4 flex flex-wrap gap-2 content-center">
-                                                <div className="my-auto">
-                                                    <fa.FaMinus size={13} className="text-white" />
-                                                </div>
-                                            </button>
-                                        </td>
-                                    </>
-                                )
-                            } else {
-                                if (data.product[Produk].id_ware === data.product[Produk].variation[index].id_ware) {
-                                    return (
-                                        <>
-                                            <td className="pt-4 p-0">
-                                                <div className="h-[46px] flex flex-wrap justify-center items-center rounded-l-lg">
-                                                    <input readOnly defaultValue={data.product[Produk].variation[index].size} {...register(`variasi.${index}.size`, { required: true })} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="text"
-                                                    />
-                                                </div>
-                                            </td>
-                                            <td className="pt-4 p-0">
-                                                <div className="h-[46px] flex flex-wrap justify-center items-center rounded-l-lg">
-                                                    <input readOnly defaultValue={data.product[Produk].variation[index].qty} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="number"
-                                                    />
-                                                </div>
-                                            </td>
-                                            <td className="pt-4 p-0">
-                                                <div className="h-[46px] flex flex-wrap justify-center items-center rounded-l-lg">
-                                                    <input defaultValue={0} {...register(`variasi.${index}.stok_baru`, { required: true })} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="number" placeholder="Size"
-                                                    />
-                                                </div>
-                                            </td>
-                                        </>
-                                    )
-                                }
-                            }
-                        })()}
-                    </tr >
-                )
-            }
-        }
     }
 
     const [selectedImage, setSelectedImage] = useState(null);
@@ -539,11 +541,12 @@ export default function DaftarProduk() {
     };
 
     return (
-        <>
+        <div className="p-5">
             <div className="font-bold text-3xl border-b border-[#2125291A] h-16 mb-7">
                 Daftar Produk
-
             </div>
+
+            {/* <span> {JSON.stringify(datasize)}</span> */}
 
             <ToastContainer className="mt-[50px]" />
 
@@ -559,12 +562,14 @@ export default function DaftarProduk() {
                 </div>
 
                 <div className="ml-auto flex flex-row items-center justify-end">
-                    <button type="button" className="ml-3 shadow rounded-lg bg-blue-600 hover:bg-blue-800 h-[45px] text-white px-4 flex flex-wrap gap-2 content-center">
-                        <Link href='add_produk'>Tambah Produk</Link >
-                        <div className="my-auto">
-                            <fa.FaPlus size={13} className="text-white" />
-                        </div>
-                    </button>
+                    <Link href='add_produk'>
+                        <button type="button" className="ml-3 shadow rounded-lg bg-blue-600 hover:bg-blue-800 h-[45px] text-white px-4 flex flex-wrap gap-2 content-center">
+                            Tambah Produk
+                            <div className="my-auto">
+                                <fa.FaPlus size={13} className="text-white" />
+                            </div>
+                        </button>
+                    </Link >
                 </div>
 
 
@@ -732,118 +737,233 @@ export default function DaftarProduk() {
 
             {repeatModal ? (
                 <>
-                    <div className="justify-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
-                        <div className="relative w-auto mt-[20px] mb-[40px] mx-auto max-w-3xl ">
+                    <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+                        <div className="mb-[40px] mx-auto w-[60%]">
                             {/*content*/}
-                            <div className="border-0 rounded-lg shadow-lg relative flex flex-col bg-white outline-none focus:outline-none w-[auto]">
+                            <div className="border-0 rounded-lg shadow-lg flex flex-col bg-white outline-none focus:outline-none w-[100%]">
                                 {/*header*/}
-                                <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
-                                    <span className="text-xl font-semibold">
-                                        Repeat Stock
+                                <div className="flex items-start justify-between px-5 py-3 border-b border-solid border-slate-200 rounded-t">
+                                    <span className="text-base font-semibold">
+                                        Restock : {repeatProduct} | {gudang}
                                     </span>
                                 </div>
+
+                                {/* <span className="text-xs px-3">{JSON.stringify(watch())}</span> */}
                                 {/*body*/}
-                                <div className="relative p-6 flex flex-auto">
-                                    <div className="w-[60%] mr-4">
-                                        <div className="">
-                                            <label className="block mb-2 text-sm font-medium text-black">Nama Produk</label>
-                                            <input
-                                                className={`${errors.edit_produk ? "border-red-500 border-2" : "border"} h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
-                                                type="text"
-                                                defaultValue="" {...register("edit_produk", { required: true })}
-                                            />
-                                            {errors.edit_produk && <div className="mt-1 text-sm italic">This field is required</div>}
-                                        </div>
-
-                                        <div className="mt-5">
-                                            <label className="block mb-2 text-sm font-medium text-black">ID Produk</label>
-                                            <input
-                                                className={`${errors.id_produk ? "border-red-500 border-2" : "border"} h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
-                                                type="text"
-                                                readOnly
-                                                defaultValue="" {...register("id_produk", { required: true })}
-                                            />
-                                            {errors.id_produk && <div className="mt-1 text-sm italic">This field is required</div>}
-                                        </div>
-
-                                        <div className="mt-5">
-                                            <label className="block mb-2 text-sm font-medium text-black">ID Gudang</label>
-                                            <input
-                                                className={`${errors.id_gudang_pengirim ? "border-red-500 border-2" : "border"} h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
-                                                type="text"
-                                                readOnly
-                                                defaultValue="" {...register("id_gudang_pengirim", { required: true })}
-                                            />
-                                            {errors.id_gudang_pengirim && <div className="mt-1 text-sm italic">This field is required</div>}
-                                        </div>
-
-                                        <div className="mt-5">
-                                            <label className="block mb-2 text-sm font-medium text-black">Gudang Pengirim</label>
-                                            <input
-                                                className={`${errors.gudang_pengirim ? "border-red-500 border-2" : "border"} h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
-                                                type="text"
-                                                readOnly
-                                                defaultValue="" {...register("gudang_pengirim", { required: true })}
-                                            />
-                                            {errors.gudang_pengirim && <div className="mt-1 text-sm italic">This field is required</div>}
-                                        </div>
-
-                                        <div className="mt-5">
-                                            <label className="block mb-2 text-sm font-medium text-black">Supplier</label>
-                                            <select {...register("supplier", { required: true })} className={`${errors.supplier ? "border-red-500 border-2" : "border"} appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
-                                                <option value="">Pilih Supplier</option>
-                                                {list_supplier}
+                                <div className="p-6 gap-4 flex flex-auto h-[auto]">
+                                    <div className="w-[33%] text-sm flex flex-col">
+                                        <div className="flex flex-wrap items-center justify-end">
+                                            <select {...register("tipe_po", { required: true })}
+                                                onChange={(e) => {
+                                                    settipepo(e.target.value)
+                                                    setValue('history_po', "")
+                                                    setValue('supplier_pobaru', "")
+                                                }}
+                                                className={`${errors.tipe_po ? "border-red-500 border-2" : "border"} appearance-none border h-[30px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
+                                                <option value="">Tipe Purchase order</option>
+                                                <option value="PO_BARU">PO Baru</option>
+                                                <option value="PO_LANJUTAN">PO Lanjutan</option>
                                             </select>
-                                            {errors.supplier && <div className="mt-1 text-sm italic">This field is required</div>}
+                                            <i className="fi fi-rr-angle-small-down w-[1.12rem] h-[1.12rem] text-center text-gray-500 text-[1.12rem] leading-4 absolute mr-5"></i>
                                         </div>
+                                        {errors.tipe_po && <div className="mt-1 text-sm italic">This field is required</div>}
 
-                                        <div className="mt-5">
-                                            <label className="block mb-2 text-sm font-medium text-black">Harga Beli</label>
-                                            <input
-                                                className={`${errors.harga_beli ? "border-red-500 border-2" : "border"} h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
-                                                type="text"
-                                                defaultValue="" {...register("harga_beli", { required: true })}
-                                            />
-                                            {errors.harga_beli && <div className="mt-1 text-sm italic">This field is required</div>}
-                                        </div>
-                                    </div>
+                                        {(function () {
+                                            if (tipepo === "PO_LANJUTAN") {
+                                                return (
+                                                    <div>
+                                                        <div className="mt-4 flex flex-wrap items-center justify-end">
+                                                            <select {...register("history_po", { required: true })} className={`${errors.history_po ? "border-red-500 border-2" : "border"} appearance-none border h-[30px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
+                                                                <option value="">Pilih Data PO</option>
+                                                                {list_po}
+                                                            </select>
+                                                            <i className="fi fi-rr-angle-small-down w-[1.12rem] h-[1.12rem] text-center text-gray-500 text-[1.12rem] leading-4 absolute mr-5"></i>
+                                                        </div>
+                                                        {errors.history_po && <div className="mt-1 text-sm italic">This field is required</div>}
+                                                    </div>
+                                                )
+                                            }
+                                        }
+                                        )()}
 
-                                    <div className="grow">
-                                        <table className="table table-auto bg-transparent text-sm w-[400px]">
-
-                                            <thead className="bg-[#DDE4F0] text-gray-800">
-                                                <tr className="">
-                                                    <th className="py-3 rounded-l-lg">
-                                                        Size
-                                                    </th>
-                                                    <th className="py-3">
-                                                        Stok Gudang
-                                                    </th>
-                                                    <th className="py-3 rounded-r-lg">
-                                                        Stok Baru
-                                                    </th>
-                                                </tr>
-                                            </thead>
-
-                                            <tbody className="group rounded-lg">
-                                                {list_variasi}
-                                            </tbody>
-                                        </table>
-
-                                        <button
-                                            onClick={() => {
-                                                append({ size: null, stok_baru: 0 });
-                                                setCount(Count + 1);
-                                            }}
-                                            type="button" className="mt-3 mx-2 m-auto border-none rounded-lg bg-blue-600 hover:bg-blue-800 h-[45px] text-white px-4 flex flex-wrap gap-2 content-center">
-                                            <div className="my-auto">
-                                                <fa.FaPlus size={13} className="text-white" />
+                                        <div>
+                                            <div className="mt-4 flex flex-wrap items-center justify-end">
+                                                <select {...register("supplier_pobaru", { required: true })} className={`${errors.supplier_pobaru ? "border-red-500 border-2" : "border"} appearance-none border h-[30px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
+                                                    <option value="">Pilih Supplier PO</option>
+                                                    {list_supplier}
+                                                </select>
+                                                <i className="fi fi-rr-angle-small-down w-[1.12rem] h-[1.12rem] text-center text-gray-500 text-[1.12rem] leading-4 absolute mr-5"></i>
                                             </div>
-                                        </button>
+                                            {errors.supplier_pobaru && <div className="mt-1 text-sm italic">This field is required</div>}
+                                        </div>
+
+                                        <div className="mt-4 flex flex-wrap items-center justify-start gap-3">
+                                            <div className="h-[30px] flex items-center text-sm font-medium text-black">Harga Beli :</div>
+                                            <input
+                                                className={`${errors.harga_beli ? "border-red-500 border-2" : "border"} h-[30px] grow pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
+                                                type="number"
+                                                defaultValue="" {...register("harga_beli", { required: true, min: 1 })}
+                                            />
+                                        </div>
+                                        {errors.harga_beli && <div className="mt-1 text-sm italic">This field is required</div>}
+
+                                        <div className="grow">
+                                            <table className="table table-auto bg-transparent text-sm mt-3">
+
+                                                <thead className="bg-[#DDE4F0] text-gray-800 text-xs">
+                                                    <tr className="">
+                                                        <th className="py-2 rounded-l-lg">
+                                                            Size
+                                                        </th>
+                                                        <th className="py-2">
+                                                            Stok Gudang
+                                                        </th>
+                                                        <th className="py-2 rounded-r-lg">
+                                                            Stok Baru
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+
+                                                <tbody className="group rounded-lg text-xs">
+                                                    {datasize.map((datasizes, index) => {
+                                                        return (
+                                                            <tr key={index} className="rounded-lg h-auto mt-7">
+                                                                <td className="pt-2 p-0">
+                                                                    <div className="h-[30px] flex flex-wrap justify-center items-center rounded-l-lg">
+                                                                        <input readOnly defaultValue={datasizes.size} {...register(`variasirestock.${index}.size`, { required: true })} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="text"
+                                                                        />
+                                                                    </div>
+                                                                </td>
+                                                                <td className="pt-2 p-0">
+                                                                    <div className="h-[30px] flex flex-wrap justify-center items-center rounded-l-lg">
+                                                                        <input readOnly defaultValue={datasizes.qty} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="number"
+                                                                        />
+                                                                    </div>
+                                                                </td>
+                                                                <td className="pt-2 p-0">
+                                                                    <div className="h-[30px] flex flex-wrap justify-center items-center rounded-l-lg">
+                                                                        <input min={0} defaultValue={0} {...register(`variasirestock.${index}.stok_baru`, { required: true })} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="number" placeholder="Size"
+                                                                        />
+                                                                    </div>
+                                                                </td>
+                                                            </tr >
+                                                        );
+                                                    })}
+                                                </tbody>
+                                            </table>
+
+                                            {/* <button
+                                                onClick={() => {
+                                                    append({ size: null, stok_baru: 0 });
+                                                    setCount(Count + 1);
+                                                }}
+                                                type="button" className="mt-3 mx-2 m-auto border-none rounded-lg bg-blue-600 hover:bg-blue-800 h-[30px] text-white px-2 flex flex-wrap gap-2 content-center">
+                                                <div className="my-auto">
+                                                    <fa.FaPlus size={13} className="text-white" />
+                                                </div>
+                                            </button> */}
+                                        </div>
+
+                                        <div className="h-[10%] mt-6 w-full grid grid-cols-2 items-end justify-start">
+                                            <button
+                                                className="bg-red-500 text-white font-bold uppercase text-xs px-6 py-2.5 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 ease-linear transition-all duration-150"
+                                                type="button"
+                                                onClick={() => {
+                                                    setSelectedImage(null);
+                                                    setValue("harga_beli", null);
+                                                    // batas = 0;
+                                                    // setCount(batas);
+                                                    setrepeatModal(false);
+                                                }}
+                                            >
+                                                Close
+                                            </button>
+                                            <button
+                                                className="bg-emerald-500 text-white font-bold uppercase text-xs px-6 py-2.5 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 ease-linear transition-all duration-150"
+                                                type="button"
+                                                onClick={handleSubmit(onSubmitRepeat)}
+                                            >
+                                                Save Changes
+                                            </button>
+                                        </div>
+
                                     </div>
+
+                                    <div className="grow flex flex-col justify-start">
+                                        <div className="h-[500px] w-full pb-10">
+                                            <div className="text-xs flex flex-auto text-center mb-2 font-bold">
+                                                <div className="border py-1.5 w-[40%] rounded-l-lg">Detail</div>
+                                                <div className="border py-1.5 grow">Total Pembelian</div>
+                                                <div className="border py-1.5 w-[40%] rounded-r-lg">Size</div>
+                                            </div>
+
+                                            {/* {JSON.stringify(data_po)} */}
+
+                                            <div className="h-[100%] overscroll-y-auto overflow-x-hidden scrollbar-none pb-20">
+                                                {(function () {
+                                                    if (data_po.data_po.length > 0) {
+                                                        return (
+                                                            data_po.data_po.map((datapo: any, index: any) => {
+                                                                return (
+                                                                    <div key={index} className="h-auto flex flex-auto text-xs items-center border rounded-lg px-2 py-2 mb-2">
+                                                                        <div className="w-[40%] grid grid-rows-5 pl-4">
+                                                                            <div className="grid grid-cols-3">
+                                                                                <span>Tanggal</span>
+                                                                                <span className="col-span-2">: {datapo.tanggal_receive}</span>
+                                                                            </div>
+                                                                            <div className="grid grid-cols-3">
+                                                                                <span>ID PO</span>
+                                                                                <span className="col-span-2 font-bold text-violet-600">: {datapo.idpo}</span>
+                                                                            </div>
+                                                                            <div className="grid grid-cols-3">
+                                                                                <span>Tipe PO</span>
+                                                                                <span className="col-span-2 font-bold">: {datapo.tipe_order}</span>
+                                                                            </div>
+                                                                            <div className="grid grid-cols-3">
+                                                                                <span>Supplier</span>
+                                                                                <span className="col-span-2">: {datapo.supplier}</span>
+                                                                            </div>
+                                                                            <div className="grid grid-cols-3">
+                                                                                <span>Harga Satuan</span>
+                                                                                <span className="col-span-2">: Rp {datapo.m_price}</span>
+                                                                            </div>
+                                                                            <div className="grid grid-cols-3">
+                                                                                <span>Quantity</span>
+                                                                                <span className="col-span-2">: {datapo.qty}</span>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div className="grow text-center font-bold">Rp {datapo.total_amount}</div>
+
+                                                                        <div className="w-[40%] text-center grid grid-cols-4 px-2 gap-1">
+                                                                            {(function () {
+                                                                                return (
+                                                                                    datapo.variation.map((variation: any, indexs: any) => {
+                                                                                        return (
+                                                                                            <div key={indexs} className="border rounded px-2">{variation.size}={variation.qty}</div>
+                                                                                        );
+                                                                                    })
+                                                                                )
+                                                                            }
+                                                                            )()}
+                                                                        </div>
+                                                                    </div>
+                                                                );
+                                                            })
+                                                        )
+                                                    }
+                                                }
+                                                )()}
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
                                 </div>
                                 {/*footer*/}
-                                <div className="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
+                                {/* <div className="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
+                                    {JSON.stringify(watch())}
                                     <button
                                         className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                                         type="button"
@@ -865,183 +985,183 @@ export default function DaftarProduk() {
                                     >
                                         Save Changes
                                     </button>
-                                </div>
+                                </div> */}
+
                             </div>
                         </div>
                     </div>
                     <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
                 </>
-            ) : null}
+            ) : null
+            }
 
             {transferModal ? (
                 <>
                     <div className="justify-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
-                        <div className="relative w-auto mt-[20px] mb-[40px] mx-auto max-w-3xl ">
+                        <div className="relative mt-[50px] mb-[40px] mx-auto w-[60%]">
                             {/*content*/}
-                            <div className="border-0 rounded-lg shadow-lg relative flex flex-col bg-white outline-none focus:outline-none w-[auto]">
+                            <div className="border-0 rounded-lg shadow-lg relative flex flex-col bg-white outline-none focus:outline-none w-[100%]">
                                 {/*header*/}
-                                <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
-                                    <span className="text-xl font-semibold">
-                                        Transfer Stock
+                                <div className="flex items-start justify-between px-5 py-3 border-b border-solid border-slate-200 rounded-t">
+                                    <span className="text-base font-semibold">
+                                        Transfer Stock : {transferproduct}
                                     </span>
                                 </div>
+
+                                {/* <span className="text-xs px-3">{JSON.stringify(watch())}</span> */}
                                 {/*body*/}
-                                <div className="relative p-6 flex flex-auto">
-                                    <div className="w-[60%] mr-4">
-                                        <div className="">
-                                            <label className="block mb-2 text-sm font-medium text-black">Nama Produk</label>
-                                            <input
-                                                className={`${errors.edit_produk ? "border-red-500 border-2" : "border"} h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
-                                                type="text"
-                                                readOnly
-                                                defaultValue="" {...register("edit_produk", { required: true })}
-                                            />
-                                            {errors.edit_produk && <div className="mt-1 text-sm italic">This field is required</div>}
+                                <div className="p-6 gap-4 flex flex-auto h-[auto]">
+                                    <div className="w-[33%] text-sm flex flex-col pb-3">
+                                        <div className="grow">
+                                            <div className="">
+                                                <label className="text-xs">Gudang Pengirim</label>
+                                                <input readOnly {...register("gudangpengirim", { required: true })}
+                                                    className={`${errors.gudangpengirim ? "border-red-500 border-2" : "border"} appearance-none border h-[30px] mt-2 w-[100%] pr-3 pl-5 text-gray-700 focus:outline-none rounded-lg`}>
+                                                </input>
+                                            </div>
+
+                                            <div className="mt-3">
+                                                <label className="text-xs">Gudang Penerima</label>
+                                                <div className="mt-2 flex flex-wrap items-center justify-end">
+                                                    <select {...register("transferwaretujuan", { required: true })} className={`${errors.transferwaretujuan ? "border-red-500 border-2" : "border"} appearance-none border h-[30px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
+                                                        <option value="">Pilih Gudang Penerima</option>
+                                                        {list_warehouse}
+                                                    </select>
+                                                    <i className="fi fi-rr-angle-small-down w-[1.12rem] h-[1.12rem] text-center text-gray-500 text-[1.12rem] leading-4 absolute mr-5"></i>
+                                                </div>
+                                                {errors.transferwaretujuan && <div className="mt-1 text-sm italic">This field is required</div>}
+                                            </div>
+
                                         </div>
 
-                                        <div className="mt-5">
-                                            <label className="block mb-2 text-sm font-medium text-black">ID Produk</label>
-                                            <input
-                                                className={`${errors.id_produk ? "border-red-500 border-2" : "border"} h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
-                                                type="text"
-                                                readOnly
-                                                defaultValue="" {...register("id_produk", { required: true })}
-                                            />
-                                            {errors.id_produk && <div className="mt-1 text-sm italic">This field is required</div>}
-                                        </div>
-
-                                        <div className="mt-5">
-                                            <label className="block mb-2 text-sm font-medium text-black">ID Gudang</label>
-                                            <input
-                                                className={`${errors.id_gudang_pengirim ? "border-red-500 border-2" : "border"} h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
-                                                type="text"
-                                                readOnly
-                                                defaultValue="" {...register("id_gudang_pengirim", { required: true })}
-                                            />
-                                            {errors.id_gudang_pengirim && <div className="mt-1 text-sm italic">This field is required</div>}
-                                        </div>
-
-                                        <div className="mt-5">
-                                            <label className="block mb-2 text-sm font-medium text-black">Gudang Pengirim</label>
-                                            <input
-                                                className={`${errors.gudang_pengirim ? "border-red-500 border-2" : "border"} h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
-                                                type="text"
-                                                readOnly
-                                                defaultValue="" {...register("gudang_pengirim", { required: true })}
-                                            />
-                                            {errors.gudang_pengirim && <div className="mt-1 text-sm italic">This field is required</div>}
-                                        </div>
-
-                                        <div className="mt-5">
-                                            <div className="mb-3">Gudang penerima</div>
-                                            <select {...register("gudang_penerima", { required: true })}
-                                                className={`${errors.gudang_penerima ? "border-red-500 border-2" : "border"}appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
-                                                <option value="">Pilih Warehouse</option>
-                                                {list_warehouse}
-                                            </select>
-                                            {errors.gudang_penerima && <div className="mt-1 text-sm italic">This field is required</div>}
-                                        </div>
                                     </div>
 
                                     <div className="grow">
                                         <table className="table table-auto bg-transparent text-sm w-full">
 
-                                            <thead className="bg-[#DDE4F0] text-gray-800">
+                                            <thead className="bg-[#DDE4F0] text-gray-800 text-xs">
                                                 <tr className="">
-                                                    <th className="py-3 rounded-l-lg">
+                                                    <th className="py-2 rounded-l-lg">
                                                         Size
                                                     </th>
-                                                    <th className="py-3">
+                                                    <th className="py-2">
                                                         Stok Gudang
                                                     </th>
-                                                    <th className="py-3 rounded-r-lg">
+                                                    <th className="py-2 rounded-r-lg">
                                                         Stok Transfer
                                                     </th>
                                                 </tr>
                                             </thead>
 
-                                            <tbody className="group rounded-lg">
-                                                {list_variasi}
+                                            <tbody className="group rounded-lg text-xs">
+                                                {datasize.map((datasizes, index) => {
+                                                    return (
+                                                        <tr key={index} className="rounded-lg h-auto mt-7">
+                                                            <td className="pt-2 p-0">
+                                                                <div className="h-[30px] flex flex-wrap justify-center items-center rounded-l-lg">
+                                                                    <input readOnly defaultValue={datasizes.size} {...register(`variasitransfer.${index}.size`, { required: true })} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="text"
+                                                                    />
+                                                                </div>
+                                                            </td>
+                                                            <td className="pt-2 p-0">
+                                                                <div className="h-[30px] flex flex-wrap justify-center items-center rounded-l-lg">
+                                                                    <input readOnly defaultValue={datasizes.qty} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="number"
+                                                                    />
+                                                                </div>
+                                                            </td>
+                                                            <td className="pt-2 p-0">
+                                                                <div className="h-[30px] flex flex-wrap justify-center items-center rounded-l-lg">
+                                                                    <input min={0} defaultValue={0} {...register(`variasitransfer.${index}.stok_baru`, { required: true })} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="number" placeholder="Size"
+                                                                    />
+                                                                </div>
+                                                            </td>
+                                                        </tr >
+                                                    );
+                                                })}
                                             </tbody>
                                         </table>
+
+                                        <div className="h-[10%] py-2 mt-3 w-full grid grid-cols-2 items-end justify-start">
+                                            <button
+                                                className="bg-red-500 text-white font-bold uppercase text-xs px-6 py-2.5 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 ease-linear transition-all duration-150"
+                                                type="button"
+                                                onClick={() => {
+                                                    setSelectedImage(null);
+                                                    settransferModal(false);
+                                                }}
+                                            >
+                                                Close
+                                            </button>
+                                            <button
+                                                className="bg-emerald-500 text-white font-bold uppercase text-xs px-6 py-2.5 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 ease-linear transition-all duration-150"
+                                                type="button"
+                                                onClick={handleSubmit(onSubmitTransfer)}
+                                            >
+                                                Save Changes
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                                {/*footer*/}
-                                <div className="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
-                                    <button
-                                        className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                                        type="button"
-                                        onClick={() => {
-                                            batas = 0;
-                                            setCount(batas);
-                                            setValue('gudang_penerima', '');
-                                            settransferModal(false);
-                                        }}
-                                    >
-                                        Close
-                                    </button>
-                                    <button
-                                        className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                                        type="button"
-                                        onClick={handleSubmit(onSubmitTransfer)}
-                                    >
-                                        Save Changes
-                                    </button>
-                                </div>
+
+
+
                             </div>
                         </div>
                     </div>
                     <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
                 </>
-            ) : null}
+            ) : null
+            }
 
-            {delModal ? (
-                <>
-                    <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
-                        <div className="relative w-auto my-6 mx-auto max-w-3xl ">
-                            {/*content*/}
-                            <div className="border-0 rounded-lg shadow-lg relative flex flex-col bg-white outline-none focus:outline-none w-[500px]">
-                                {/*header*/}
-                                <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
-                                    <span className="text-sm font-semibold">
-                                        Warning
-                                    </span>
-                                </div>
-                                {/*body*/}
-                                <div className="relative p-6 flex-auto">
-                                    <p className="text-sm font-semibold">
-                                        Produk {produk_name} akan dihapus?
-                                    </p>
-                                    <p className="text-sm italic text-red-400">
-                                        *Semua data dan Variasi Stok akan ikut terhapus
-                                    </p>
-                                </div>
-                                {/*footer*/}
-                                <div className="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
-                                    <button
-                                        className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1"
-                                        type="button"
-                                        onClick={() => {
-                                            setdelModal(false);
-                                        }}
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        className="bg-red-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
-                                        type="button"
-                                        onClick={() => deleteData()}
-                                    >
-                                        Delete
-                                    </button>
+            {
+                delModal ? (
+                    <>
+                        <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+                            <div className="relative w-auto my-6 mx-auto max-w-3xl ">
+                                {/*content*/}
+                                <div className="border-0 rounded-lg shadow-lg relative flex flex-col bg-white outline-none focus:outline-none w-[500px]">
+                                    {/*header*/}
+                                    <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
+                                        <span className="text-sm font-semibold">
+                                            Warning
+                                        </span>
+                                    </div>
+                                    {/*body*/}
+                                    <div className="relative p-6 flex-auto">
+                                        <p className="text-sm font-semibold">
+                                            Produk {produk_name} akan dihapus?
+                                        </p>
+                                        <p className="text-sm italic text-red-400">
+                                            *Semua data dan Variasi Stok akan ikut terhapus
+                                        </p>
+                                    </div>
+                                    {/*footer*/}
+                                    <div className="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
+                                        <button
+                                            className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1"
+                                            type="button"
+                                            onClick={() => {
+                                                setdelModal(false);
+                                            }}
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            className="bg-red-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+                                            type="button"
+                                            onClick={() => deleteData()}
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
-                </>
-            ) : null}
+                        <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+                    </>
+                ) : null
+            }
 
-        </>
+        </div >
     );
 }

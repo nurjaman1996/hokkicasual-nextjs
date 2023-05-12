@@ -13,6 +13,7 @@ import styles from '../../styles/Table.module.css';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import * as Icons from "react-icons/fa";
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
@@ -30,7 +31,7 @@ export default function Shipping() {
 
     }
 
-    const { data, error, isLoading, mutate } = useSWR(`https://api.inovasimediakreatif.site/orders/0/10/SEDANG DIKIRIM/${Query}`, fetcher);
+    const { data, error, isLoading, mutate } = useSWR(`https://api.hokkiscasual.com/orders/0/10/SEDANG DIKIRIM/${Query}`, fetcher);
 
     const [date, setDate] = useState(format(new Date(), 'dd/MM/yyyy'));
     const [start, setStart] = useState(30);
@@ -42,24 +43,26 @@ export default function Shipping() {
         data.orders.map((order: any, index: number) => {
             return (
                 list_order.push(
-                    <div key={order.id} className="hover:shadow-md w-full h-auto bg-white rounded-lg text-sm">
-                        <div className="flex flex-1 w-full h-auto border-b py-4 px-4">
-                            <div className="grow">Cust. <b>{order.customer}</b> | {order.sales_channel}</div>
-                            <div className="text-start">No. Pesanan {order.id_pesanan}</div>
-                        </div>
-
-                        <div className="h-auto p-4 py-6 items-center justify-start flex flex-wrap">
-                            <div className="w-[3%] ml-3">
-                                {index + 1}.
+                    <div key={order.id} className="shadow hover:shadow-md w-full h-auto bg-white rounded-lg text-sm">
+                        <div className="flex flex-wrap w-full h-auto border-b py-2.5 pt-3 px-7 items-center">
+                            {/* <div className="grow">Cust. <b>{order.customer}</b> | {order.sales_channel}</div> */}
+                            <div className="grow text-start text-xs flex flex-col">
+                                {/* <span>Invoice <b>#{order.id_invoice}</b></span> */}
+                                <span><b>{order.sales_channel}</b></span>
+                                <span>{format(new Date(order.created_at), 'dd MMMM, Y HH:mm')} | Pesanan #<b className="text-blue-500">{order.id_pesanan}</b></span>
                             </div>
 
-                            <div className="flex flex-col w-[36%] gap-2">
+
+                        </div>
+
+                        <div className="grid grid-cols-5 px-7 py-5">
+                            <div className="flex flex-col gap-4 col-span-2">
                                 {(function (rows: any, i, len) {
                                     while (++i <= len) {
                                         rows.push(
-                                            <div key={i} className="flex justify-start items-start gap-7">
+                                            <div key={i} className="flex h-[50px] justify-start items-start gap-5">
                                                 <Image
-                                                    className="max-w-[60px] rounded-lg max-h-[60px]"
+                                                    className="rounded border h-[100%] w-auto"
                                                     // src="/produk.jpg"
                                                     src={`https://buwanais.co.id/apiupload/${order.details_order[i - 1].img}`}
                                                     alt="product-1"
@@ -67,14 +70,12 @@ export default function Shipping() {
                                                     width="500"
                                                     priority
                                                 />
-                                                <div className="flex flex-col gap-2 grow">
-                                                    <span>{order.details_order[i - 1].produk}</span>
-                                                    <span className="text-xs text-gray-500">Variasi {order.details_order[i - 1].size}</span>
+                                                <div className="flex flex-col grow h-[100%] justify-center">
+                                                    <span className="font-medium">{order.details_order[i - 1].produk}</span>
+                                                    <div className="text-xs text-black">Variasi <span className="text-black font-medium">{order.details_order[i - 1].size}</span> | {order.details_order[i - 1].source}</div>
+                                                    <span className="text-xs text-black">x{order.details_order[i - 1].qty}</span>
                                                 </div>
 
-                                                <div className="mx-20">
-                                                    <span>x{order.details_order[i - 1].qty}</span>
-                                                </div>
                                             </div>
                                         )
                                     }
@@ -82,29 +83,96 @@ export default function Shipping() {
                                 })([], 0, order.details_order.length)}
                             </div>
 
-                            <div className="text-start w-[20%] flex flex-col">
-                                <span>Rp{order.total_amount}</span>
-                                <span>{order.payment.length < 1 ? "Belum ada Pembayaran" : ""}</span>
+                            <div className="justify-center flex">
+                                <div className="text-start flex flex-col">
+                                    <span className="font-bold">Rp{order.total_amount}</span>
+                                    <span>{order.payment.length < 1 ? "Belum ada Pembayaran" : ""}</span>
+                                </div>
                             </div>
 
-                            <div className="w-[20%]">
-                                <span>{order.status_pesanan}</span>
+                            <div className="text-center text-xs">
+                                <span className="font-bold">{order.status_pesanan}</span>
                             </div>
 
-                            <div className="w-[20%]">
-                                <span>{order.catatan}</span>
-                            </div>
+                            {/* <div className="justify-end text-xs flex flex-wrap gap-2">
+                                <div>
+                                    <button
+                                        onClick={() => {
+                                            showdeleteModal(order.id_pesanan, index)
+                                        }}
+                                        className="flex flex-wrap gap-1 items-center text-white bg-blue-500 border px-3 py-1.5 rounded-md"
+                                    >
+                                        <Icons.FaUndo />
+                                        <span className="font-medium">Retur</span>
+                                    </button>
+                                </div>
 
+                                <div>
+                                    <button
+                                        onClick={() => {
+                                            showdeleteModal(order.id_pesanan, index)
+                                        }}
+                                        className="flex flex-wrap gap-1 items-center text-white bg-red-500 border px-3 py-1.5 rounded-md"
+                                    >
+                                        <Icons.FaTimesCircle />
+                                        <span className="font-medium">Refund</span>
+                                    </button>
+                                </div>
+
+                                <div>
+                                    <button
+                                        onClick={() => {
+                                            showdeleteModal(order.id_pesanan, index)
+                                        }}
+                                        className="flex flex-wrap gap-1 items-center text-white bg-green-500 border px-3 py-1.5 rounded-md"
+                                    >
+                                        <Icons.FaCheckCircle />
+                                        <span className="font-medium">Selesai</span>
+                                    </button>
+                                </div>
+
+                            </div> */}
                         </div>
 
-                        <div className="flex flex-wrap justify-end gap-3 p-4 border-t">
-                            <button
-                                onClick={() => {
-                                    showdeleteModal(order.id_pesanan, index)
-                                }}
-                                className="bg-white border-2 border-blue-400 h-auto rounded-lg py-1.5 px-3 grid grid-flow-row">
-                                <span className="text-blue-500 text-sm font-medium">Selesaikan Pesanan</span>
-                            </button>
+                        <div className="flex flex-wrap w-full h-auto border-t py-4 px-7 items-center justify-end">
+                            <div className="text-xs flex flex-wrap gap-2">
+                                <div>
+                                    <button
+                                        onClick={() => {
+                                            showdeleteModal(order.id_pesanan, index)
+                                        }}
+                                        className="flex flex-wrap gap-1 items-center text-white bg-blue-500 border px-3 py-1.5 rounded-md"
+                                    >
+                                        <Icons.FaUndo />
+                                        <span className="font-medium">Retur</span>
+                                    </button>
+                                </div>
+
+                                <div>
+                                    <button
+                                        onClick={() => {
+                                            showdeleteModal(order.id_pesanan, index)
+                                        }}
+                                        className="flex flex-wrap gap-1 items-center text-white bg-red-500 border px-3 py-1.5 rounded-md"
+                                    >
+                                        <Icons.FaTimesCircle />
+                                        <span className="font-medium">Refund</span>
+                                    </button>
+                                </div>
+
+                                <div>
+                                    <button
+                                        onClick={() => {
+                                            showdeleteModal(order.id_pesanan, index)
+                                        }}
+                                        className="flex flex-wrap gap-1 items-center text-white bg-green-500 border px-3 py-1.5 rounded-md"
+                                    >
+                                        <Icons.FaCheckCircle />
+                                        <span className="font-medium">Selesai</span>
+                                    </button>
+                                </div>
+
+                            </div>
                         </div>
 
                     </div>
@@ -113,19 +181,6 @@ export default function Shipping() {
         })
     }
 
-
-    const CustomMaterialPagination = ({ rowsPerPage, rowCount, onChangePage, onChangeRowsPerPage, currentPage }: any) => (
-        <div className="bg-white border-t px-3 py-2 flex flex-wrap justify-start h-14 items-center">
-            <div className="grow">
-                Menampilkan {String(currentPage)}-{String(Math.ceil(rowCount / 10))} dari {String(rowCount)} items
-            </div>
-
-            <div className="grid grid-cols-2 gap-2">
-                <button className="bg-white border rounded-lg border-gray-300 p-2 text-sm font-normal" onClick={({ }) => onChangePage(currentPage === 1 ? currentPage : currentPage - 1)}>Back</button>
-                <button className="bg-white border rounded-lg border-gray-300 p-2 text-sm font-normal" onClick={({ }) => onChangePage(currentPage + 1)}>Next</button>
-            </div>
-        </div>
-    );
 
     const [updateorder, setupdateorder] = React.useState(false);
     const [id_pesanan, setid_pesanan] = React.useState(null);
@@ -136,7 +191,7 @@ export default function Shipping() {
     }
 
     async function updateOrder() {
-        await axios.post(`https://api.inovasimediakreatif.site/selesai/${id_pesanan}`)
+        await axios.post(`https://api.hokkiscasual.com/selesai/${id_pesanan}`)
             .then(function (response) {
                 // console.log(response.data);
                 mutate();
@@ -152,8 +207,8 @@ export default function Shipping() {
     }
 
     return (
-        <div>
-            <div className="font-bold text-3xl border-b border-[#2125291A] h-16 mb-7">Order Dikirim</div>
+        <div className="p-5">
+            <div className="font-bold text-3xl border-b border-[#2125291A] h-16 mb-7">Orders</div>
 
             <div className="flex flex-wrap items-center content-center">
                 <div className="shadow rounded-lg w-auto flex flex-row text-center content-center">
@@ -173,7 +228,7 @@ export default function Shipping() {
                     </button>
                 </div>
 
-                <div className="shadow rounded-lg ml-auto w-[290px] flex flex-row items-center justify-end">
+                <div className="shadow rounded-lg ml-auto w-[290px] flex flex-row items-center justify-end bg-white">
                     <Flatpickr
                         className="text-gray-500 h-[50px] text-start py-2 px-4 w-full rounded-lg focus:outline-none"
                         // value={date}
@@ -193,7 +248,7 @@ export default function Shipping() {
                         }}
                     />
 
-                    <i className="fi fi-rr-calendar w-[1.12rem] h-[1.12rem] text-center text-gray-500 text-[1.12rem] leading-4 absolute mr-4"></i>
+                    <i className="fi fi-rr-calendar w-[1.12rem] h-[1.12rem] text-center text-gray-500 text-[1.12rem] leading-4  mr-4"></i>
                 </div>
 
                 <Link href='/order/add_order'>
@@ -206,31 +261,31 @@ export default function Shipping() {
                 </Link>
             </div>
 
-            <div className="font-medium text-black py-4">
+            <div className="font-medium text-black text-sm py-3 pl-1">
                 <span>{list_order.length} order ditampilkan</span>
             </div>
 
-            <table className="table bg-transparent h-px mb-4 text-sm w-full">
-                <thead className="bg-white text-gray-800">
+            {/* <table className="table table-fixed bg-transparent h-px mb-4 text-sm w-full">
+                <thead className="bg-white text-gray-500">
                     <tr className="rounded-lg">
                         <th className="pl-2 py-3 rounded-l-lg w-[5%] text-start">
                             <span className="ml-3">No.</span>
                         </th>
-                        <th className="pl-2 py-3 w-[35%] text-start">
-                            Produk
+                        <th className="py-3 text-start rounded-l-lg">
+                            <span className="ml-5">Produk</span>
                         </th>
-                        <th className="py-3 w-[20%] text-start">
+                        <th className="py-3 ">
                             Total Pembayaran
                         </th>
-                        <th className="py-3 w-[20%] text-start">
+                        <th className="py-3 ">
                             Status
                         </th>
-                        <th className="py-3 w-[20%] rounded-r-lg text-start">
-                            Catatan
+                        <th className="py-3 rounded-r-lg">
+                            <span className="mr-7">Aksi</span>
                         </th>
                     </tr>
                 </thead>
-            </table>
+            </table> */}
 
             <div className="grid grid-cols-1 gap-4 w-full h-auto pb-10">
                 {list_order}

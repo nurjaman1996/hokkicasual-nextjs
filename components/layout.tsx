@@ -152,7 +152,7 @@ const Layout = (props: PropsWithChildren) => {
                     <div className="h-full bg-[#F4F4F4] pt-5 px-4 ">
                     </div>
 
-                    <main className={`${toggleViewMode ? "px-0" : "px-32"} h-full bg-[#F4F4F4] duration-200`}>
+                    <main className={`${toggleViewMode ? "px-0" : "px-32"} h-full bg-[#F4F4F4] duration-200 overscroll-y-auto overflow-x-hidden scrollbar-none`}>
                         {props.children}
                     </main>
                 </div>

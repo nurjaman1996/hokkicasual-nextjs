@@ -32,7 +32,7 @@ export default function AddOrder() {
     const [dataProduct, setData] = useState([]);
     const [showModal, setShowModal] = React.useState(false);
 
-    const { data, error, isLoading } = useSWR(`https://api.inovasimediakreatif.site/getstore`, fetcher);
+    const { data, error, isLoading } = useSWR(`https://api.hokkiscasual.com/getstore`, fetcher);
 
     let list_store: any = [];
 
@@ -51,13 +51,13 @@ export default function AddOrder() {
             setLoadData('standby');
         } else {
             setLoadData('searching');
-            await axios.get(`https://api.inovasimediakreatif.site/products_sales/${event.target.value}`).then(function (response) {
+            await axios.get(`https://api.hokkiscasual.com/products_sales/${event.target.value}`).then(function (response) {
                 // console.log(response.data);
                 const newDataProduct = response.data;
                 setData(newDataProduct.product);
                 setLoadData('showing');
             });
-            // const req = await fetch(`https://api.inovasimediakreatif.site/products/${event.target.value}`,
+            // const req = await fetch(`https://api.hokkiscasual.com/products/${event.target.value}`,
             //     {
             //         method: 'GET',
             //         headers: {
@@ -300,7 +300,7 @@ export default function AddOrder() {
 
 
     async function saveSales() {
-        let res = await fetch("https://api.inovasimediakreatif.site/saveSales", {
+        let res = await fetch("https://api.hokkiscasual.com/saveSales", {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

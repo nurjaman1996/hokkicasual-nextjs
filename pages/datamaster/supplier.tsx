@@ -42,7 +42,7 @@ export default function Warehouse() {
 
     const list_supplier: any = [];
 
-    const { data, error, isLoading, mutate } = useSWR(`https://api.inovasimediakreatif.site/getsupplier`, fetcher);
+    const { data, error, isLoading, mutate } = useSWR(`https://api.hokkiscasual.com/getsupplier`, fetcher);
 
     const { register, resetField, setValue, handleSubmit, watch, formState: { errors } } = useForm({
         defaultValues: {
@@ -60,7 +60,7 @@ export default function Warehouse() {
     const [id, setid] = React.useState(null);
 
     const onSubmit = async (data: any) => {
-        await axios.post("https://api.inovasimediakreatif.site/savesupplier", {
+        await axios.post("https://api.hokkiscasual.com/savesupplier", {
             data: data,
         }).then(function (response) {
             // console.log(response.data);
@@ -86,7 +86,7 @@ export default function Warehouse() {
     }
 
     const onSubmitUpdate = async (data: any) => {
-        await axios.post(`https://api.inovasimediakreatif.site/editsupplier/${id}`, {
+        await axios.post(`https://api.hokkiscasual.com/editsupplier/${id}`, {
             data: data,
         }).then(function (response) {
             // console.log(response.data);
@@ -109,7 +109,7 @@ export default function Warehouse() {
     }
 
     async function deleteData() {
-        await axios.post(`https://api.inovasimediakreatif.site/deletesupplier/${id}`)
+        await axios.post(`https://api.hokkiscasual.com/deletesupplier/${id}`)
             .then(function (response) {
                 // console.log(response.data);
                 mutate();

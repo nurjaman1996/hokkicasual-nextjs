@@ -20,7 +20,7 @@ const fetcher = (url: string) => fetch(url).then(res => res.json());
 export default function Area() {
     const [date, setDate] = useState(format(new Date(), "dd/MM/yyyy"));
 
-    const { data, error, isLoading, mutate } = useSWR(`https://api.inovasimediakreatif.site/getarea`, fetcher);
+    const { data, error, isLoading, mutate } = useSWR(`https://api.hokkiscasual.com/getarea`, fetcher);
 
     const { register, resetField, setValue, handleSubmit, watch, formState: { errors } } = useForm({
         defaultValues: {
@@ -34,7 +34,7 @@ export default function Area() {
     });
 
     const onSubmit = async (data: any) => {
-        await axios.post("https://api.inovasimediakreatif.site/savearea", {
+        await axios.post("https://api.hokkiscasual.com/savearea", {
             data: data,
         }).then(function (response) {
             // console.log(response.data);
@@ -64,7 +64,7 @@ export default function Area() {
     }
 
     const onSubmitUpdate = async (data: any) => {
-        await axios.post(`https://api.inovasimediakreatif.site/editarea/${id}`, {
+        await axios.post(`https://api.hokkiscasual.com/editarea/${id}`, {
             data: data,
         }).then(function (response) {
             // console.log(response.data);
@@ -174,7 +174,7 @@ export default function Area() {
     }
 
     async function deleteData() {
-        await axios.post(`https://api.inovasimediakreatif.site/deletearea/${id}`)
+        await axios.post(`https://api.hokkiscasual.com/deletearea/${id}`)
             .then(function (response) {
                 // console.log(response.data);
                 mutate();

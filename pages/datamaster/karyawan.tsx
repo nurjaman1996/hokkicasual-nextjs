@@ -66,9 +66,9 @@ export default function DaftarProduk() {
         </div>
     );
 
-    const { data, error, isLoading, mutate } = useSWR(`https://api.inovasimediakreatif.site/getkaryawan`, fetcher);
+    const { data, error, isLoading, mutate } = useSWR(`https://api.hokkiscasual.com/getkaryawan`, fetcher);
 
-    const { data: store_data, error: store_error, isLoading: store_isLoading, mutate: store_mutate } = useSWR(`https://api.inovasimediakreatif.site/getstore`, fetcher);
+    const { data: store_data, error: store_error, isLoading: store_isLoading, mutate: store_mutate } = useSWR(`https://api.hokkiscasual.com/getstore`, fetcher);
 
     const list_store: any = [];
 
@@ -153,7 +153,7 @@ export default function DaftarProduk() {
     const [Deskripsi, setDeskripsi] = React.useState(null);
 
     const onSubmit = async (data: any) => {
-        await axios.post("https://api.inovasimediakreatif.site/savekaryawan", data).then(function (response) {
+        await axios.post("https://api.hokkiscasual.com/savekaryawan", data).then(function (response) {
             console.log(response.data);
             mutate();
         });
@@ -185,7 +185,7 @@ export default function DaftarProduk() {
     }
 
     const onSubmitUpdate = async (data: any) => {
-        await axios.post(`https://api.inovasimediakreatif.site/editkaryawan/${id}`, data).then(function (response) {
+        await axios.post(`https://api.hokkiscasual.com/editkaryawan/${id}`, data).then(function (response) {
             console.log(response.data);
             mutate();
         });
@@ -206,7 +206,7 @@ export default function DaftarProduk() {
     }
 
     async function deleteData() {
-        await axios.post(`https://api.inovasimediakreatif.site/deletekaryawan/${id}`)
+        await axios.post(`https://api.hokkiscasual.com/deletekaryawan/${id}`)
             .then(function (response) {
                 // console.log(response.data);
                 mutate();

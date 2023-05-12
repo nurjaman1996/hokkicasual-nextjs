@@ -21,9 +21,9 @@ export default function NotaBarang() {
 
     const [Query, setQuery] = useState("all");
 
-    const { data, error, isLoading, mutate } = useSWR(`https://api.inovasimediakreatif.site/notabarang/${Query}`, fetcher);
+    const { data, error, isLoading, mutate } = useSWR(`https://api.hokkiscasual.com/notabarang/${Query}`, fetcher);
 
-    const { data: brand_data, error: brand_error, isLoading: brand_isLoading, mutate: brand_mutate } = useSWR(`https://api.inovasimediakreatif.site/getbrand`, fetcher);
+    const { data: brand_data, error: brand_error, isLoading: brand_isLoading, mutate: brand_mutate } = useSWR(`https://api.hokkiscasual.com/getbrand`, fetcher);
 
     const list_brand: any = [];
 
@@ -35,7 +35,7 @@ export default function NotaBarang() {
         })
     }
 
-    const { data: category_data, error: category_error, isLoading: category_isLoading, mutate: category_mutate } = useSWR(`https://api.inovasimediakreatif.site/getcategory`, fetcher);
+    const { data: category_data, error: category_error, isLoading: category_isLoading, mutate: category_mutate } = useSWR(`https://api.hokkiscasual.com/getcategory`, fetcher);
 
     const list_category: any = [];
 
@@ -47,7 +47,7 @@ export default function NotaBarang() {
         })
     }
 
-    const { data: supplier_data, error: supplier_error, isLoading: supplier_isLoading, mutate: supplier_mutate } = useSWR(`https://api.inovasimediakreatif.site/getsupplier`, fetcher);
+    const { data: supplier_data, error: supplier_error, isLoading: supplier_isLoading, mutate: supplier_mutate } = useSWR(`https://api.hokkiscasual.com/getsupplier`, fetcher);
 
     const list_supplier: any = [];
 
@@ -59,7 +59,7 @@ export default function NotaBarang() {
         })
     }
 
-    const { data: warehouse_data, error: warehouse_error, isLoading: warehouse_isLoading, mutate: warehouse_mutate } = useSWR(`https://api.inovasimediakreatif.site/getwarehouse`, fetcher);
+    const { data: warehouse_data, error: warehouse_error, isLoading: warehouse_isLoading, mutate: warehouse_mutate } = useSWR(`https://api.hokkiscasual.com/getwarehouse`, fetcher);
 
     const list_warehouse: any = [];
 
@@ -92,7 +92,7 @@ export default function NotaBarang() {
     const [editModal, seteditModal] = React.useState(false);
 
     const onSubmit = async (data: any) => {
-        await axios.post("https://api.inovasimediakreatif.site/savenota", {
+        await axios.post("https://api.hokkiscasual.com/savenota", {
             data: data
         }).then(function (response) {
             // console.log(response.data);

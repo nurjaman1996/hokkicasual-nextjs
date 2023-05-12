@@ -54,7 +54,7 @@ export default function Expense() {
 
   const list_expense: any = [];
 
-  const { data, error, isLoading, mutate } = useSWR(`https://api.inovasimediakreatif.site/getexpense`, fetcher);
+  const { data, error, isLoading, mutate } = useSWR(`https://api.hokkiscasual.com/getexpense`, fetcher);
 
   const { register, resetField, setValue, handleSubmit, watch, formState: { errors } } = useForm({
     defaultValues: {
@@ -76,7 +76,7 @@ export default function Expense() {
   const [id, setid] = React.useState(null);
 
   const onSubmit = async (data: any) => {
-    await axios.post("https://api.inovasimediakreatif.site/saveexpense", {
+    await axios.post("https://api.hokkiscasual.com/saveexpense", {
       data: data,
       tanggal: date
     }).then(function (response) {
@@ -107,7 +107,7 @@ export default function Expense() {
   }
 
   const onSubmitUpdate = async (data: any) => {
-    await axios.post(`https://api.inovasimediakreatif.site/editexpense/${id}`, {
+    await axios.post(`https://api.hokkiscasual.com/editexpense/${id}`, {
       data: data,
       tanggal: date
     }).then(function (response) {
@@ -131,7 +131,7 @@ export default function Expense() {
   }
 
   async function deleteData() {
-    await axios.post(`https://api.inovasimediakreatif.site/deleteexpense/${id}`)
+    await axios.post(`https://api.hokkiscasual.com/deleteexpense/${id}`)
       .then(function (response) {
         // console.log(response.data);
         mutate();

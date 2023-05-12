@@ -48,9 +48,9 @@ export default function Store() {
 
     ];
 
-    const { data, error, isLoading, mutate } = useSWR(`https://api.inovasimediakreatif.site/getstore`, fetcher);
+    const { data, error, isLoading, mutate } = useSWR(`https://api.hokkiscasual.com/getstore`, fetcher);
 
-    const { data: area_data, error: area_error, isLoading: area_isLoading, mutate: area_mutate } = useSWR(`https://api.inovasimediakreatif.site/getarea`, fetcher);
+    const { data: area_data, error: area_error, isLoading: area_isLoading, mutate: area_mutate } = useSWR(`https://api.hokkiscasual.com/getarea`, fetcher);
 
     const list_area: any = [];
 
@@ -75,7 +75,7 @@ export default function Store() {
     });
 
     const onSubmit = async (data: any) => {
-        await axios.post("https://api.inovasimediakreatif.site/savestore", {
+        await axios.post("https://api.hokkiscasual.com/savestore", {
             data: data,
         }).then(function (response) {
             // console.log(response.data);
@@ -109,7 +109,7 @@ export default function Store() {
     }
 
     const onSubmitUpdate = async (data: any) => {
-        await axios.post(`https://api.inovasimediakreatif.site/editstore/${id}`, {
+        await axios.post(`https://api.hokkiscasual.com/editstore/${id}`, {
             data: data,
         }).then(function (response) {
             console.log(response.data);
@@ -139,7 +139,7 @@ export default function Store() {
     }
 
     async function deleteData() {
-        await axios.post(`https://api.inovasimediakreatif.site/deletestore/${id}`)
+        await axios.post(`https://api.hokkiscasual.com/deletestore/${id}`)
             .then(function (response) {
                 console.log(response.data);
                 mutate();

@@ -43,7 +43,7 @@ export default function Brand() {
 
     const list_brand: any = [];
 
-    const { data, error, isLoading, mutate } = useSWR(`https://api.inovasimediakreatif.site/getbrand`, fetcher);
+    const { data, error, isLoading, mutate } = useSWR(`https://api.hokkiscasual.com/getbrand`, fetcher);
 
     const { register, resetField, setValue, handleSubmit, watch, formState: { errors } } = useForm({
         defaultValues: {
@@ -60,7 +60,7 @@ export default function Brand() {
     const [id, setid] = React.useState(null);
 
     const onSubmit = async (data: any) => {
-        await axios.post("https://api.inovasimediakreatif.site/savebrand", {
+        await axios.post("https://api.hokkiscasual.com/savebrand", {
             data: data,
         }).then(function (response) {
             // console.log(response.data);
@@ -84,7 +84,7 @@ export default function Brand() {
     }
 
     const onSubmitUpdate = async (data: any) => {
-        await axios.post(`https://api.inovasimediakreatif.site/editbrand/${id}`, {
+        await axios.post(`https://api.hokkiscasual.com/editbrand/${id}`, {
             data: data,
         }).then(function (response) {
             console.log(response.data);
@@ -107,7 +107,7 @@ export default function Brand() {
     }
 
     async function deleteData() {
-        await axios.post(`https://api.inovasimediakreatif.site/deletebrand/${id}`)
+        await axios.post(`https://api.hokkiscasual.com/deletebrand/${id}`)
             .then(function (response) {
                 // console.log(response.data);
                 mutate();

@@ -20,9 +20,9 @@ const fetcher = (url: string) => fetch(url).then(res => res.json());
 export default function Warehouse() {
     const [date, setDate] = useState(format(new Date(), "dd/MM/yyyy"));
 
-    const { data, error, isLoading, mutate } = useSWR(`https://api.inovasimediakreatif.site/getwarehouse`, fetcher);
+    const { data, error, isLoading, mutate } = useSWR(`https://api.hokkiscasual.com/getwarehouse`, fetcher);
 
-    const { data: area_data, error: area_error, isLoading: area_isLoading, mutate: area_mutate } = useSWR(`https://api.inovasimediakreatif.site/getarea`, fetcher);
+    const { data: area_data, error: area_error, isLoading: area_isLoading, mutate: area_mutate } = useSWR(`https://api.hokkiscasual.com/getarea`, fetcher);
 
     const list_area: any = [];
 
@@ -47,7 +47,7 @@ export default function Warehouse() {
     });
 
     const onSubmit = async (data: any) => {
-        await axios.post("https://api.inovasimediakreatif.site/savewarehouse", {
+        await axios.post("https://api.hokkiscasual.com/savewarehouse", {
             data: data,
         }).then(function (response) {
             // console.log(response.data);
@@ -77,7 +77,7 @@ export default function Warehouse() {
     }
 
     const onSubmitUpdate = async (data: any) => {
-        await axios.post(`https://api.inovasimediakreatif.site/editwarehouse/${id}`, {
+        await axios.post(`https://api.hokkiscasual.com/editwarehouse/${id}`, {
             data: data,
         }).then(function (response) {
             console.log(response.data);
@@ -106,7 +106,7 @@ export default function Warehouse() {
     }
 
     async function deleteData() {
-        await axios.post(`https://api.inovasimediakreatif.site/deletewarehouse/${id}`)
+        await axios.post(`https://api.hokkiscasual.com/deletewarehouse/${id}`)
             .then(function (response) {
                 console.log(response.data);
                 mutate();

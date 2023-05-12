@@ -36,7 +36,7 @@ export default function Category() {
 
     ];
 
-    const { data, error, isLoading, mutate } = useSWR(`https://api.inovasimediakreatif.site/getcategory`, fetcher);
+    const { data, error, isLoading, mutate } = useSWR(`https://api.hokkiscasual.com/getcategory`, fetcher);
 
     const { register, resetField, setValue, handleSubmit, watch, formState: { errors } } = useForm({
         defaultValues: {
@@ -52,7 +52,7 @@ export default function Category() {
     const [id, setid] = React.useState(null);
 
     const onSubmit = async (data: any) => {
-        await axios.post("https://api.inovasimediakreatif.site/savecategory", {
+        await axios.post("https://api.hokkiscasual.com/savecategory", {
             data: data,
         }).then(function (response) {
             // console.log(response.data);
@@ -76,7 +76,7 @@ export default function Category() {
     }
 
     const onSubmitUpdate = async (data: any) => {
-        await axios.post(`https://api.inovasimediakreatif.site/editcategory/${id}`, {
+        await axios.post(`https://api.hokkiscasual.com/editcategory/${id}`, {
             data: data,
         }).then(function (response) {
             // console.log(response.data);
@@ -99,7 +99,7 @@ export default function Category() {
     }
 
     async function deleteData() {
-        await axios.post(`https://api.inovasimediakreatif.site/deletecategory/${id}`)
+        await axios.post(`https://api.hokkiscasual.com/deletecategory/${id}`)
             .then(function (response) {
                 // console.log(response.data);
                 mutate();
