@@ -70,7 +70,7 @@ export default function AddProduk() {
 
     const [Count, setCount] = useState(1);
 
-    const { register, unregister, control, resetField, setValue, trigger, handleSubmit, watch, formState: { errors } } = useForm({
+    const { register, unregister, control, resetField, reset, setValue, trigger, handleSubmit, watch, formState: { errors } } = useForm({
         // defaultValues: {
         //     produk: '',
         //     brand: '',
@@ -93,81 +93,111 @@ export default function AddProduk() {
     const [tipevariasi, settipevariasi] = useState("");
 
     function ubahtipevariasi(e: any) {
-        unregister('variasi');
         settipevariasi(e.target.value)
-    }
 
-    let list_variasi2: any = [];
-    {
-        for (let index = 0; index < 11; index++) {
-            list_variasi2.push(
-                <tr key={index} className="rounded-lg h-auto mt-7">
-                    <td className="p-0">
-                        <div className="h-[30px] flex flex-wrap justify-center items-center rounded-l-lg">
-                            <input {...register(`variasi.${index}.size`, { required: false })} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="text" placeholder="Size"
-                            />
-                        </div>
-                    </td>
-                    <td className="p-0">
-                        <div className="h-[30px] flex flex-wrap justify-center items-center rounded-l-lg">
-                            <input defaultValue={0} {...register(`variasi.${index}.stok`, { required: false })} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="number" placeholder="Size"
-                            />
-                        </div>
-                    </td>
-                    {/* <td className="p-0">
-                        {(function () {
-                            if (index < 1) {
-                                return (
-                                    <button onClick={() => {
-                                        append({ size: "", stok: 0 });
-                                        setCount(Count + 1);
-                                    }}
-                                        type="button" className="mx-2 m-auto border-none rounded-lg bg-blue-600 hover:bg-blue-800 h-[45px] text-white px-4 flex flex-wrap gap-2 content-center">
-                                        <div className="my-auto">
-                                            <fa.FaPlus size={13} className="text-white" />
-                                        </div>
-                                    </button>
-                                )
-                            } else {
-                                return (
-                                    <button
-                                        // onClick={() => { setCount(Count - 1) }}
-                                        onClick={() => {
-                                            remove(index)
-                                            setCount(Count - 1);
-                                        }}
-                                        type="button" className="mx-2 m-auto border-none rounded-lg bg-red-600 hover:bg-red-800 h-[45px] text-white px-4 flex flex-wrap gap-2 content-center">
-                                        <div className="my-auto">
-                                            <fa.FaMinus size={13} className="text-white" />
-                                        </div>
-                                    </button>
-                                )
-                            }
-                        })()}
-                    </td> */}
-                </tr >
-            )
+        if (e.target.value === "sneakers35-45") {
+
+            unregister('variasi');
+            reset({
+                variasi: [
+                    {
+                        size: '35',
+                        stok: 0
+                    },
+                    {
+                        size: '36',
+                        stok: 0
+                    },
+                    {
+                        size: '37',
+                        stok: 0
+                    },
+                    {
+                        size: '38',
+                        stok: 0
+                    },
+                    {
+                        size: '39',
+                        stok: 0
+                    },
+                    {
+                        size: '40',
+                        stok: 0
+                    },
+                    {
+                        size: '41',
+                        stok: 0
+                    },
+                    {
+                        size: '42',
+                        stok: 0
+                    },
+                    {
+                        size: '43',
+                        stok: 0
+                    },
+                    {
+                        size: '44',
+                        stok: 0
+                    },
+                    {
+                        size: '45',
+                        stok: 0
+                    },
+                ]
+            });
+        } else {
+            setCount(1);
+            unregister('variasi');
+            reset({
+                variasi: [
+                    {
+                        size: "",
+                        stok: 0
+                    }
+                ]
+            });
         }
     }
 
     let list_variasi: any = [];
-    {
+
+    if (tipevariasi === "sneakers35-45") {
+        for (let index = 0; index < 11; index++) {
+            list_variasi.push(
+                <tr key={index} className="rounded-lg h-auto mt-7">
+                    <td className="pt-2">
+                        <div className="h-[30px] flex flex-wrap justify-center items-center rounded-l-lg">
+                            <input readOnly defaultValue={35 + index} {...register(`variasi.${index}.size`, { required: true })} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="text" placeholder="Size"
+                            />
+                        </div>
+                    </td>
+                    <td className="pt-2">
+                        <div className="h-[30px] flex flex-wrap justify-center items-center rounded-l-lg">
+                            <input defaultValue={0} {...register(`variasi.${index}.stok`, { required: true })} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="number" placeholder="Size"
+                            />
+                        </div>
+                    </td>
+                </tr >
+            )
+        }
+    } else if (tipevariasi === "custom") {
         for (let index = 0; index < Count; index++) {
             list_variasi.push(
                 <tr key={index} className="rounded-lg h-auto mt-7">
-                    <td className="pt-4 p-0">
-                        <div className="h-[46px] flex flex-wrap justify-center items-center rounded-l-lg">
-                            <input {...register(`variasi.${index}.size`, { required: false })} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="text" placeholder="Size"
+                    <td className="pt-2 p-0">
+                        <div className="h-[30px] flex flex-wrap justify-center items-center rounded-l-lg">
+                            <input {...register(`variasi.${index}.size`, { required: true })} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="text" placeholder="Size"
                             />
                         </div>
                     </td>
-                    <td className="pt-4 p-0">
-                        <div className="h-[46px] flex flex-wrap justify-center items-center rounded-l-lg">
-                            <input defaultValue={0} {...register(`variasi.${index}.stok`, { required: false })} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="number" placeholder="Size"
+                    <td className="pt-2 p-0">
+                        <div className="h-[30px] flex flex-wrap justify-center items-center rounded-l-lg">
+                            <input defaultValue={0} {...register(`variasi.${index}.stok`, { required: true })} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="number" placeholder="Size"
                             />
                         </div>
                     </td>
-                    <td className="pt-4 p-0">
+                    <td className="pt-2 p-0">
                         {(function () {
                             if (index < 1) {
                                 return (
@@ -175,7 +205,7 @@ export default function AddProduk() {
                                         append({ size: "", stok: 0 });
                                         setCount(Count + 1);
                                     }}
-                                        type="button" className="mx-2 m-auto border-none rounded-lg bg-blue-600 hover:bg-blue-800 h-[45px] text-white px-4 flex flex-wrap gap-2 content-center">
+                                        type="button" className="mx-2 m-auto border-none rounded-lg bg-blue-600 hover:bg-blue-800 h-[30px] text-white px-4 flex flex-wrap gap-2 content-center">
                                         <div className="my-auto">
                                             <fa.FaPlus size={13} className="text-white" />
                                         </div>
@@ -189,7 +219,7 @@ export default function AddProduk() {
                                             remove(index)
                                             setCount(Count - 1);
                                         }}
-                                        type="button" className="mx-2 m-auto border-none rounded-lg bg-red-600 hover:bg-red-800 h-[45px] text-white px-4 flex flex-wrap gap-2 content-center">
+                                        type="button" className="mx-2 m-auto border-none rounded-lg bg-red-600 hover:bg-red-800 h-[30px] text-white px-4 flex flex-wrap gap-2 content-center">
                                         <div className="my-auto">
                                             <fa.FaMinus size={13} className="text-white" />
                                         </div>
@@ -206,21 +236,34 @@ export default function AddProduk() {
     const [selectedImage, setSelectedImage] = useState(null);
 
     const onSubmit = async (data: any) => {
-        await axios.post("https://api.hokkiscasual.com/saveproduk", {
-            data: data,
-            image: !selectedImage ? null : selectedImage,
-        }, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-        }).then(function (response) {
-            toast.success("Data telah disimpan", {
+        var qty_all = 0;
+        for (let index = 0; index < data.variasi.length; index++) {
+            qty_all = qty_all + parseInt(data.variasi[index].stok);
+        }
+
+        if (qty_all < 1) {
+            toast.warning("Jumlah Total Quantity Tidak Boleh Kosong", {
                 position: toast.POSITION.TOP_RIGHT,
                 pauseOnHover: false,
                 autoClose: 2000,
-                onClose: () => router.back(),
             });
-        });
+        } else {
+            await axios.post("https://api.hokkiscasual.com/saveproduk", {
+                data: data,
+                image: !selectedImage ? null : selectedImage,
+            }, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            }).then(function (response) {
+                toast.success("Data telah disimpan", {
+                    position: toast.POSITION.TOP_RIGHT,
+                    pauseOnHover: false,
+                    autoClose: 2000,
+                    onClose: () => router.back(),
+                });
+            });
+        }
     };
 
     const inputRef = useRef(null);
@@ -262,7 +305,7 @@ export default function AddProduk() {
                     <span className="font-bold text-lg">Informasi Produk</span>
 
                     <div className="flex flex-1 gap-5">
-                        <div className="flex items-center justify-center w-[25%]">
+                        <div className="flex pt-8 items-start justify-center w-[25%]">
                             <input
                                 className="absolute w-0 opacity-0"
                                 accept="image/*"
@@ -282,7 +325,7 @@ export default function AddProduk() {
                                 </div>
                             ) : (
                                 <div
-                                    className="aspect-square m-auto w-[20rem] h-[20rem] border rounded-lg cursor-pointer"
+                                    className="aspect-square w-[20rem] h-[20rem] border rounded-lg cursor-pointer"
                                     onClick={handleClick}
                                 >
                                     <fa.FaPlus size={13} className="m-auto h-full" color="grey" />
@@ -296,49 +339,44 @@ export default function AddProduk() {
                                     <div>
                                         <div className="mb-3">Nama Produk</div>
                                         <input
-                                            className={`border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
+                                            className={`${errors.produk ? "border-red-400" : ""} border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
                                             type="text"
                                             placeholder="Masukan Produk"
-                                            {...register("produk", { required: false })}
+                                            {...register("produk", { required: true })}
                                         />
+                                        {/* {errors.produk && <div className="mt-1 text-sm italic">This field is required</div>} */}
                                     </div>
                                     <div>
                                         <div className="mb-3">Harga Beli</div>
                                         <input
-                                            className={`border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
+                                            className={`${errors.harga_beli ? "border-red-400" : ""} border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
                                             type="number"
                                             placeholder="Masukan Harga Beli"
-                                            {...register("harga_beli", { required: false })}
+                                            {...register("harga_beli", { required: true })}
                                         />
                                     </div>
 
                                     <div>
                                         <div className="mb-3">Brand</div>
-                                        <select {...register("brand", { required: false })} className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
+                                        <select {...register("brand", { required: true })}
+                                            className={`${errors.brand ? "border-red-400" : ""} appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
                                             <option value="">Pilih Brand</option>
                                             {list_brand}
                                         </select>
                                     </div>
-                                    {/* <div>
-                                        <div className="mb-3">Harga Jual</div>
-                                        <input
-                                            className={`border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
-                                            type="number"
-                                            placeholder="Masukan Harga Jual"
-                                            {...register("harga_jual", { required: false })}
-                                        />
-                                    </div> */}
 
                                     <div>
                                         <div className="mb-3">Warehouse</div>
-                                        <select {...register("warehouse", { required: false })} className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
+                                        <select {...register("warehouse", { required: true })}
+                                            className={`${errors.warehouse ? "border-red-400" : ""} appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
                                             <option value="">Pilih Warehouse</option>
                                             {list_warehouse}
                                         </select>
                                     </div>
                                     <div>
                                         <div className="mb-3">Quality</div>
-                                        <select {...register("quality", { required: false })} className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
+                                        <select {...register("quality", { required: true })}
+                                            className={`${errors.quality ? "border-red-400" : ""} appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
                                             <option value="">Pilih Quality</option>
                                             <option value="IMPORT">IMPORT</option>
                                             <option value="LOKAL">LOKAL</option>
@@ -348,7 +386,8 @@ export default function AddProduk() {
 
                                     <div>
                                         <div className="mb-3">Supplier</div>
-                                        <select {...register("supplier", { required: false })} className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
+                                        <select {...register("supplier", { required: true })}
+                                            className={`${errors.supplier ? "border-red-400" : ""} appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
                                             <option value="">Pilih Supplier</option>
                                             {list_supplier}
                                         </select>
@@ -356,9 +395,23 @@ export default function AddProduk() {
 
                                     <div>
                                         <div className="mb-3">Kategori</div>
-                                        <select {...register("kategori", { required: false })} className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
+                                        <select {...register("kategori", { required: true })}
+                                            className={`${errors.kategori ? "border-red-400" : ""} appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
                                             <option value="">Pilih Kategori</option>
                                             {list_category}
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <div className="mb-3">Tipe Variasi</div>
+                                        <select
+                                            onChange={(e) => {
+                                                ubahtipevariasi(e)
+                                            }}
+                                            className={`appearance-none border h-[45px] w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
+                                            <option value="">Pilih Tipe Variasi</option>
+                                            <option value="sneakers35-45">Sneakers Unisex 35-45</option>
+                                            <option value="custom">Custom</option>
                                         </select>
                                     </div>
                                 </div>
@@ -367,18 +420,6 @@ export default function AddProduk() {
 
                         <div className="flex text-sm flex-1 gap-5">
                             <div className="w-[400px]">
-                                <div className="mb-3">
-                                    <div className="mb-3">Tipe Variasi</div>
-                                    <select
-                                        onChange={(e) => {
-                                            ubahtipevariasi(e)
-                                        }}
-                                        className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
-                                        <option value="">Pilih Tipe Variasi</option>
-                                        <option value="sneakers35-45">Sneakers Unisex 35-45</option>
-                                        <option value="custom">Custom</option>
-                                    </select>
-                                </div>
 
                                 {(function () {
                                     if (tipevariasi === "custom") {
@@ -386,13 +427,13 @@ export default function AddProduk() {
                                             <table className="table table-auto bg-transparent text-sm w-full">
                                                 <thead className="bg-[#DDE4F0] text-gray-800">
                                                     <tr className="">
-                                                        <th className="py-3 rounded-l-lg">
+                                                        <th className="py-1 rounded-l-lg">
                                                             Size
                                                         </th>
-                                                        <th className="py-3">
+                                                        <th className="py-1">
                                                             Stok
                                                         </th>
-                                                        <th className="py-3 rounded-r-lg">
+                                                        <th className="py-1 rounded-r-lg">
                                                             Aksi
                                                         </th>
                                                     </tr>
@@ -407,31 +448,34 @@ export default function AddProduk() {
                                             <table className="table table-auto bg-transparent text-sm w-full">
                                                 <thead className="bg-[#DDE4F0] text-gray-800">
                                                     <tr className="">
-                                                        <th className="py-3 rounded-l-lg">
+                                                        <th className="py-1 rounded-l-lg">
                                                             Size
                                                         </th>
-                                                        <th className="py-3">
+                                                        <th className="py-1 rounded-r-lg">
                                                             Stok
-                                                        </th>
-                                                        <th className="py-3 rounded-r-lg">
-                                                            Aksi
                                                         </th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className="group rounded-lg">
-                                                    {list_variasi2}
+                                                    {list_variasi}
                                                 </tbody>
                                             </table>
                                         )
                                     }
                                 })()}
 
-
                             </div>
                         </div>
                     </div>
 
+                    <div className="pt-11 rounded-lg flex justify-end">
+                        <button onClick={handleSubmit(onSubmit)} className="cursor-pointer rounded-lg bg-blue-600 hover:bg-blue-800 h-[45px] text-white px-4 flex flex-wrap content-center">
+                            Simpan Produk
+                        </button>
+                    </div>
+
                 </div>
+
 
                 {/* <div className="bg-white p-8 pb-14 rounded-lg gap-3 mt-5">
                     <form onSubmit={handleSubmit(onSubmit)}>
@@ -460,17 +504,11 @@ export default function AddProduk() {
                             </div>
                             <div className="grow">
                                 <div className="text-base mb-3">Deskripsi</div>
-                                <textarea {...register("deskripsi", { required: false })} rows={5} className="resize-none bg-white h-[140px] rounded-lg w-full py-3 px-5 text-gray-700 focus:outline-none border text-base "></textarea>
+                                <textarea {...register("deskripsi", { required: true })} rows={5} className="resize-none bg-white h-[140px] rounded-lg w-full py-3 px-5 text-gray-700 focus:outline-none border text-base "></textarea>
                             </div>
                         </div>
                     </form>
                 </div> */}
-
-                <div className="py-5 rounded-lg flex justify-end">
-                    <button onClick={handleSubmit(onSubmit)} className="cursor-pointer rounded-lg bg-blue-600 hover:bg-blue-800 h-[45px] text-white px-4 flex flex-wrap gap-2 content-center">
-                        Simpan Produk
-                    </button>
-                </div>
 
             </div>
 
