@@ -125,6 +125,11 @@ const Items = [
         "href": "/expense",
         "text": "Expense",
         "icon_item": "fi fi-rr-label"
+    }, {
+        "title": "Assets",
+        "href": "/assets",
+        "text": "Assets",
+        "icon_item": "fi fi-rs-sack-dollar"
     },
     // {
     //     "title": "Report",
