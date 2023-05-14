@@ -31,7 +31,30 @@ export default function Shipping() {
 
     }
 
-    const { data, error, isLoading, mutate } = useSWR(`https://api.hokkiscasual.com/orders/0/10/SEDANG DIKIRIM/${Query}`, fetcher);
+    const [tabactive, settabactive] = React.useState("SEDANG DIKIRIM");
+    const [status_pesanan, setstatus_pesanan] = React.useState("SEDANG DIKIRIM");
+
+    // const [count_dikirim, setcount_dikirim] = React.useState(0);
+    // const [count_selesai, setcount_selesai] = React.useState(0);
+    // const [count_cancel, setcount_cancel] = React.useState(0);
+
+    function tabActive(select: any) {
+        settabactive(select);
+        setstatus_pesanan(select);
+    }
+
+    const { data, error, isLoading, mutate } = useSWR(`https://api.hokkiscasual.com/orders/0/10/${status_pesanan}/${Query}`, fetcher);
+
+
+    const { data: count_data, error: count_error, isLoading: count_isLoading, mutate: count_mutate } = useSWR(`https://api.hokkiscasual.com/get_count_pesanan`, fetcher);
+
+    if (!count_isLoading && !count_error) {
+        var count_dikirim = count_data.dikirim;
+        var count_selesai = count_data.selesai;
+        var count_cancel = count_data.cancel;
+    }
+
+
 
     const [date, setDate] = useState(format(new Date(), 'dd/MM/yyyy'));
     const [start, setStart] = useState(30);
@@ -74,11 +97,19 @@ export default function Shipping() {
                                                     <div className="flex flex-wrap gap-1">
                                                         <span className="font-medium line-clamp-1">{order.details_order[i - 1].produk}</span>
                                                     </div>
-                                                    <div>
-                                                        <button className="text-xs text-blue-500 font-bold">Tukar Size</button>
-                                                        <span> | </span>
-                                                        <button className="text-xs text-red-500 font-bold">Refund</button>
-                                                    </div>
+
+                                                    {(function () {
+                                                        if (tabactive != "CANCEL") {
+                                                            return (
+                                                                <div>
+                                                                    <button className="text-xs text-blue-500 font-bold">Tukar Size</button>
+                                                                    <span> | </span>
+                                                                    <button className="text-xs text-red-500 font-bold">Refund</button>
+                                                                </div>
+                                                            )
+                                                        }
+                                                    })()}
+
                                                     <div className="text-xs text-black">Variasi <span className="text-black font-medium">{order.details_order[i - 1].size}</span> | {order.details_order[i - 1].source}</div>
                                                     <span className="text-xs text-black">x{order.details_order[i - 1].qty}</span>
                                                 </div>
@@ -93,7 +124,13 @@ export default function Shipping() {
                             <div className="justify-center flex self-center">
                                 <div className="text-start flex flex-col">
                                     <span className="font-bold">Rp{order.total_amount}</span>
-                                    <span>{order.payment.length < 1 ? "Belum ada Pembayaran" : ""}</span>
+                                    {(function () {
+                                        if (tabactive != "CANCEL") {
+                                            return (
+                                                <span>{order.payment.length < 1 ? "Belum ada Pembayaran" : ""}</span>
+                                            )
+                                        }
+                                    })()}
                                 </div>
                             </div>
 
@@ -101,42 +138,54 @@ export default function Shipping() {
                                 <span className="font-bold">{order.status_pesanan}</span>
                             </div>
 
-                            <div className="justify-center text-xs flex flex-wrap gap-2 self-center">
-                                <div className="mt-1 flex flex-1 items-center justify-center border rounded-lg">
-                                    <select
-                                        className="appearance-none h-auto cursor-pointer w-[70%] bg-white py-2 pl-5 focus:outline-none text-sm" placeholder="Pilih Store">
-                                        <option value="">Update Pesanan</option>
-                                        <option value="">Selesai</option>
-                                        <option value="">Cancel</option>
-                                    </select>
-                                    <i className="fi fi-rr-angle-small-down w-[1.12rem] h-[1.12rem] text-center text-gray-500 text-[1.12rem] leading-4"></i>
-                                </div>
 
-                                {/* <div>
-                                    <button
-                                        onClick={() => {
-                                            showdeleteModal(order.id_pesanan, index)
-                                        }}
-                                        className="flex flex-wrap gap-1 items-center text-white bg-green-500 border px-3 py-1.5 rounded-md"
-                                    >
-                                        <Icons.FaCheckCircle />
-                                        <span className="font-medium">Selesai</span>
-                                    </button>
-                                </div>
+                            {(function () {
+                                if (tabactive === "SEDANG DIKIRIM") {
+                                    return (
+                                        <div className="justify-center text-xs flex flex-wrap gap-2 self-center">
+                                            <div>
+                                                <button
+                                                    onClick={() => {
+                                                        showSelesaimodal(order.id_pesanan, index)
+                                                    }}
+                                                    className="flex flex-wrap gap-1 items-center text-white bg-green-500 border px-3 py-1.5 rounded-md"
+                                                >
+                                                    <Icons.FaCheckCircle />
+                                                    <span className="font-medium">Selesai</span>
+                                                </button>
+                                            </div>
 
-                                <div>
-                                    <button
-                                        onClick={() => {
-                                            showdeleteModal(order.id_pesanan, index)
-                                        }}
-                                        className="flex flex-wrap gap-1 items-center text-white bg-red-500 border px-3 py-1.5 rounded-md"
-                                    >
-                                        <Icons.FaTimesCircle />
-                                        <span className="font-medium">Cancel</span>
-                                    </button>
-                                </div> */}
-
-                            </div>
+                                            <div>
+                                                <button
+                                                    onClick={() => {
+                                                        showCancelmodal(order.id_pesanan, index)
+                                                    }}
+                                                    className="flex flex-wrap gap-1 items-center text-white bg-red-500 border px-3 py-1.5 rounded-md"
+                                                >
+                                                    <Icons.FaTimesCircle />
+                                                    <span className="font-medium">Cancel</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )
+                                } else if (tabactive === "SELESAI") {
+                                    return (
+                                        <div className="justify-center text-xs flex flex-wrap gap-2 self-center">
+                                            <div>
+                                                <button
+                                                    onClick={() => {
+                                                        showCancelmodal(order.id_pesanan, index)
+                                                    }}
+                                                    className="flex flex-wrap gap-1 items-center text-white bg-red-500 border px-3 py-1.5 rounded-md"
+                                                >
+                                                    <Icons.FaTimesCircle />
+                                                    <span className="font-medium">Cancel</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )
+                                }
+                            })()}
                         </div>
 
                         <div className="flex flex-wrap w-full h-auto border-t py-4 px-7 items-center ">
@@ -186,35 +235,48 @@ export default function Shipping() {
     }
 
 
-    const [updateorder, setupdateorder] = React.useState(false);
+    const [selesaiOrdermodal, setselesaiOrdermodal] = React.useState(false);
+    const [cancelOrderModal, setcancelOrderModal] = React.useState(false);
     const [id_pesanan, setid_pesanan] = React.useState(null);
 
-    function showdeleteModal(id_pesanan: any, index: number) {
+    function showSelesaimodal(id_pesanan: any, index: number) {
         setid_pesanan(id_pesanan)
-        setupdateorder(true)
+        setselesaiOrdermodal(true)
     }
 
-    async function updateOrder() {
-        await axios.post(`https://api.hokkiscasual.com/selesai/${id_pesanan}`)
-            .then(function (response) {
-                // console.log(response.data);
-                mutate();
+    function showCancelmodal(id_pesanan: any, index: number) {
+        setid_pesanan(id_pesanan)
+        setcancelOrderModal(true)
+    }
+
+    async function updatePesanan(status: any) {
+        await axios.post(`https://api.hokkiscasual.com/updatepesanan/${id_pesanan}`, {
+            status
+        }).then(function (response) {
+            // console.log(response.data);
+            mutate();
+
+            toast.success("Data berhasil Update", {
+                position: toast.POSITION.TOP_RIGHT,
+                pauseOnHover: false,
+                autoClose: 2000,
             });
 
-        toast.success("Data berhasil dihapus", {
-            position: toast.POSITION.TOP_RIGHT,
-            pauseOnHover: false,
-            autoClose: 2000,
+            setselesaiOrdermodal(false)
+            setcancelOrderModal(false)
         });
 
-        setupdateorder(false)
+
     }
 
     return (
         <div className="p-5">
+
+            <ToastContainer className="mt-[50px]" />
+
             <div className="font-bold text-3xl border-b border-[#2125291A] h-14 mb-5">Orders</div>
 
-            <div className="flex flex-wrap items-center content-center">
+            <div className="flex flex-wrap items-center content-center mb-3">
                 <div className="shadow rounded-lg w-auto flex flex-row text-center content-center">
                     {/* <button type="button" className="rounded-l-lg bg-gray-200 hover:bg-gray-300 h-[50px] text-gray-700 font-medium px-4 flex flex-wrap gap-2 content-center">
                         <span>Order ID</span>
@@ -265,9 +327,28 @@ export default function Shipping() {
                 </Link>
             </div>
 
-            <div className="font-medium text-black text-sm py-3 pl-1">
-                <span>{list_order.length} order ditampilkan</span>
+            <div className="my-4 mt-3 py-2 px-5 flex flex-warp items-center bg-white rounded-lg h-[50px]">
+                <button onClick={() => tabActive("SEDANG DIKIRIM")}
+                    className={`${tabactive === "SEDANG DIKIRIM" ? "border-blue-500 text-blue-500 border-b-4 font-bold" : "text-black"} text-sm px-3 h-[50px]`}>
+                    Dikirim {count_dikirim}
+                </button>
+
+                <button onClick={() => tabActive("SELESAI")}
+                    className={`${tabactive === "SELESAI" ? "border-blue-500 text-blue-500 border-b-4 font-bold" : "text-black"} text-sm px-3 h-[50px]`}>
+                    Selesai {count_selesai}
+                </button>
+
+                <button onClick={() => tabActive("CANCEL")}
+                    className={`${tabactive === "CANCEL" ? "border-blue-500 text-blue-500 border-b-4 font-bold" : "text-black"} text-sm px-3 h-[50px]`}>
+                    Batal {count_cancel}
+                </button>
+
+                <div className="font-medium text-black text-sm grow text-end px-5">
+                    {list_order.length} order ditampilkan
+                </div>
             </div>
+
+
 
             {/* <table className="table table-fixed bg-transparent h-px mb-4 text-sm w-full">
                 <thead className="bg-white text-gray-500">
@@ -295,7 +376,7 @@ export default function Shipping() {
                 {list_order}
             </div>
 
-            {updateorder ? (
+            {selesaiOrdermodal ? (
                 <>
                     <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
                         <div className="relative w-auto my-6 mx-auto max-w-3xl ">
@@ -304,13 +385,57 @@ export default function Shipping() {
                                 {/*header*/}
                                 <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
                                     <span className="text-sm font-semibold">
-                                        Warning
+                                        Update Pesanan {id_pesanan}
                                     </span>
                                 </div>
                                 {/*body*/}
                                 <div className="relative p-6 flex-auto">
                                     <span className="text-sm font-semibold">
-                                        Selesaikan Pesanan {id_pesanan}?
+                                        Ingin Merubah Status Pesanan Jadi Selesai?
+                                    </span>
+                                </div>
+                                {/*footer*/}
+                                <div className="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
+                                    <button
+                                        className="text-green-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1"
+                                        type="button"
+                                        onClick={() => {
+                                            setselesaiOrdermodal(false);
+                                        }}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        className="bg-green-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
+                                        type="button"
+                                        onClick={() => updatePesanan("SELESAI")}
+                                    >
+                                        Submit
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+                </>
+            ) : null}
+
+            {cancelOrderModal ? (
+                <>
+                    <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+                        <div className="relative w-auto my-6 mx-auto max-w-3xl ">
+                            {/*content*/}
+                            <div className="border-0 rounded-lg shadow-lg relative flex flex-col bg-white outline-none focus:outline-none w-[500px]">
+                                {/*header*/}
+                                <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
+                                    <span className="text-sm font-semibold">
+                                        Update Pesanan {id_pesanan}
+                                    </span>
+                                </div>
+                                {/*body*/}
+                                <div className="relative p-6 flex-auto">
+                                    <span className="text-sm font-semibold">
+                                        Ingin Merubah Status Pesanan Jadi Cancel?
                                     </span>
                                 </div>
                                 {/*footer*/}
@@ -319,7 +444,7 @@ export default function Shipping() {
                                         className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1"
                                         type="button"
                                         onClick={() => {
-                                            setupdateorder(false);
+                                            setcancelOrderModal(false);
                                         }}
                                     >
                                         Cancel
@@ -327,7 +452,7 @@ export default function Shipping() {
                                     <button
                                         className="bg-red-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1"
                                         type="button"
-                                        onClick={() => updateOrder()}
+                                        onClick={() => updatePesanan("CANCEL")}
                                     >
                                         Submit
                                     </button>
