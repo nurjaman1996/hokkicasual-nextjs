@@ -505,7 +505,7 @@ export default function AddOrder() {
                     position: toast.POSITION.TOP_RIGHT,
                     pauseOnHover: false,
                     autoClose: 2000,
-                    onClose: () => router.back(),
+                    onClose: () => router.replace('/order/shipping'),
                 });
                 setTombolTambahOrder(true);
             });
