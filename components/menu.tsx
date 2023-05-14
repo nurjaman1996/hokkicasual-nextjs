@@ -7,70 +7,6 @@ const Items = [
         "text": "Dashboard",
         "icon_item": "fi fi-rr-layout-fluid"
     }, {
-        "title": "Orders",
-        "href": "#",
-        "text": "Orders",
-        "icon_item": "fi fi-rr-bags-shopping",
-        "path": "order",
-        "children": [
-            {
-                "title": "Tambah Pesanan",
-                "href": "/order/add_order",
-                "icon_item": "fi fi-rr-database",
-                "text": "Tambah Pesanan"
-            },
-            {
-                "title": "Daftar Pesanan",
-                "href": "/order/shipping",
-                "icon_item": "fi fi-rs-truck-side",
-                "text": "Daftar Pesanan"
-            },
-            // {
-            //     "title": "Pesanan Selesai",
-            //     "href": "/order/pesanan_selesai",
-            //     "icon_item": "fi fi-rr-checkbox",
-            //     "text": "Pesanan Selesai"
-            // },
-            // {
-            //     "title": "Pesanan Cancel",
-            //     "href": "/order/cancel_order",
-            //     "icon_item": "fi fi-rr-time-delete",
-            //     "text": "Pesanan Cancel",
-            // }
-        ]
-    }, {
-        "title": "Product",
-        "href": "#",
-        "text": "Product",
-        "icon_item": "fi fi-rr-box",
-        "path": "products",
-        "children": [
-            {
-                "title": "Daftar Produk",
-                "href": "/products/daftar_produk",
-                "icon_item": "fi fi-rr-box-alt",
-                "text": "Daftar Produk"
-            },
-            {
-                "title": "Nota Barang",
-                "href": "/products/nota_barang",
-                "icon_item": "fi fi-rr-file-invoice",
-                "text": "Nota Barang"
-            },
-            {
-                "title": "Stok Opname",
-                "href": "/products/stock_opname",
-                "icon_item": "fi fi-rr-boxes",
-                "text": "Stok Opname",
-            },
-            // {
-            //     "title": "History Produk",
-            //     "href": "/products/historypo",
-            //     "icon_item": "fi fi-rr-time-past",
-            //     "text": "History Produk"
-            // }
-        ]
-    }, {
         "title": "Data Master",
         "href": "#",
         "text": "Data Master",
@@ -121,9 +57,73 @@ const Items = [
             },
         ]
     }, {
-        "title": "Expense",
+        "title": "Produk",
+        "href": "#",
+        "text": "Produk",
+        "icon_item": "fi fi-rr-box",
+        "path": "products",
+        "children": [
+            {
+                "title": "Daftar Produk",
+                "href": "/products/daftar_produk",
+                "icon_item": "fi fi-rr-box-alt",
+                "text": "Daftar Produk"
+            },
+            {
+                "title": "Nota Barang",
+                "href": "/products/nota_barang",
+                "icon_item": "fi fi-rr-file-invoice",
+                "text": "Nota Barang"
+            },
+            {
+                "title": "Stok Opname",
+                "href": "/products/stock_opname",
+                "icon_item": "fi fi-rr-boxes",
+                "text": "Stok Opname",
+            },
+            // {
+            //     "title": "History Produk",
+            //     "href": "/products/historypo",
+            //     "icon_item": "fi fi-rr-time-past",
+            //     "text": "History Produk"
+            // }
+        ]
+    }, {
+        "title": "Pesanan",
+        "href": "#",
+        "text": "Pesanan",
+        "icon_item": "fi fi-rr-bags-shopping",
+        "path": "order",
+        "children": [
+            {
+                "title": "Tambah Pesanan",
+                "href": "/order/add_order",
+                "icon_item": "fi fi-rr-database",
+                "text": "Tambah Pesanan"
+            },
+            {
+                "title": "Daftar Pesanan",
+                "href": "/order/shipping",
+                "icon_item": "fi fi-rs-truck-side",
+                "text": "Daftar Pesanan"
+            },
+            // {
+            //     "title": "Pesanan Selesai",
+            //     "href": "/order/pesanan_selesai",
+            //     "icon_item": "fi fi-rr-checkbox",
+            //     "text": "Pesanan Selesai"
+            // },
+            // {
+            //     "title": "Pesanan Cancel",
+            //     "href": "/order/cancel_order",
+            //     "icon_item": "fi fi-rr-time-delete",
+            //     "text": "Pesanan Cancel",
+            // }
+        ]
+    }, {
+        "title": "Pengeluaran Toko",
         "href": "/expense",
-        "text": "Expense",
+        "text": "Pengeluaran Toko",
         "icon_item": "fi fi-rr-label"
     }, {
         "title": "Assets",
