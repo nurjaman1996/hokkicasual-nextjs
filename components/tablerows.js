@@ -20,7 +20,7 @@ function TableRows({
             <div className="h-[70px] w-[70px] rounded-lg shadow mr-2">
               <Image
                 className="m-auto max-w-[100%] rounded-lg max-h-[100%]"
-                src={`https://buwanais.co.id/apiupload/${img}`}
+                src={`https://hokkiscasual.com/apiupload/${img}`}
                 alt="product-1"
                 height="500"
                 width="500"

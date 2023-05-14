@@ -79,7 +79,7 @@ export default function AddOrder() {
                         <div className="h-[70px] w-[70px] rounded-lg">
                             <Image
                                 className='m-auto max-w-[100%] max-h-[100%]'
-                                src={`https://buwanais.co.id/apiupload/${product.img}`}
+                                src={`https://hokkiscasual.com/apiupload/${product.img}`}
                                 alt='product-1'
                                 height="500"
                                 width="500"

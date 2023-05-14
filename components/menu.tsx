@@ -13,30 +13,30 @@ const Items = [
         "icon_item": "fi fi-rr-bags-shopping",
         "path": "order",
         "children": [
-            // {
-            //     "title": "Semua Order",
-            //     "href": "/order/all_order",
-            //     "icon_item": "fi fi-rr-database",
-            //     "text": "Semua Order"
-            // },
             {
-                "title": "Pesanan Dikirim",
+                "title": "Tambah Pesanan",
+                "href": "/order/add_order",
+                "icon_item": "fi fi-rr-database",
+                "text": "Tambah Pesanan"
+            },
+            {
+                "title": "Daftar Pesanan",
                 "href": "/order/shipping",
                 "icon_item": "fi fi-rs-truck-side",
-                "text": "Pesanan Dikirim"
+                "text": "Daftar Pesanan"
             },
-            {
-                "title": "Pesanan Selesai",
-                "href": "/order/pesanan_selesai",
-                "icon_item": "fi fi-rr-checkbox",
-                "text": "Pesanan Selesai"
-            },
-            {
-                "title": "Pesanan Cancel",
-                "href": "/order/cancel_order",
-                "icon_item": "fi fi-rr-time-delete",
-                "text": "Pesanan Cancel",
-            }
+            // {
+            //     "title": "Pesanan Selesai",
+            //     "href": "/order/pesanan_selesai",
+            //     "icon_item": "fi fi-rr-checkbox",
+            //     "text": "Pesanan Selesai"
+            // },
+            // {
+            //     "title": "Pesanan Cancel",
+            //     "href": "/order/cancel_order",
+            //     "icon_item": "fi fi-rr-time-delete",
+            //     "text": "Pesanan Cancel",
+            // }
         ]
     }, {
         "title": "Product",

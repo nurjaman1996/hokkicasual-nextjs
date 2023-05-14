@@ -147,10 +147,9 @@ export default function NotaBarang() {
                                         priority
                                     /> */}
                                     <div className="flex flex-col justify-center">
-                                        <div className="text-xs">{data_produk.id_nota} | {data_produk.brand[0].brand}</div>
+                                        <div className="text-xs">{data_produk.id_nota}</div>
                                         <div className="text-base">{data_produk.produk}</div>
                                         <div className="text-xs">Harga Beli : Rp{data_produk.m_price}</div>
-                                        <div className="text-xs">Harga Jual : Rp{data_produk.selling_price}</div>
                                     </div>
                                 </div>
                             </td>
@@ -166,7 +165,7 @@ export default function NotaBarang() {
                             </td>
                             <td className="p-0 pt-4 h-full">
                                 <div className="flex flex-wrap justify-center items-center h-full bg-white pt-2 md:pt-4 md:pb-[15px] px-4">
-                                    {data_produk.category[0].category}
+                                    ID Pesanan {data_produk.deskripsi}
                                 </div>
                             </td>
                             <td className="p-0 pt-4 h-full">
@@ -211,7 +210,7 @@ export default function NotaBarang() {
                             </td>
                             <td className="p-0 h-full" colSpan={7}>
                                 <div className="pr-6 bg-white rounded-br-lg ">
-                                    <div className="flex items-center h-full pb-7 border-t">
+                                    <div className="flex items-center h-full pb-7 ">
 
                                     </div>
                                 </div>
@@ -227,7 +226,7 @@ export default function NotaBarang() {
 
 
     return (
-        <>
+        <div className="p-5">
             <div className="font-bold text-3xl border-b border-[#2125291A] h-16 mb-7">
                 Daftar Nota Barang
             </div>
@@ -450,6 +449,6 @@ export default function NotaBarang() {
                 </>
             ) : null
             }
-        </>
+        </div>
     );
 }

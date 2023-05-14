@@ -13,7 +13,7 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "buwanais.co.id",
+        hostname: "hokkiscasual.com",
       },
     ],
     minimumCacheTTL: 1500000,

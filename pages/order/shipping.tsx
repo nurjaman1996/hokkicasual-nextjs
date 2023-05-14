@@ -64,7 +64,7 @@ export default function Shipping() {
                                                 <Image
                                                     className="rounded border h-[100%] w-auto"
                                                     // src="/produk.jpg"
-                                                    src={`https://buwanais.co.id/apiupload/${order.details_order[i - 1].img}`}
+                                                    src={`https://hokkiscasual.com/apiupload/${order.details_order[i - 1].img}`}
                                                     alt="product-1"
                                                     height="500"
                                                     width="500"

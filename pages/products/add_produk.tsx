@@ -70,7 +70,7 @@ export default function AddProduk() {
 
     const [Count, setCount] = useState(1);
 
-    const { register, control, resetField, setValue, trigger, handleSubmit, watch, formState: { errors } } = useForm({
+    const { register, unregister, control, resetField, setValue, trigger, handleSubmit, watch, formState: { errors } } = useForm({
         // defaultValues: {
         //     produk: '',
         //     brand: '',
@@ -89,6 +89,66 @@ export default function AddProduk() {
         control,
         name: "variasi"
     });
+
+    const [tipevariasi, settipevariasi] = useState("");
+
+    function ubahtipevariasi(e: any) {
+        unregister('variasi');
+        settipevariasi(e.target.value)
+    }
+
+    let list_variasi2: any = [];
+    {
+        for (let index = 0; index < 11; index++) {
+            list_variasi2.push(
+                <tr key={index} className="rounded-lg h-auto mt-7">
+                    <td className="p-0">
+                        <div className="h-[30px] flex flex-wrap justify-center items-center rounded-l-lg">
+                            <input {...register(`variasi.${index}.size`, { required: false })} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="text" placeholder="Size"
+                            />
+                        </div>
+                    </td>
+                    <td className="p-0">
+                        <div className="h-[30px] flex flex-wrap justify-center items-center rounded-l-lg">
+                            <input defaultValue={0} {...register(`variasi.${index}.stok`, { required: false })} className="h-[100%] border w-[100%] pr-3 pl-5 mx-2 text-gray-700 focus:outline-none rounded-lg" type="number" placeholder="Size"
+                            />
+                        </div>
+                    </td>
+                    {/* <td className="p-0">
+                        {(function () {
+                            if (index < 1) {
+                                return (
+                                    <button onClick={() => {
+                                        append({ size: "", stok: 0 });
+                                        setCount(Count + 1);
+                                    }}
+                                        type="button" className="mx-2 m-auto border-none rounded-lg bg-blue-600 hover:bg-blue-800 h-[45px] text-white px-4 flex flex-wrap gap-2 content-center">
+                                        <div className="my-auto">
+                                            <fa.FaPlus size={13} className="text-white" />
+                                        </div>
+                                    </button>
+                                )
+                            } else {
+                                return (
+                                    <button
+                                        // onClick={() => { setCount(Count - 1) }}
+                                        onClick={() => {
+                                            remove(index)
+                                            setCount(Count - 1);
+                                        }}
+                                        type="button" className="mx-2 m-auto border-none rounded-lg bg-red-600 hover:bg-red-800 h-[45px] text-white px-4 flex flex-wrap gap-2 content-center">
+                                        <div className="my-auto">
+                                            <fa.FaMinus size={13} className="text-white" />
+                                        </div>
+                                    </button>
+                                )
+                            }
+                        })()}
+                    </td> */}
+                </tr >
+            )
+        }
+    }
 
     let list_variasi: any = [];
     {
@@ -160,7 +220,6 @@ export default function AddProduk() {
                 autoClose: 2000,
                 onClose: () => router.back(),
             });
-
         });
     };
 
@@ -182,7 +241,7 @@ export default function AddProduk() {
     };
 
     return (
-        <>
+        <div className="p-5">
             <div className="border-b border-[#2125291A] h-16 mb-7">
                 <div className="flex flex-wrap items-center">
                     <button className="bg-gray-200 p-4 rounded-lg mr-6 " onClick={() => router.back()}>
@@ -191,9 +250,9 @@ export default function AddProduk() {
                     <span className="font-bold text-3xl">Tambah Produk</span>
                 </div>
 
-                {/* <span>
+                <span>
                     {JSON.stringify(watch())}
-                </span> */}
+                </span>
             </div>
 
             <ToastContainer className="mt-[50px]" />
@@ -203,7 +262,7 @@ export default function AddProduk() {
                     <span className="font-bold text-lg">Informasi Produk</span>
 
                     <div className="flex flex-1 gap-5">
-                        <div className="flex items-center justify-center w-[500px]">
+                        <div className="flex items-center justify-center w-[25%]">
                             <input
                                 className="absolute w-0 opacity-0"
                                 accept="image/*"
@@ -231,7 +290,7 @@ export default function AddProduk() {
                             )}
                         </div>
 
-                        <div className="grow">
+                        <div className="grow text-sm">
                             <form onSubmit={handleSubmit(onSubmit)}>
                                 <div className="grid grid-cols-2 gap-5 justify-center content-center items-center">
                                     <div>
@@ -305,11 +364,76 @@ export default function AddProduk() {
                                 </div>
                             </form>
                         </div>
+
+                        <div className="flex text-sm flex-1 gap-5">
+                            <div className="w-[400px]">
+                                <div className="mb-3">
+                                    <div className="mb-3">Tipe Variasi</div>
+                                    <select
+                                        onChange={(e) => {
+                                            ubahtipevariasi(e)
+                                        }}
+                                        className={`appearance-none border h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}>
+                                        <option value="">Pilih Tipe Variasi</option>
+                                        <option value="sneakers35-45">Sneakers Unisex 35-45</option>
+                                        <option value="custom">Custom</option>
+                                    </select>
+                                </div>
+
+                                {(function () {
+                                    if (tipevariasi === "custom") {
+                                        return (
+                                            <table className="table table-auto bg-transparent text-sm w-full">
+                                                <thead className="bg-[#DDE4F0] text-gray-800">
+                                                    <tr className="">
+                                                        <th className="py-3 rounded-l-lg">
+                                                            Size
+                                                        </th>
+                                                        <th className="py-3">
+                                                            Stok
+                                                        </th>
+                                                        <th className="py-3 rounded-r-lg">
+                                                            Aksi
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="group rounded-lg">
+                                                    {list_variasi}
+                                                </tbody>
+                                            </table>
+                                        )
+                                    } else if (tipevariasi === "sneakers35-45") {
+                                        return (
+                                            <table className="table table-auto bg-transparent text-sm w-full">
+                                                <thead className="bg-[#DDE4F0] text-gray-800">
+                                                    <tr className="">
+                                                        <th className="py-3 rounded-l-lg">
+                                                            Size
+                                                        </th>
+                                                        <th className="py-3">
+                                                            Stok
+                                                        </th>
+                                                        <th className="py-3 rounded-r-lg">
+                                                            Aksi
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="group rounded-lg">
+                                                    {list_variasi2}
+                                                </tbody>
+                                            </table>
+                                        )
+                                    }
+                                })()}
+
+
+                            </div>
+                        </div>
                     </div>
 
                 </div>
 
-                <div className="bg-white p-8 pb-14 rounded-lg gap-3 mt-5">
+                {/* <div className="bg-white p-8 pb-14 rounded-lg gap-3 mt-5">
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <div className="flex flex-1 gap-5">
                             <div className="w-[500px]">
@@ -340,7 +464,7 @@ export default function AddProduk() {
                             </div>
                         </div>
                     </form>
-                </div>
+                </div> */}
 
                 <div className="py-5 rounded-lg flex justify-end">
                     <button onClick={handleSubmit(onSubmit)} className="cursor-pointer rounded-lg bg-blue-600 hover:bg-blue-800 h-[45px] text-white px-4 flex flex-wrap gap-2 content-center">
@@ -375,7 +499,7 @@ export default function AddProduk() {
                 </div>
             </div> */}
 
-        </>
+        </div>
     );
 }
 

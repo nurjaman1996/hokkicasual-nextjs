@@ -165,7 +165,7 @@ export default function DaftarProduk() {
         setValue("edit_harga", harga);
         setShowModal(true);
 
-        setimg(`https://buwanais.co.id/apiupload/${img}`);
+        setimg(`https://hokkiscasual.com/apiupload/${img}`);
     }
 
     const onSubmitUpdate = async (data: any) => {
@@ -271,7 +271,7 @@ export default function DaftarProduk() {
         setValue("harga_beli", 0);
         setValue("id_gudang_pengirim", ware);
         setValue("gudang_pengirim", gudang_pengirim);
-        setimg(`https://buwanais.co.id/apiupload/${img}`);
+        setimg(`https://hokkiscasual.com/apiupload/${img}`);
 
         clearErrors();
         settipepo("")
@@ -383,7 +383,7 @@ export default function DaftarProduk() {
                                 <div className="flex flex-row gap-4 items-center h-full bg-white pt-5 pb-3 pl-4">
                                     <Image
                                         className="max-w-[80px] max-h-[80px] rounded"
-                                        src={`https://buwanais.co.id/apiupload/${data_produk.img}`}
+                                        src={`https://hokkiscasual.com/apiupload/${data_produk.img}`}
                                         alt="product-1"
                                         height="500"
                                         width="500"
