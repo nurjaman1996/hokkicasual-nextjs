@@ -210,7 +210,7 @@ export default function Store() {
 
 
     return (
-        <>
+        <div className="p-5">
             <div className="font-bold text-3xl border-b border-[#2125291A] h-16 mb-7">
                 Data Store
             </div>
@@ -473,6 +473,6 @@ export default function Store() {
                 </>
             ) : null}
 
-        </>
+        </div>
     );
 }

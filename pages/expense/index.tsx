@@ -198,9 +198,9 @@ export default function Expense() {
   );
 
   return (
-    <>
+    <div className="p-5">
       <div className="font-bold text-3xl border-b border-[#2125291A] h-16 mb-7">
-        Expense
+        Pengeluaran Toko
       </div>
 
       <div className="flex flex-wrap items-center content-center mb-6">
@@ -504,6 +504,6 @@ export default function Expense() {
         </>
       ) : null}
 
-    </>
+    </div>
   );
 }
