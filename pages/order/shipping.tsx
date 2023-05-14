@@ -56,11 +56,11 @@ export default function Shipping() {
                         </div>
 
                         <div className="grid grid-cols-5 px-7 py-5">
-                            <div className="flex flex-col gap-4 col-span-2">
+                            <div className="flex flex-col gap-5 col-span-2">
                                 {(function (rows: any, i, len) {
                                     while (++i <= len) {
                                         rows.push(
-                                            <div key={i} className="flex h-[50px] justify-start items-start gap-5">
+                                            <div key={i} className="flex h-[65px] justify-start items-start gap-5">
                                                 <Image
                                                     className="rounded border h-[100%] w-auto"
                                                     // src="/produk.jpg"
@@ -71,7 +71,14 @@ export default function Shipping() {
                                                     priority
                                                 />
                                                 <div className="flex flex-col grow h-[100%] justify-center">
-                                                    <span className="font-medium">{order.details_order[i - 1].produk}</span>
+                                                    <div className="flex flex-wrap gap-1">
+                                                        <span className="font-medium line-clamp-1">{order.details_order[i - 1].produk}</span>
+                                                    </div>
+                                                    <div>
+                                                        <button className="text-xs text-blue-500 font-bold">Tukar Size</button>
+                                                        <span> | </span>
+                                                        <button className="text-xs text-red-500 font-bold">Refund</button>
+                                                    </div>
                                                     <div className="text-xs text-black">Variasi <span className="text-black font-medium">{order.details_order[i - 1].size}</span> | {order.details_order[i - 1].source}</div>
                                                     <span className="text-xs text-black">x{order.details_order[i - 1].qty}</span>
                                                 </div>
@@ -83,43 +90,29 @@ export default function Shipping() {
                                 })([], 0, order.details_order.length)}
                             </div>
 
-                            <div className="justify-center flex">
+                            <div className="justify-center flex self-center">
                                 <div className="text-start flex flex-col">
                                     <span className="font-bold">Rp{order.total_amount}</span>
                                     <span>{order.payment.length < 1 ? "Belum ada Pembayaran" : ""}</span>
                                 </div>
                             </div>
 
-                            <div className="text-center text-xs">
+                            <div className="text-center text-xs self-center">
                                 <span className="font-bold">{order.status_pesanan}</span>
                             </div>
 
-                            {/* <div className="justify-end text-xs flex flex-wrap gap-2">
-                                <div>
-                                    <button
-                                        onClick={() => {
-                                            showdeleteModal(order.id_pesanan, index)
-                                        }}
-                                        className="flex flex-wrap gap-1 items-center text-white bg-blue-500 border px-3 py-1.5 rounded-md"
-                                    >
-                                        <Icons.FaUndo />
-                                        <span className="font-medium">Retur</span>
-                                    </button>
+                            <div className="justify-center text-xs flex flex-wrap gap-2 self-center">
+                                <div className="mt-1 flex flex-1 items-center justify-center border rounded-lg">
+                                    <select
+                                        className="appearance-none h-auto cursor-pointer w-[70%] bg-white py-2 pl-5 focus:outline-none text-sm" placeholder="Pilih Store">
+                                        <option value="">Update Pesanan</option>
+                                        <option value="">Selesai</option>
+                                        <option value="">Cancel</option>
+                                    </select>
+                                    <i className="fi fi-rr-angle-small-down w-[1.12rem] h-[1.12rem] text-center text-gray-500 text-[1.12rem] leading-4"></i>
                                 </div>
 
-                                <div>
-                                    <button
-                                        onClick={() => {
-                                            showdeleteModal(order.id_pesanan, index)
-                                        }}
-                                        className="flex flex-wrap gap-1 items-center text-white bg-red-500 border px-3 py-1.5 rounded-md"
-                                    >
-                                        <Icons.FaTimesCircle />
-                                        <span className="font-medium">Refund</span>
-                                    </button>
-                                </div>
-
-                                <div>
+                                {/* <div>
                                     <button
                                         onClick={() => {
                                             showdeleteModal(order.id_pesanan, index)
@@ -131,23 +124,6 @@ export default function Shipping() {
                                     </button>
                                 </div>
 
-                            </div> */}
-                        </div>
-
-                        <div className="flex flex-wrap w-full h-auto border-t py-4 px-7 items-center justify-end">
-                            <div className="text-xs flex flex-wrap gap-2">
-                                <div>
-                                    <button
-                                        onClick={() => {
-                                            showdeleteModal(order.id_pesanan, index)
-                                        }}
-                                        className="flex flex-wrap gap-1 items-center text-white bg-blue-500 border px-3 py-1.5 rounded-md"
-                                    >
-                                        <Icons.FaUndo />
-                                        <span className="font-medium">Retur</span>
-                                    </button>
-                                </div>
-
                                 <div>
                                     <button
                                         onClick={() => {
@@ -156,23 +132,51 @@ export default function Shipping() {
                                         className="flex flex-wrap gap-1 items-center text-white bg-red-500 border px-3 py-1.5 rounded-md"
                                     >
                                         <Icons.FaTimesCircle />
-                                        <span className="font-medium">Refund</span>
+                                        <span className="font-medium">Cancel</span>
                                     </button>
-                                </div>
-
-                                <div>
-                                    <button
-                                        onClick={() => {
-                                            showdeleteModal(order.id_pesanan, index)
-                                        }}
-                                        className="flex flex-wrap gap-1 items-center text-white bg-green-500 border px-3 py-1.5 rounded-md"
-                                    >
-                                        <Icons.FaCheckCircle />
-                                        <span className="font-medium">Selesai</span>
-                                    </button>
-                                </div>
+                                </div> */}
 
                             </div>
+                        </div>
+
+                        <div className="flex flex-wrap w-full h-auto border-t py-4 px-7 items-center ">
+                            {/* <div className="text-xs flex flex-wrap gap-2">
+                                <div>
+                                    <button
+                                        onClick={() => {
+                                            showdeleteModal(order.id_pesanan, index)
+                                        }}
+                                        className="flex flex-wrap gap-1 items-center text-white bg-blue-500 border px-3 py-1.5 rounded-md"
+                                    >
+                                        <Icons.FaUndo />
+                                        <span className="font-medium">Retur</span>
+                                    </button>
+                                </div>
+
+                                <div>
+                                    <button
+                                        onClick={() => {
+                                            showdeleteModal(order.id_pesanan, index)
+                                        }}
+                                        className="flex flex-wrap gap-1 items-center text-white bg-red-500 border px-3 py-1.5 rounded-md"
+                                    >
+                                        <Icons.FaTimesCircle />
+                                        <span className="font-medium">Refund</span>
+                                    </button>
+                                </div>
+
+                                <div>
+                                    <button
+                                        onClick={() => {
+                                            showdeleteModal(order.id_pesanan, index)
+                                        }}
+                                        className="flex flex-wrap gap-1 items-center text-white bg-green-500 border px-3 py-1.5 rounded-md"
+                                    >
+                                        <Icons.FaCheckCircle />
+                                        <span className="font-medium">Selesai</span>
+                                    </button>
+                                </div>
+                            </div> */}
                         </div>
 
                     </div>
@@ -208,7 +212,7 @@ export default function Shipping() {
 
     return (
         <div className="p-5">
-            <div className="font-bold text-3xl border-b border-[#2125291A] h-16 mb-7">Orders</div>
+            <div className="font-bold text-3xl border-b border-[#2125291A] h-14 mb-5">Orders</div>
 
             <div className="flex flex-wrap items-center content-center">
                 <div className="shadow rounded-lg w-auto flex flex-row text-center content-center">
