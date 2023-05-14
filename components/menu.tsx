@@ -81,12 +81,12 @@ const Items = [
                 "icon_item": "fi fi-rr-boxes",
                 "text": "Stok Opname",
             },
-            // {
-            //     "title": "History Produk",
-            //     "href": "/products/historypo",
-            //     "icon_item": "fi fi-rr-time-past",
-            //     "text": "History Produk"
-            // }
+            {
+                "title": "Barcode",
+                "href": "/products/barcode",
+                "icon_item": "fi fi-ss-barcode-read",
+                "text": "Cetak Barcode"
+            }
         ]
     }, {
         "title": "Pesanan",
