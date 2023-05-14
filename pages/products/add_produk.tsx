@@ -285,17 +285,17 @@ export default function AddProduk() {
 
     return (
         <div className="p-5">
-            <div className="border-b border-[#2125291A] h-16 mb-7">
+            <div className="border-b border-[#2125291A] h-16 mb-4">
                 <div className="flex flex-wrap items-center">
-                    <button className="bg-gray-200 p-4 rounded-lg mr-6 " onClick={() => router.back()}>
+                    <button className="bg-gray-200 p-3 rounded-lg mr-6 " onClick={() => router.back()}>
                         <fa.FaChevronLeft size={13} />
                     </button>
-                    <span className="font-bold text-3xl">Tambah Produk</span>
+                    <span className="font-bold text-xl">Tambah Produk</span>
                 </div>
 
-                <span>
+                {/* <span>
                     {JSON.stringify(watch())}
-                </span>
+                </span> */}
             </div>
 
             <ToastContainer className="mt-[50px]" />
