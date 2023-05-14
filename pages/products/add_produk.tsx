@@ -305,7 +305,7 @@ export default function AddProduk() {
                     <span className="font-bold text-lg">Informasi Produk</span>
 
                     <div className="flex flex-1 gap-5">
-                        <div className="flex pt-8 items-start justify-center w-[25%]">
+                        <div className="flex pt-8 items-start justify-center w-[400px]">
                             <input
                                 className="absolute w-0 opacity-0"
                                 accept="image/*"
