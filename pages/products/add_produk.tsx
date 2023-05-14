@@ -419,7 +419,7 @@ export default function AddProduk() {
                         </div>
 
                         <div className="flex text-sm flex-1 gap-5">
-                            <div className="w-[400px]">
+                            <div className="w-[100%]">
 
                                 {(function () {
                                     if (tipevariasi === "custom") {
