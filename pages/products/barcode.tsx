@@ -13,7 +13,9 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useForm } from "react-hook-form";
 import useSWR from 'swr';
+import { useRouter } from "next/router";
 import axios from 'axios';
+
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
@@ -22,6 +24,7 @@ export default function Expense() {
 
     let list_store: any = [];
 
+    const router = useRouter();
 
     const columns: any = [
         {
@@ -160,12 +163,14 @@ export default function Expense() {
                         total_amount: data_expense.total_amount,
                         action: (
                             <div className="flex flex-warp gap-4">
-                                <button className="text-blue-500" onClick={() => showeditModal(data_expense.id, data_expense.deskripsi, data_expense.amount, data_expense.qty, data_expense.total_amount, index)}>
-                                    <i className="fi fi-rr-edit text-center text-xl"></i>
+                                <button className="text-blue-500" onClick={() => {
+                                    router.replace('/products/printBarcode')
+                                }}>
+                                    <i className="fi fi-rr-print text-center text-xl"></i>
                                 </button>
-                                <button className="text-red-500" onClick={() => showdeleteModal(data_expense.id, index)}>
+                                {/* <button className="text-red-500" onClick={() => showdeleteModal(data_expense.id, index)}>
                                     <i className="fi fi-rr-trash text-center text-xl"></i>
-                                </button>
+                                </button> */}
                             </div>
                         ),
                     },
