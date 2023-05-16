@@ -34,6 +34,10 @@ export default function Expense() {
       selector: (row: { deskripsi: any }) => row.deskripsi,
     },
     {
+      name: 'Store',
+      selector: (row: { id_store: any }) => row.id_store,
+    },
+    {
       name: 'Amount',
       selector: (row: { amount: any }) => row.amount,
     },
@@ -56,16 +60,28 @@ export default function Expense() {
 
   const { data, error, isLoading, mutate } = useSWR(`https://api.hokkiscasual.com/getexpense`, fetcher);
 
-  const { register, resetField, setValue, handleSubmit, watch, formState: { errors } } = useForm({
+  const { data: store_data, error: store_error, isLoading: store_isLoading, mutate: store_mutate } = useSWR(`https://api.hokkiscasual.com/getstore`, fetcher);
+  const list_store: any = [];
+  if (!store_isLoading && !store_error) {
+    store_data.data_store.map((store: any, index: number) => {
+      list_store.push(
+        <option key={index} value={store.id_store}>{store.store}</option>
+      )
+    })
+  }
+
+  const { register, resetField, setValue, handleSubmit, getValues, watch, formState: { errors } } = useForm({
     defaultValues: {
       deskripsi: '',
-      amount: '',
-      qty: '',
-      total_amount: '',
+      amount: 0,
+      qty: 1,
+      total_amount: 0,
+      id_store: 'ALL-STORE',
+      edit_id_store: 'ALL-STORE',
       edit_deskripsi: '',
-      edit_amount: '',
-      edit_qty: '',
-      edit_total_amount: '',
+      edit_amount: 0,
+      edit_qty: 1,
+      edit_total_amount: 0,
     }
   });
 
@@ -74,6 +90,16 @@ export default function Expense() {
   const [editModal, seteditModal] = React.useState(false);
   const [Deskripsi, setDeskripsi] = React.useState(null);
   const [id, setid] = React.useState(null);
+
+  function hitungAmount() {
+    var jumlah = getValues("amount") * getValues("qty");
+    setValue('total_amount', jumlah)
+  }
+
+  function hitungAmountedit() {
+    var jumlah = getValues("edit_amount") * getValues("edit_qty");
+    setValue('edit_total_amount', jumlah)
+  }
 
   const onSubmit = async (data: any) => {
     await axios.post("https://api.hokkiscasual.com/saveexpense", {
@@ -97,12 +123,13 @@ export default function Expense() {
     setShowModal(false);
   };
 
-  function showeditModal(id: any, deskripsi: any, amount: any, qty: any, total_amount: any, index: number) {
+  function showeditModal(id: any, deskripsi: any, amount: any, qty: any, total_amount: any, index: number, id_store: any) {
     setid(id);
     setValue("edit_deskripsi", deskripsi);
     setValue("edit_amount", amount);
     setValue("edit_qty", qty);
     setValue("edit_total_amount", total_amount);
+    setValue("edit_id_store", id_store);
     seteditModal(true);
   }
 
@@ -158,9 +185,10 @@ export default function Expense() {
             amount: data_expense.amount,
             qty: data_expense.qty,
             total_amount: data_expense.total_amount,
+            id_store: data_expense.id_store === "ALL-STORE" ? "ALL-STORE" : data_expense.store[0]['store'],
             action: (
               <div className="flex flex-warp gap-4">
-                <button className="text-blue-500" onClick={() => showeditModal(data_expense.id, data_expense.deskripsi, data_expense.amount, data_expense.qty, data_expense.total_amount, index)}>
+                <button className="text-blue-500" onClick={() => showeditModal(data_expense.id, data_expense.deskripsi, data_expense.amount, data_expense.qty, data_expense.total_amount, index, data_expense.id_store)}>
                   <i className="fi fi-rr-edit text-center text-xl"></i>
                 </button>
                 <button className="text-red-500" onClick={() => showdeleteModal(data_expense.id, index)}>
@@ -180,7 +208,8 @@ export default function Expense() {
     return (
       list_expense.tanggal.toLocaleLowerCase().includes(filterText.toLocaleLowerCase()) ||
       list_expense.id_expense.toLocaleLowerCase().includes(filterText.toLocaleLowerCase()) ||
-      list_expense.deskripsi.toLocaleLowerCase().includes(filterText.toLocaleLowerCase())
+      list_expense.deskripsi.toLocaleLowerCase().includes(filterText.toLocaleLowerCase()) ||
+      list_expense.id_store.toLocaleLowerCase().includes(filterText.toLocaleLowerCase())
     );
   });
 
@@ -251,7 +280,7 @@ export default function Expense() {
                   </span>
                 </div>
                 {/*body*/}
-                <div className="relative p-6 flex-auto">
+                <div className="relative p-3 px-4 flex-auto">
                   <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="">
                       <label className="block mb-2 text-sm font-medium text-black">Tanggal</label>
@@ -276,6 +305,18 @@ export default function Expense() {
                       />
                     </div>
                     <div className="mt-6">
+                      <label className="block mb-2 text-sm font-medium text-black">Store</label>
+                      <select
+                        className={`${errors.id_store ? "border-red-500 border-2" : "border"} h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
+                        {...register("id_store", { required: true })}
+                      >
+                        <option value="ALL-STORE">ALL STORE</option>
+                        {list_store}
+                      </select>
+                      {errors.id_store && <div className="mt-1 text-sm italic">This field is required</div>}
+                    </div>
+
+                    <div className="mt-6">
                       <label className="block mb-2 text-sm font-medium text-black">Deskripsi</label>
                       <input
                         className={`${errors.deskripsi ? "border-red-500 border-2" : "border"} h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
@@ -293,7 +334,7 @@ export default function Expense() {
                         type="number"
                         placeholder="Masukan Amount"
                         // ref={req_brand}
-                        defaultValue="" {...register("amount", { required: true })}
+                        defaultValue="" {...register("amount", { required: true, onChange: () => hitungAmount() })}
                       />
                       {errors.amount && <div className="mt-1 text-sm italic">This field is required</div>}
                     </div>
@@ -304,7 +345,7 @@ export default function Expense() {
                         type="number"
                         placeholder="Masukan Quantity"
                         // ref={req_brand}
-                        defaultValue="" {...register("qty", { required: true })}
+                        defaultValue="" {...register("qty", { required: true, onChange: () => hitungAmount() })}
                       />
                       {errors.qty && <div className="mt-1 text-sm italic">This field is required</div>}
                     </div>
@@ -313,6 +354,7 @@ export default function Expense() {
                       <input
                         className={`${errors.total_amount ? "border-red-500 border-2" : "border"} h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
                         type="number"
+                        readOnly
                         placeholder="Masukan Total Amount"
                         // ref={req_brand}
                         defaultValue="" {...register("total_amount", { required: true })}
@@ -400,13 +442,24 @@ export default function Expense() {
                       {errors.edit_deskripsi && <div className="mt-1 text-sm italic">This field is required</div>}
                     </div>
                     <div className="mt-6">
+                      <label className="block mb-2 text-sm font-medium text-black">Store</label>
+                      <select
+                        className={`${errors.edit_id_store ? "border-red-500 border-2" : "border"} h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
+                        {...register("edit_id_store", { required: true })}
+                      >
+                        <option value="ALL-STORE">ALL STORE</option>
+                        {list_store}
+                      </select>
+                      {errors.edit_id_store && <div className="mt-1 text-sm italic">This field is required</div>}
+                    </div>
+                    <div className="mt-6">
                       <label className="block mb-2 text-sm font-medium text-black">Amount</label>
                       <input
                         className={`${errors.edit_amount ? "border-red-500 border-2" : "border"} h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
                         type="number"
                         placeholder="Masukan Amount"
                         // ref={req_brand}
-                        defaultValue="" {...register("edit_amount", { required: true })}
+                        defaultValue="" {...register("edit_amount", { required: true, onChange: () => hitungAmountedit() })}
                       />
                       {errors.edit_amount && <div className="mt-1 text-sm italic">This field is required</div>}
                     </div>
@@ -417,7 +470,7 @@ export default function Expense() {
                         type="number"
                         placeholder="Masukan Quantity"
                         // ref={req_brand}
-                        defaultValue="" {...register("edit_qty", { required: true })}
+                        defaultValue="" {...register("edit_qty", { required: true, onChange: () => hitungAmountedit() })}
                       />
                       {errors.edit_qty && <div className="mt-1 text-sm italic">This field is required</div>}
                     </div>
@@ -427,6 +480,7 @@ export default function Expense() {
                         className={`${errors.edit_total_amount ? "border-red-500 border-2" : "border"} h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
                         type="number"
                         placeholder="Masukan Total Amount"
+                        readOnly
                         // ref={req_brand}
                         defaultValue="" {...register("edit_total_amount", { required: true })}
                       />

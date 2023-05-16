@@ -1,10 +1,11 @@
 import * as fa from "react-icons/fa";
 import Items from './menu';
-import React, { PropsWithChildren, useState } from "react";
+import React, { PropsWithChildren, useEffect, useState } from "react";
 import { Collapse } from "react-collapse";
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from "next/router";
+import Cookies from "js-cookie";
 
 const Layout = (props: PropsWithChildren) => {
     const [toggleViewMode, setToggleViewMode] = useState(true);
@@ -60,10 +61,24 @@ const Layout = (props: PropsWithChildren) => {
         }
     }
 
+    function logout() {
+        Cookies.remove('auth')
+        Cookies.remove('auth_idusername')
+        Cookies.remove('auth_username')
+        Cookies.remove('auth_password')
+        Cookies.remove('auth_role')
+        router.reload();
+    }
+
+    const [Username, setUsername]: any = useState(null);
+
+    //hook useEffect
+    useEffect(() => {
+        { Cookies.get('auth') ? setUsername(Cookies.get('auth_username')) : setUsername(false) }
+    }, []);
+
     return (
-
-
-        <div className="grid min-h-screen grid-rows-[60px_1fr]">
+        <div className="grid min-h-screen grid-rows-[60px_1fr] text-sm">
             {/* header */}
             <div className="w-full h-[60px] fixed drop-shadow bg-white flex justify-start items-center z-20">
                 <div className="ml-4 flex cursor-pointer items-center h-10 w-auto px-2" onClick={() => toogleActiveStyles()} >
@@ -86,14 +101,7 @@ const Layout = (props: PropsWithChildren) => {
                 </div>
 
                 <div className="flex gap-2 items-center mr-5 justify-center">
-                    <Image
-                        className="max-w-full max-h-full"
-                        src="/circle-user.png"
-                        alt="Picture of the author"
-                        width={24}
-                        height={24}
-                    />
-                    <span className="font-medium m-auto items-center">admin</span>
+                    <span className="m-auto items-center">Hello <b>{String(Username)}</b>, <button onClick={() => logout()}>Logout</button></span>
                 </div>
             </div>
             {/* end header */}

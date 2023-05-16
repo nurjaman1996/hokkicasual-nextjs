@@ -47,6 +47,10 @@ export default function DaftarProduk() {
             selector: (row: { store: any }) => row.store,
         },
         {
+            name: 'Status Akun',
+            selector: (row: { status: any }) => row.status,
+        },
+        {
             name: 'Action',
             selector: (row: { action: any }) => row.action,
         },
@@ -69,13 +73,21 @@ export default function DaftarProduk() {
     const { data, error, isLoading, mutate } = useSWR(`https://api.hokkiscasual.com/getkaryawan`, fetcher);
 
     const { data: store_data, error: store_error, isLoading: store_isLoading, mutate: store_mutate } = useSWR(`https://api.hokkiscasual.com/getstore`, fetcher);
-
     const list_store: any = [];
-
     if (!store_isLoading && !store_error) {
         store_data.data_store.map((store: any, index: number) => {
             list_store.push(
                 <option key={index} value={store.id_store}>{store.store}</option>
+            )
+        })
+    }
+
+    const { data: roles_data, error: roles_error, isLoading: roles_isLoading, mutate: roles_mutate } = useSWR(`https://api.hokkiscasual.com/getroles`, fetcher);
+    const list_roles: any = [];
+    if (!roles_isLoading && !roles_error) {
+        roles_data.data_roles.map((roles: any, index: number) => {
+            list_roles.push(
+                <option key={index} value={roles.role}>{roles.role}</option>
             )
         })
     }
@@ -97,6 +109,7 @@ export default function DaftarProduk() {
             domisili: '',
             role: '',
             store: '',
+            username: '',
 
             edit_name: '',
             edit_tlp: '',
@@ -120,6 +133,30 @@ export default function DaftarProduk() {
                         domisili: data_karyawan.domisili,
                         role: data_karyawan.role,
                         store: data_karyawan.store[0]['store'],
+                        status: (
+                            <div>
+                                {(function () {
+                                    if (data_karyawan.status_account === "ACTIVE") {
+                                        return (
+                                            <button
+                                                onClick={() => {
+                                                    onUpdateAkun(data_karyawan.status_account, data_karyawan.id)
+                                                }}
+                                                className="text-blue-600 font-bold">{data_karyawan.status_account}</button>
+                                        )
+                                    } else {
+                                        return (
+                                            <button
+                                                onClick={() => {
+                                                    onUpdateAkun(data_karyawan.status_account, data_karyawan.id)
+                                                }}
+                                                className="text-red-600 font-bold">{data_karyawan.status_account}</button>
+                                        )
+                                    }
+                                }
+                                )()}
+                            </div>
+                        ),
                         action: (
                             <div className="flex flex-warp gap-4">
                                 <button className="text-blue-500" onClick={() => showeditModal(data_karyawan.id, data_karyawan.name, data_karyawan.tlp, data_karyawan.domisili, data_karyawan.id_store, data_karyawan.role, index)}>
@@ -170,6 +207,29 @@ export default function DaftarProduk() {
         setValue("store", "");
         setValue("role", "");
         setShowModal(false);
+    };
+
+    const onUpdateAkun = async (status: any, idakun: any) => {
+        if (status === "NONACTIVE") {
+            var status_akun = "ACTIVE";
+        } else {
+            var status_akun = "NONACTIVE";
+        }
+
+        await axios.post("https://api.hokkiscasual.com/updateakun", {
+            id: idakun,
+            status: status_akun
+        })
+            .then(function (response) {
+                // console.log(response.data);
+                mutate();
+            });
+
+        toast.success("Status Akun Berhasil Update", {
+            position: toast.POSITION.TOP_RIGHT,
+            pauseOnHover: false,
+            autoClose: 2000,
+        });
     };
 
     const [id, setid] = React.useState(null);
@@ -282,8 +342,19 @@ export default function DaftarProduk() {
                                     </span>
                                 </div>
                                 {/*body*/}
-                                <div className="relative p-6 flex-auto">
+                                <div className="relative px-6 py-5 flex-auto">
                                     <form onSubmit={handleSubmit(onSubmit)}>
+                                        {/* <div className="">
+                                            <label className="block mb-2 text-sm font-medium text-black">Username</label>
+                                            <input
+                                                className={`${errors.username ? "border-red-500 border-2" : "border"} h-[45px]  w-[100%] pr-3 pl-5  text-gray-700 focus:outline-none rounded-lg`}
+                                                type="text"
+                                                placeholder="Masukan Username Login"
+                                                // ref={req_brand}
+                                                defaultValue="" {...register("username", { required: true })}
+                                            />
+                                            {errors.username && <div className="mt-1 text-sm italic">This field is required</div>}
+                                        </div> */}
                                         <div className="">
                                             <label className="block mb-2 text-sm font-medium text-black">Nama</label>
                                             <input
@@ -337,9 +408,7 @@ export default function DaftarProduk() {
                                                 {...register("role", { required: true })}
                                             >
                                                 <option value="">Pilih Roles</option>
-                                                <option value="HEAD-STORE">HEAD STORE</option>
-                                                <option value="MANAGER">MANAGER</option>
-                                                <option value="ADMIN">ADMIN</option>
+                                                {list_roles}
                                             </select>
                                             {errors.role && <div className="mt-1 text-sm italic">This field is required</div>}
                                         </div>
@@ -444,9 +513,7 @@ export default function DaftarProduk() {
                                                 {...register("edit_role", { required: true })}
                                             >
                                                 <option value="">Pilih Roles</option>
-                                                <option value="HEAD-STORE">HEAD STORE</option>
-                                                <option value="MANAGER">MANAGER</option>
-                                                <option value="ADMIN">ADMIN</option>
+                                                {list_roles}
                                             </select>
                                             {errors.edit_role && <div className="mt-1 text-sm italic">This field is required</div>}
                                         </div>

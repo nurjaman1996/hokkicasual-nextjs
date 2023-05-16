@@ -3,7 +3,7 @@ import * as fa from "react-icons/fa";
 const Items = [
     {
         "title": "Dashboard",
-        "href": "/dashboard",
+        "href": "/",
         "text": "Dashboard",
         "icon_item": "fi fi-rr-layout-fluid"
     }, {
