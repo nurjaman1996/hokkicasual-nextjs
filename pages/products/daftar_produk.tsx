@@ -392,7 +392,7 @@ export default function DaftarProduk() {
                                     <div className="flex flex-col">
                                         <div className="text-xs">#{data_produk.id_produk} | {data_produk.brand[0].brand}</div>
                                         <div className="text-base">{data_produk.produk}</div>
-                                        <div className="text-xs">Rp{data_produk.n_price}</div>
+                                        {/* <div className="text-xs">Rp{data_produk.n_price}</div> */}
                                     </div>
                                 </div>
                             </td>

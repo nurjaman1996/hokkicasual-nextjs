@@ -64,6 +64,78 @@ export default function Shipping() {
         })
     }
 
+    const [returLuarModal, setreturLuarModal] = React.useState(false);
+    const [LuarProduk, setLuarProduk] = React.useState("");
+    const [LuarIdPesanan, setLuarIdPesanan] = React.useState("");
+    const [LuarIdProduk, setLuarIdProduk] = React.useState("");
+    const [LuarSize, setLuarSize] = React.useState("");
+    const [LuarOldQty, setLuarOldQty] = React.useState(0);
+    const [LuarSupplier, setLuarSupplier] = React.useState("");
+    const [LuarHargaBeli, setLuarHargaBeli] = React.useState(0);
+    const [LuarQtyNew, setLuarQtyNew] = React.useState(1);
+
+    async function openReturLuarModal(produk: any, id_produk: any, size: any, qty: any, source: any, id_pesanan: any, idpo: any, id_ware: any) {
+        setreturLuarModal(true);
+        setLuarProduk(produk);
+        setLuarOldQty(qty);
+        setLuarSupplier("");
+        setLuarIdPesanan(id_pesanan);
+        setLuarIdProduk(id_produk);
+        setLuarSize("");
+        setLuarHargaBeli(0);
+        setLuarQtyNew(1);
+    }
+
+    function setQtymanualluar(type: any) {
+        if (type === "plus") {
+            if (LuarQtyNew >= LuarOldQty) {
+                toast.warning("Jumlah Melebihi Stok Pesanan!", {
+                    position: toast.POSITION.TOP_RIGHT,
+                    pauseOnHover: false,
+                    autoClose: 2000,
+                });
+            } else {
+                setLuarQtyNew(LuarQtyNew + 1)
+            }
+        } else if (type === "min") {
+            if (LuarQtyNew > 1) {
+                setLuarQtyNew(LuarQtyNew - 1)
+            }
+        }
+    }
+
+    async function sumbitReturLuar() {
+        if (LuarSupplier === "" || LuarSize === "") {
+            toast.warning("Mohon Lengkapi Data", {
+                position: toast.POSITION.TOP_RIGHT,
+                pauseOnHover: false,
+                autoClose: 2000,
+            });
+        } else {
+            await axios.post(`https://api.hokkiscasual.com/returLuar`, {
+                LuarProduk: LuarProduk,
+                LuarSize: LuarSize,
+                LuarOldQty: LuarOldQty,
+                LuarSupplier: LuarSupplier,
+                LuarHargaBeli: LuarHargaBeli,
+                LuarQtyNew: LuarQtyNew,
+                LuarIdPesanan: LuarIdPesanan,
+                LuarIdProduk: LuarIdProduk,
+            }).then(function (response) {
+                console.log(response.data);
+                mutate();
+                count_mutate();
+                setreturModal(false);
+
+                toast.success("Data berhasil Retur", {
+                    position: toast.POSITION.TOP_RIGHT,
+                    pauseOnHover: false,
+                    autoClose: 2000,
+                });
+            });
+        }
+    }
+
     const [returModal, setreturModal] = React.useState(false);
     const [id_produkretur, setid_produkretur] = React.useState("");
     const [produkretur, setprodukretur] = React.useState("");
@@ -195,7 +267,7 @@ export default function Shipping() {
         }).then(function (response) {
             console.log(response.data);
             mutate();
-
+            count_mutate();
             setreturModal(false);
 
             toast.success("Data berhasil Update", {
@@ -330,19 +402,35 @@ export default function Shipping() {
 
                                                     {(function (produk: any, id_produk: any, size: any, qty: any, source: any, id_pesanan: any, idpo: any, id_ware: any, id: any) {
                                                         if (tabactive != "CANCEL") {
-                                                            return (
-                                                                <div>
-                                                                    <button
-                                                                        onClick={() => {
-                                                                            openReturModal(produk, id_produk, size, qty, source, id_pesanan, idpo, id_ware);
-                                                                        }}
-                                                                        className="text-xs text-blue-500 font-bold">Tukar Size</button>
-                                                                    <span> | </span>
-                                                                    <button
-                                                                        onClick={() => openrefundModal(produk, id_produk, size, qty, source, id_pesanan, idpo, id_ware, id)}
-                                                                        className="text-xs text-red-500 font-bold">Refund</button>
-                                                                </div>
-                                                            )
+                                                            if (source === "Barang Gudang") {
+                                                                return (
+                                                                    <div>
+                                                                        <button
+                                                                            onClick={() => {
+                                                                                openReturModal(produk, id_produk, size, qty, source, id_pesanan, idpo, id_ware);
+                                                                            }}
+                                                                            className="text-xs text-blue-500 font-bold">Tukar Size</button>
+                                                                        <span> | </span>
+                                                                        <button
+                                                                            onClick={() => openrefundModal(produk, id_produk, size, qty, source, id_pesanan, idpo, id_ware, id)}
+                                                                            className="text-xs text-red-500 font-bold">Refund</button>
+                                                                    </div>
+                                                                )
+                                                            } else {
+                                                                return (
+                                                                    <div>
+                                                                        <button
+                                                                            onClick={() => {
+                                                                                openReturLuarModal(produk, id_produk, size, qty, source, id_pesanan, idpo, id_ware);
+                                                                            }}
+                                                                            className="text-xs text-blue-500 font-bold">Tukar Size</button>
+                                                                        <span> | </span>
+                                                                        <button
+                                                                            onClick={() => openrefundModal(produk, id_produk, size, qty, source, id_pesanan, idpo, id_ware, id)}
+                                                                            className="text-xs text-red-500 font-bold">Refund</button>
+                                                                    </div>
+                                                                )
+                                                            }
                                                         }
                                                     })(order.details_order[i - 1].produk, order.details_order[i - 1].id_produk, order.details_order[i - 1].size, order.details_order[i - 1].qty, order.details_order[i - 1].source, order.id_pesanan, order.details_order[i - 1].idpo, order.details_order[i - 1].id_ware, order.details_order[i - 1].id)}
 
@@ -491,7 +579,7 @@ export default function Shipping() {
         }).then(function (response) {
             // console.log(response.data);
             mutate();
-
+            count_mutate();
             toast.success("Data berhasil Update", {
                 position: toast.POSITION.TOP_RIGHT,
                 pauseOnHover: false,
@@ -869,6 +957,113 @@ export default function Shipping() {
                                         onClick={() => sumbitrefund()}
                                     >
                                         Refund
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+                </>
+            ) : null}
+
+            {returLuarModal ? (
+                <>
+                    <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+                        <div className="relative w-auto my-6 mx-auto max-w-3xl ">
+                            {/*content*/}
+                            <div className="border-0 rounded-lg shadow-lg relative flex flex-col bg-white outline-none focus:outline-none w-[500px]">
+                                {/*header*/}
+                                <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
+                                    <span className="text-sm font-semibold">
+                                        Tukar Size Barang Luar - {LuarProduk + " | Size " + LuarSize + " | Qty " + LuarOldQty}
+                                    </span>
+                                </div>
+                                {/*body*/}
+                                <div className="relative text-sm p-6 flex-auto">
+                                    <div className="text-sm">
+                                        <label>Nama Produk</label>
+                                        <input
+                                            value={LuarProduk}
+                                            readOnly
+                                            className="h-auto rounded-lg w-full bg-white py-2 px-5 mt-2 text-gray-700 focus:outline-none border"
+                                            type="text"
+                                            placeholder="Masukan Nama Produk" />
+                                    </div>
+
+                                    <div className="text-sm mt-3">
+                                        <label>Size Baru</label>
+                                        <input
+                                            value={LuarSize}
+                                            onChange={(e) => {
+                                                setLuarSize(e.target.value)
+                                            }}
+                                            className="h-auto rounded-lg w-full bg-white py-2 px-5 mt-2 text-gray-700 focus:outline-none border"
+                                            type="text"
+                                            placeholder="Masukan Size" />
+                                    </div>
+
+                                    <div className="text-sm mt-3">
+                                        <div className="mb-2">Qty:</div>
+                                        <div className="text-sm flex flex-wrap items-center">
+                                            <button
+                                                onClick={() => {
+                                                    setQtymanualluar("min")
+                                                }}
+                                                className="w-10 py-2 border border-blue-300 rounded font-bold text-blue-500 hover:bg-blue-500 hover:text-white">-</button>
+                                            <div className="font-bold py-2 grow text-center border rounded mx-2">{LuarQtyNew}</div>
+                                            <button
+                                                onClick={() => {
+                                                    setQtymanualluar("plus")
+                                                }}
+                                                className="w-10 py-2 border border-blue-300 rounded font-bold text-blue-500 hover:bg-blue-500 hover:text-white">+</button>
+                                        </div>
+                                    </div>
+
+                                    <div className="text-sm mt-3">
+                                        <label>Supplier</label>
+                                        <div className="mt-2 flex flex-wrap items-center justify-end">
+                                            <select
+                                                onChange={(e) => {
+                                                    setLuarSupplier(e.target.value)
+                                                }}
+                                                className="appearance-none h-auto cursor-pointer rounded-lg w-full bg-white py-2 px-5 focus:outline-none border text-sm" placeholder="Pilih Store">
+                                                <option value="">Pilih Supplier</option>
+                                                {list_supplier}
+                                            </select>
+                                            <i className="fi fi-rr-angle-small-down w-[1.12rem] h-[1.12rem] text-center text-gray-500 text-[1.12rem] leading-4 absolute mr-5"></i>
+                                        </div>
+                                    </div>
+
+                                    <div className="text-sm my-3">
+                                        <label>Harga Beli</label>
+                                        <input
+                                            onChange={(e) => {
+                                                setLuarHargaBeli(parseInt(e.target.value));
+                                            }}
+                                            value={LuarHargaBeli}
+                                            className="h-auto rounded-lg w-full bg-white py-2 px-5 mt-2 text-gray-700 focus:outline-none border"
+                                            type="number"
+                                            placeholder="Masukan Harga Beli" />
+                                    </div>
+
+                                </div>
+                                {/*footer*/}
+                                <div className="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
+                                    <button
+                                        className="text-green-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1"
+                                        type="button"
+                                        onClick={() => {
+                                            setreturLuarModal(false);
+                                        }}
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        className={`bg-green-500 text-white font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1`}
+                                        type="button"
+                                        onClick={() => sumbitReturLuar()}
+                                    >
+                                        Submit
                                     </button>
                                 </div>
                             </div>
