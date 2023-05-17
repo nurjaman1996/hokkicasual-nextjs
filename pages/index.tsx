@@ -5,27 +5,66 @@ import Flatpickr from "react-flatpickr";
 import "flatpickr/dist/themes/dark.css";
 import React, { Component, useRef, useState } from "react";
 import { compareAsc, format } from 'date-fns'
+import useSWR from 'swr';
+import axios from 'axios';
+const fetcher = (url: string) => fetch(url).then(res => res.json());
+
 
 export default function Home() {
     // format(new Date(2014, 1, 11), 'yyyy-MM-dd')
 
-    const [date, setDate] = useState(format(new Date(), 'dd/MM/yyyy')
-    );
+    const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+
+    const [Store, setStore] = useState("all");
+
+    const { data, error, isLoading, mutate } = useSWR(`https://api.hokkiscasual.com/dashboard/${Store}/${date}`, fetcher);
+
+    if (!isLoading && !error) {
+        var gross_sale = data.gross_sale;
+        var expense = data.expense;
+        var netsale = data.netsale;
+        var transactions = data.transactions;
+        var produkgudangsold = data.produkgudangsold;
+        var produkextsold = data.produkextsold;
+    }
+
+    const { data: store_data, error: store_error, isLoading: store_isLoading } = useSWR(`https://api.hokkiscasual.com/getstore`, fetcher);
+    let list_store: any = [];
+    if (!store_isLoading && !store_error) {
+        store_data.data_store.map((store: any, index: number) => {
+            list_store.push(
+                <option key={index} value={store.id_store}>{store.store}</option>
+            )
+        })
+    } else {
+        var data_store: any = [];
+    }
 
     return (
         <div className="p-5">
             <div className="font-bold text-3xl border-b border-[#2125291A] h-16 mb-7">Dashboard</div>
 
-            <div className="grid grid-cols-2 items-center content-center mb-7">
+            <div className="flex flex-wrap gap-3 items-center content-center mb-7">
                 <div className="grow font-normal italic text-sm">Menampilkan Data : {String(date)} </div>
+                <div className="flex text-sm flex-row items-center w-[20%] justify-end">
+                    <select
+                        value={Store}
+                        onChange={(e) => {
+                            setStore(e.target.value);
+                        }}
+                        className={`appearance-none border h-[45px] w-[100%] px-5  text-gray-700 focus:outline-none rounded-lg`}>
+                        <option value="all">All Store</option>
+                        {list_store}
+                    </select>
+                </div>
                 <div className="shadow rounded-lg ml-auto w-[290px] flex flex-row items-center justify-end">
                     <Flatpickr
-                        className="text-gray-500 h-[50px] text-start py-2 px-4 w-full rounded-lg focus:outline-none"
+                        className="text-gray-500 h-[45px] text-start py-2 px-4 w-full rounded-lg focus:outline-none"
                         value={date}
                         placeholder="Select Date Range"
                         options={{
                             mode: "range",
-                            dateFormat: "d/m/Y",
+                            dateFormat: "Y-m-d",
                             enableTime: false,
                             // disable: [
                             //   function (date) {
@@ -57,17 +96,17 @@ export default function Home() {
                                 />
                             </div>
 
-                            <div>
+                            {/* <div>
                                 <fa.FaChevronRight size={18} className="text-gray-400 group-hover:text-gray-800" />
-                            </div>
+                            </div> */}
                         </div>
 
                         <div className="font-medium text-base text-gray-400">
-                            Gross Sales
+                            Omzet Penjualan
                         </div>
 
                         <div className="font-bold text-xl text-black">
-                            Rp 2.345.312
+                            Rp {gross_sale ? gross_sale : 0}
                         </div>
                     </div>
 
@@ -87,17 +126,17 @@ export default function Home() {
                                 />
                             </div>
 
-                            <div>
+                            {/* <div>
                                 <fa.FaChevronRight size={18} className="text-gray-400 group-hover:text-gray-800" />
-                            </div>
+                            </div> */}
                         </div>
 
                         <div className="font-medium text-base text-gray-400">
-                            Expenses
+                            Pengeluaran
                         </div>
 
                         <div className="font-bold text-xl text-black">
-                            Rp 2.345.312
+                            Rp {expense ? expense : 0}
                         </div>
                     </div>
 
@@ -117,17 +156,17 @@ export default function Home() {
                                 />
                             </div>
 
-                            <div>
+                            {/* <div>
                                 <fa.FaChevronRight size={18} className="text-gray-400 group-hover:text-gray-800" />
-                            </div>
+                            </div> */}
                         </div>
 
                         <div className="font-medium text-base text-gray-400">
-                            Net Sales
+                            Omzet Bersih (Omzet - Pengeluaran)
                         </div>
 
                         <div className="font-bold text-xl text-black">
-                            Rp 2.345.312
+                            Rp {netsale ? netsale : 0}
                         </div>
                     </div>
 
@@ -147,17 +186,17 @@ export default function Home() {
                                 />
                             </div>
 
-                            <div>
+                            {/* <div>
                                 <fa.FaChevronRight size={18} className="text-gray-400 group-hover:text-gray-800" />
-                            </div>
+                            </div> */}
                         </div>
 
                         <div className="font-medium text-base text-gray-400">
-                            Transactions
+                            Transaksi
                         </div>
 
                         <div className="font-bold text-xl text-black">
-                            99
+                            {transactions ? transactions : 0} Invoice
                         </div>
                     </div>
 
@@ -176,17 +215,17 @@ export default function Home() {
                                 />
                             </div>
 
-                            <div>
+                            {/* <div>
                                 <fa.FaChevronRight size={18} className="text-gray-400 group-hover:text-gray-800" />
-                            </div>
+                            </div> */}
                         </div>
 
                         <div className="font-medium text-base text-gray-400">
-                            Products Stock Sold
+                            Barang Gudang terjual
                         </div>
 
                         <div className="font-bold text-xl text-black">
-                            102
+                            {produkgudangsold ? produkgudangsold : 0} Pcs
                         </div>
                     </div>
                 </a>
@@ -204,17 +243,17 @@ export default function Home() {
                                 />
                             </div>
 
-                            <div>
+                            {/* <div>
                                 <fa.FaChevronRight size={18} className="text-gray-400 group-hover:text-gray-800" />
-                            </div>
+                            </div> */}
                         </div>
 
                         <div className="font-medium text-base text-gray-400">
-                            Product External Sold
+                            Barang Luar Terjual
                         </div>
 
                         <div className="font-bold text-xl text-black">
-                            87
+                            {produkextsold ? produkextsold : 0} Pcs
                         </div>
                     </div>
                 </a>
