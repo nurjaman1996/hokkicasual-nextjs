@@ -289,6 +289,128 @@ export default function NotaBarang() {
                 Daftar Nota Barang
             </div>
 
+            <div className="grid grid-cols-4 gap-6 grow h-auto content-start mb-6">
+                <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
+
+                    <div className="grid grid-rows-3 gap-2 items-center">
+                        <div className="flex content-center items-center justify-start">
+                            <div className="grow">
+                                <Image
+                                    className="w-[36px] h-[36px] max-w-full max-h-full"
+                                    src="/dibayar.png"
+                                    alt="Picture of the author"
+                                    width={100}
+                                    height={100}
+                                />
+                            </div>
+
+                            {/* <div>
+                                <fa.FaChevronRight size={18} className="text-gray-400 group-hover:text-gray-800" />
+                            </div> */}
+                        </div>
+
+                        <div className="font-medium text-base text-green-600">
+                            Nota Sudah Dibayar
+                        </div>
+
+                        <div className="font-bold text-xl text-green-600">
+                            Rp 10.562.120
+                        </div>
+                    </div>
+
+                </a>
+
+                <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
+
+                    <div className="grid grid-rows-3 gap-2 items-center">
+                        <div className="flex content-center items-center justify-start">
+                            <div className="grow">
+                                <Image
+                                    className="w-[36px] h-[36px] max-w-full max-h-full"
+                                    src="/boxes.png"
+                                    alt="Picture of the author"
+                                    width={100}
+                                    height={100}
+                                />
+                            </div>
+
+                            {/* <div>
+            <fa.FaChevronRight size={18} className="text-gray-400 group-hover:text-gray-800" />
+        </div> */}
+                        </div>
+
+                        <div className="font-medium text-base text-green-600">
+                            Qty
+                        </div>
+
+                        <div className="font-bold text-xl text-green-600">
+                            51 Pcs
+                        </div>
+                    </div>
+
+                </a>
+
+                <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
+
+                    <div className="grid grid-rows-3 gap-2 items-center">
+                        <div className="flex content-center items-center justify-start">
+                            <div className="grow">
+                                <Image
+                                    className="w-[36px] h-[36px] max-w-full max-h-full"
+                                    src="/belum-dibayar.png"
+                                    alt="Picture of the author"
+                                    width={100}
+                                    height={100}
+                                />
+                            </div>
+
+                            {/* <div>
+                                <fa.FaChevronRight size={18} className="text-gray-400 group-hover:text-gray-800" />
+                            </div> */}
+                        </div>
+
+                        <div className="font-medium text-base text-red-400">
+                            Nota Belum Dibayar
+                        </div>
+
+                        <div className="font-bold text-xl text-red-400">
+                            Rp 3.562.250
+                        </div>
+                    </div>
+
+                </a>
+
+                <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
+
+                    <div className="grid grid-rows-3 gap-2 items-center">
+                        <div className="flex content-center items-center justify-start">
+                            <div className="grow">
+                                <Image
+                                    className="w-[36px] h-[36px] max-w-full max-h-full"
+                                    src="/boxes.png"
+                                    alt="Picture of the author"
+                                    width={100}
+                                    height={100}
+                                />
+                            </div>
+
+                            {/* <div>
+                                <fa.FaChevronRight size={18} className="text-gray-400 group-hover:text-gray-800" />
+                            </div> */}
+                        </div>
+
+                        <div className="font-medium text-base text-red-400">
+                            Qty
+                        </div>
+
+                        <div className="font-bold text-xl text-red-400">
+                            25 Pcs
+                        </div>
+                    </div>
+
+                </a>
+            </div>
+
             <div className="flex flex-wrap items-center content-center mb-6 gap-5">
                 <div className="shadow rounded-lg w-auto flex flex-row text-center content-center">
                     <input
