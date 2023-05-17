@@ -14,11 +14,13 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useForm } from "react-hook-form";
 import useSWR from 'swr';
 import axios from 'axios';
+import { useRouter } from "next/router";
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 export default function Expense() {
   const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
+  const router = useRouter();
 
   const columns: any = [
     {
@@ -228,9 +230,15 @@ export default function Expense() {
 
   return (
     <div className="p-5">
-      <div className="font-bold text-3xl border-b border-[#2125291A] h-16 mb-7">
-        Pengeluaran Toko
+      <div className="flex flex-wrap items-center h-12 border-b border-[#2125291A] pb-5 mb-5">
+        <button className="bg-gray-200 p-3 rounded-lg mr-6 " onClick={() => router.back()}>
+          <fa.FaChevronLeft size={13} />
+        </button>
+        <span className="font-bold text-xl">Pengeluaran Toko</span>
       </div>
+      {/* <div className="font-bold text-2xl border-b border-[#2125291A] h-12 mb-5">
+        Pengeluaran Toko
+      </div> */}
 
       <div className="flex flex-wrap items-center content-center mb-6">
         <div className="shadow rounded-lg w-auto flex flex-row text-center content-center">

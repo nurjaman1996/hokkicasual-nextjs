@@ -155,7 +155,7 @@ export default function Home() {
 
                 </a>
 
-                <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-[90%] bg-white px-5 py-5 group">
+                <a href="/expense" className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-[90%] bg-white px-5 py-5 group">
 
                     <div className="grid grid-rows-3 h-full items-center">
                         <div className="flex content-center items-center justify-start">
