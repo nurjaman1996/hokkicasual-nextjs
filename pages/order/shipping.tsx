@@ -17,6 +17,12 @@ import * as Icons from "react-icons/fa";
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
+let Rupiah = new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    maximumFractionDigits: 0,
+});
+
 export default function Shipping() {
     // format(new Date(2014, 1, 11), 'yyyy-MM-dd')
 
@@ -373,7 +379,7 @@ export default function Shipping() {
                             {/* <div className="grow">Cust. <b>{order.customer}</b> | {order.sales_channel}</div> */}
                             <div className="grow text-start text-xs flex flex-col">
                                 {/* <span>Invoice <b>#{order.id_invoice}</b></span> */}
-                                <span><b>{order.sales_channel}</b></span>
+                                <span><b>{order.store[0].store}</b></span>
                                 <span>{format(new Date(order.created_at), 'dd MMMM, Y HH:mm')} | Pesanan #<b className="text-blue-500">{order.id_pesanan}</b></span>
                             </div>
 
@@ -447,7 +453,7 @@ export default function Shipping() {
 
                             <div className="justify-center flex self-center">
                                 <div className="text-start flex flex-col">
-                                    <span className="font-bold">Rp{order.total_amount}</span>
+                                    <span className="font-bold">{Rupiah.format(order.total_amount)}</span>
                                     {(function () {
                                         if (tabactive != "CANCEL") {
                                             return (

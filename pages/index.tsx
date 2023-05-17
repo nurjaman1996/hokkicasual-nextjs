@@ -9,6 +9,12 @@ import useSWR from 'swr';
 import axios from 'axios';
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
+let Rupiah = new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    maximumFractionDigits: 0,
+});
+// Rupiah.format(data.gross_sale)
 
 export default function Home() {
     // format(new Date(2014, 1, 11), 'yyyy-MM-dd')
@@ -20,9 +26,9 @@ export default function Home() {
     const { data, error, isLoading, mutate } = useSWR(`https://api.hokkiscasual.com/dashboard/${Store}/${date}`, fetcher);
 
     if (!isLoading && !error) {
-        var gross_sale = data.gross_sale;
-        var expense = data.expense;
-        var netsale = data.netsale;
+        var gross_sale = Rupiah.format(data.gross_sale);
+        var expense = Rupiah.format(data.expense);
+        var netsale = Rupiah.format(data.netsale);
         var transactions = data.transactions;
         var produkgudangsold = data.produkgudangsold;
         var produkextsold = data.produkextsold;
@@ -106,7 +112,7 @@ export default function Home() {
                         </div>
 
                         <div className="font-bold text-xl text-black">
-                            Rp {gross_sale ? gross_sale : 0}
+                            {gross_sale ? gross_sale : 0}
                         </div>
                     </div>
 
@@ -136,7 +142,7 @@ export default function Home() {
                         </div>
 
                         <div className="font-bold text-xl text-black">
-                            Rp {expense ? expense : 0}
+                            {expense ? expense : 0}
                         </div>
                     </div>
 
@@ -166,7 +172,7 @@ export default function Home() {
                         </div>
 
                         <div className="font-bold text-xl text-black">
-                            Rp {netsale ? netsale : 0}
+                            {netsale ? netsale : 0}
                         </div>
                     </div>
 
@@ -196,7 +202,7 @@ export default function Home() {
                         </div>
 
                         <div className="font-bold text-xl text-black">
-                            {transactions ? transactions : 0} Invoice
+                            {transactions ? transactions : 0} Pesanan
                         </div>
                     </div>
 
