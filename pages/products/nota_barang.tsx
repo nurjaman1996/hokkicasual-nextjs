@@ -259,6 +259,11 @@ export default function NotaBarang() {
                                 </div>
                             </td>
                             <td className="p-0 pt-4 h-full">
+                                <div className="flex flex-wrap justify-center items-center h-full bg-white pt-2 md:pt-4 md:pb-[15px] px-4">
+                                    {data_produk.payment}
+                                </div>
+                            </td>
+                            <td className="p-0 pt-4 h-full">
                                 <div className="flex flex-warp gap-4 justify-center items-center h-full bg-white pt-2 md:pt-4 md:pb-[15px] px-4 rounded-r-lg">
                                     <button className="text-blue-500">
                                         <i className="fi fi-rr-edit text-center text-lg"></i>
@@ -292,7 +297,7 @@ export default function NotaBarang() {
             <div className="grid grid-cols-4 gap-6 grow h-auto content-start mb-6">
                 <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
 
-                    <div className="grid grid-rows-3 gap-2 items-center">
+                    <div className="grid grid-rows-3 h-[90px] items-center">
                         <div className="flex content-center items-center justify-start">
                             <div className="grow">
                                 <Image
@@ -309,7 +314,7 @@ export default function NotaBarang() {
                             </div> */}
                         </div>
 
-                        <div className="font-medium text-base text-green-600">
+                        <div className="font-medium pt-2 text-base text-green-600">
                             Nota Sudah Dibayar
                         </div>
 
@@ -322,7 +327,7 @@ export default function NotaBarang() {
 
                 <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
 
-                    <div className="grid grid-rows-3 gap-2 items-center">
+                    <div className="grid grid-rows-3 h-[90px] items-center">
                         <div className="flex content-center items-center justify-start">
                             <div className="grow">
                                 <Image
@@ -339,7 +344,7 @@ export default function NotaBarang() {
         </div> */}
                         </div>
 
-                        <div className="font-medium text-base text-green-600">
+                        <div className="font-medium pt-2 text-base text-green-600">
                             Qty
                         </div>
 
@@ -352,7 +357,7 @@ export default function NotaBarang() {
 
                 <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
 
-                    <div className="grid grid-rows-3 gap-2 items-center">
+                    <div className="grid grid-rows-3 h-[90px] items-center">
                         <div className="flex content-center items-center justify-start">
                             <div className="grow">
                                 <Image
@@ -369,7 +374,7 @@ export default function NotaBarang() {
                             </div> */}
                         </div>
 
-                        <div className="font-medium text-base text-red-400">
+                        <div className="font-medium pt-2 text-base text-red-400">
                             Nota Belum Dibayar
                         </div>
 
@@ -382,7 +387,7 @@ export default function NotaBarang() {
 
                 <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
 
-                    <div className="grid grid-rows-3 gap-2 items-center">
+                    <div className="grid grid-rows-3 h-[90px] items-center">
                         <div className="flex content-center items-center justify-start">
                             <div className="grow">
                                 <Image
@@ -399,7 +404,7 @@ export default function NotaBarang() {
                             </div> */}
                         </div>
 
-                        <div className="font-medium text-base text-red-400">
+                        <div className="font-medium pt-2 text-base text-red-400">
                             Qty
                         </div>
 
@@ -498,6 +503,9 @@ export default function NotaBarang() {
                         </th>
                         <th className="py-3">
                             Status Barang
+                        </th>
+                        <th className="py-3">
+                            Status Pembayaran
                         </th>
                         <th className="py-3 rounded-r-lg">
                             Action

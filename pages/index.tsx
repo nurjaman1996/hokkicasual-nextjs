@@ -32,6 +32,11 @@ export default function Home() {
         var transactions = data.transactions;
         var produkgudangsold = data.produkgudangsold;
         var produkextsold = data.produkextsold;
+
+        var costgudang = Rupiah.format(data.costgudang);
+        var costluar = Rupiah.format(data.costluar);
+
+        var profit = Rupiah.format(data.profit);
     }
 
     const { data: store_data, error: store_error, isLoading: store_isLoading } = useSWR(`https://api.hokkiscasual.com/getstore`, fetcher);
@@ -48,10 +53,9 @@ export default function Home() {
 
     return (
         <div className="p-5">
-            <div className="font-bold text-3xl border-b border-[#2125291A] h-16 mb-7">Dashboard</div>
-
-            <div className="flex flex-wrap gap-3 items-center content-center mb-7">
-                <div className="grow font-normal italic text-sm">Menampilkan Data : {String(date)} </div>
+            <div className="flex flex-wrap gap-3 pb-4 items-center border-b border-[#2125291A] content-center mb-7">
+                <div className="font-bold text-xl">Dashboard</div>
+                <div className="grow font-normal italic text-sm pt-1">Menampilkan Data : {String(date)} </div>
                 <div className="flex text-sm flex-row items-center w-[20%] justify-end">
                     <select
                         value={Store}
@@ -87,11 +91,11 @@ export default function Home() {
                 </div>
             </div>
 
-            <div className="grid grid-cols-4 gap-6 grow h-auto content-start">
+            <div className="grid grid-cols-5 gap-5 grow h-auto content-start">
 
-                <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
+                <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-[90%] bg-white px-5 py-5 group">
 
-                    <div className="grid grid-rows-3 gap-2 items-center">
+                    <div className="grid grid-rows-3 h-full items-center">
                         <div className="flex content-center items-center justify-start">
                             <div className="grow">
                                 <Image
@@ -108,7 +112,7 @@ export default function Home() {
         </div> */}
                         </div>
 
-                        <div className="font-medium text-base text-gray-400">
+                        <div className="font-medium text-sm text-gray-400">
                             Transaksi
                         </div>
 
@@ -121,9 +125,9 @@ export default function Home() {
 
 
 
-                <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
+                <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-[90%] bg-white px-5 py-5 group">
 
-                    <div className="grid grid-rows-3 gap-2 items-center">
+                    <div className="grid grid-rows-3 h-full items-center">
                         <div className="flex content-center items-center justify-start">
                             <div className="grow">
                                 <Image
@@ -140,7 +144,7 @@ export default function Home() {
                             </div> */}
                         </div>
 
-                        <div className="font-medium text-base text-gray-400">
+                        <div className="font-medium text-sm text-gray-400">
                             Omzet Kotor Penjualan
                         </div>
 
@@ -151,9 +155,9 @@ export default function Home() {
 
                 </a>
 
-                <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
+                <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-[90%] bg-white px-5 py-5 group">
 
-                    <div className="grid grid-rows-3 gap-2 items-center">
+                    <div className="grid grid-rows-3 h-full items-center">
                         <div className="flex content-center items-center justify-start">
                             <div className="grow">
                                 <Image
@@ -170,7 +174,7 @@ export default function Home() {
                             </div> */}
                         </div>
 
-                        <div className="font-medium text-base text-gray-400">
+                        <div className="font-medium text-sm text-gray-400">
                             Pengeluaran
                         </div>
 
@@ -181,9 +185,9 @@ export default function Home() {
 
                 </a>
 
-                <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
+                <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-[90%] bg-white px-5 py-5 group">
 
-                    <div className="grid grid-rows-3 gap-2 items-center">
+                    <div className="grid grid-rows-3 h-full items-center">
                         <div className="flex content-center items-center justify-start">
                             <div className="grow">
                                 <Image
@@ -200,8 +204,8 @@ export default function Home() {
                             </div> */}
                         </div>
 
-                        <div className="font-medium text-base text-gray-400">
-                            Omzet Bersih (Omzet - Pengeluaran)
+                        <div className="font-medium text-sm text-gray-400">
+                            Omzet Bersih
                         </div>
 
                         <div className="font-bold text-xl text-black">
@@ -211,11 +215,41 @@ export default function Home() {
 
                 </a>
 
+                <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-[90%] bg-white px-5 py-5 group">
+
+                    <div className="grid grid-rows-3 h-full items-center">
+                        <div className="flex content-center items-center justify-start">
+                            <div className="grow">
+                                <Image
+                                    className="w-[36px] h-[36px] max-w-full max-h-full"
+                                    src="/money-bag.png"
+                                    alt="Picture of the author"
+                                    width={100}
+                                    height={100}
+                                />
+                            </div>
+
+                            {/* <div>
+                                <fa.FaChevronRight size={18} className="text-gray-400 group-hover:text-gray-800" />
+                            </div> */}
+                        </div>
+
+                        <div className="font-medium text-sm text-gray-400">
+                            Net Profit
+                        </div>
+
+                        <div className="font-bold text-xl text-black">
+                            {profit ? profit : 0}
+                        </div>
+                    </div>
+
+                </a>
+
             </div>
 
-            <div className="grid grid-cols-3 gap-6 grow h-auto content-start mt-6">
-                <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
-                    <div className="grid grid-rows-3 gap-2 items-center">
+            <div className="grid grid-cols-4 gap-5 grow h-auto content-start">
+                <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-[90%] bg-white px-5 py-5 group">
+                    <div className="grid grid-rows-3 h-full items-center">
                         <div className="flex content-center items-center justify-start">
                             <div className="grow">
                                 <Image
@@ -232,7 +266,7 @@ export default function Home() {
                             </div> */}
                         </div>
 
-                        <div className="font-medium text-base text-gray-400">
+                        <div className="font-medium text-sm text-gray-400">
                             Barang Gudang terjual
                         </div>
 
@@ -242,8 +276,8 @@ export default function Home() {
                     </div>
                 </a>
 
-                <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
-                    <div className="grid grid-rows-3 gap-2 items-center">
+                <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-[90%] bg-white px-5 py-5 group">
+                    <div className="grid grid-rows-3 h-full items-center">
                         <div className="flex content-center items-center justify-start">
                             <div className="grow">
                                 <Image
@@ -260,50 +294,21 @@ export default function Home() {
                             </div> */}
                         </div>
 
-                        <div className="font-medium text-base text-gray-400">
+                        <div className="font-medium text-sm text-gray-400">
                             Modal Barang Gudang
                         </div>
 
                         <div className="font-bold text-xl text-black">
-                            Rp 535.535.353
+                            {costgudang}
                         </div>
                     </div>
                 </a>
 
-                <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
-                    <div className="grid grid-rows-3 gap-2 items-center">
-                        <div className="flex content-center items-center justify-start">
-                            <div className="grow">
-                                <Image
-                                    className="w-[36px] h-[36px] max-w-full max-h-full"
-                                    src="/delivery-box.png"
-                                    alt="Picture of the author"
-                                    width={100}
-                                    height={100}
-                                />
-                            </div>
 
-                            {/* <div>
-                                <fa.FaChevronRight size={18} className="text-gray-400 group-hover:text-gray-800" />
-                            </div> */}
-                        </div>
 
-                        <div className="font-medium text-base text-gray-400">
-                            Profit Barang Gudang
-                        </div>
 
-                        <div className="font-bold text-xl text-black">
-                            Rp 535.535.353
-                        </div>
-                    </div>
-                </a>
-
-            </div>
-
-            <div className="grid grid-cols-3 gap-6 grow h-auto content-start mt-6">
-
-                <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
-                    <div className="grid grid-rows-3 gap-2 items-center">
+                <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-[90%] bg-white px-5 py-5 group">
+                    <div className="grid grid-rows-3 h-full items-center">
                         <div className="flex content-center items-center justify-start">
                             <div className="grow">
                                 <Image
@@ -320,7 +325,7 @@ export default function Home() {
                         </div> */}
                         </div>
 
-                        <div className="font-medium text-base text-gray-400">
+                        <div className="font-medium text-sm text-gray-400">
                             Barang Luar Terjual
                         </div>
 
@@ -330,8 +335,8 @@ export default function Home() {
                     </div>
                 </a>
 
-                <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
-                    <div className="grid grid-rows-3 gap-2 items-center">
+                <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-[90%] bg-white px-5 py-5 group">
+                    <div className="grid grid-rows-3 h-full items-center">
                         <div className="flex content-center items-center justify-start">
                             <div className="grow">
                                 <Image
@@ -348,40 +353,12 @@ export default function Home() {
                             </div> */}
                         </div>
 
-                        <div className="font-medium text-base text-gray-400">
+                        <div className="font-medium text-sm text-gray-400">
                             Modal Barang Luar
                         </div>
 
                         <div className="font-bold text-xl text-black">
-                            Rp 535.535.353
-                        </div>
-                    </div>
-                </a>
-
-                <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
-                    <div className="grid grid-rows-3 gap-2 items-center">
-                        <div className="flex content-center items-center justify-start">
-                            <div className="grow">
-                                <Image
-                                    className="w-[36px] h-[36px] max-w-full max-h-full"
-                                    src="/delivery-box.png"
-                                    alt="Picture of the author"
-                                    width={100}
-                                    height={100}
-                                />
-                            </div>
-
-                            {/* <div>
-                                <fa.FaChevronRight size={18} className="text-gray-400 group-hover:text-gray-800" />
-                            </div> */}
-                        </div>
-
-                        <div className="font-medium text-base text-gray-400">
-                            Profit Barang Luar
-                        </div>
-
-                        <div className="font-bold text-xl text-black">
-                            Rp 535.535.353
+                            {costluar}
                         </div>
                     </div>
                 </a>

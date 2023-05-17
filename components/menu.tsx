@@ -57,12 +57,12 @@ const Items = [
                 "icon_item": "fi fi-rr-file-invoice",
                 "text": "Nota Barang"
             },
-            {
-                "title": "Stok Opname",
-                "href": "/products/stock_opname",
-                "icon_item": "fi fi-rr-boxes",
-                "text": "Stok Opname",
-            },
+            // {
+            //     "title": "Stok Opname",
+            //     "href": "/products/stock_opname",
+            //     "icon_item": "fi fi-rr-boxes",
+            //     "text": "Stok Opname",
+            // },
             {
                 "title": "Barcode",
                 "href": "/products/barcode",
