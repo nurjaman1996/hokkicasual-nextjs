@@ -28,6 +28,7 @@ export default function Expense() {
         {
             name: 'Nama Produk',
             selector: (row: { id_expense: any }) => row.id_expense,
+            width: "350px"
         },
         {
             name: 'ID Produk',
@@ -42,7 +43,11 @@ export default function Expense() {
             selector: (row: { qty: any }) => row.qty,
         },
         {
-            name: 'Transfer',
+            name: 'Transfer In',
+            selector: (row: { total_amount: any }) => row.total_amount,
+        },
+        {
+            name: 'Transfer Out',
             selector: (row: { total_amount: any }) => row.total_amount,
         },
         {
@@ -63,6 +68,18 @@ export default function Expense() {
         },
 
     ];
+
+    const [Warehouse, setWarehouse] = useState("all");
+
+    const { data: warehouse_data, error: warehouse_error, isLoading: warehouse_isLoading, mutate: warehouse_mutate } = useSWR(`https://api.hokkiscasual.com/getwarehouse`, fetcher);
+    const list_warehouse: any = [];
+    if (!warehouse_isLoading && !warehouse_error) {
+        warehouse_data.data_ware.map((area: any, index: number) => {
+            list_warehouse.push(
+                <option key={index} value={area.id_ware}>{area.warehouse}</option>
+            )
+        })
+    }
 
     const list_expense: any = [];
 
@@ -175,9 +192,6 @@ export default function Expense() {
                                 <button className="text-blue-500" onClick={() => showeditModal(data_expense.id, data_expense.deskripsi, data_expense.amount, data_expense.qty, data_expense.total_amount, index)}>
                                     <i className="fi fi-rr-edit text-center text-xl"></i>
                                 </button>
-                                <button className="text-red-500" onClick={() => showdeleteModal(data_expense.id, index)}>
-                                    <i className="fi fi-rr-trash text-center text-xl"></i>
-                                </button>
                             </div>
                         ),
                     },
@@ -211,14 +225,14 @@ export default function Expense() {
 
     return (
         <div className="p-5">
-            <div className="font-bold text-3xl border-b border-[#2125291A] h-16 mb-7">
+            <div className="font-bold text-2xl border-b border-[#2125291A] h-12 mb-4">
                 Assets (FIFO METHOD)
             </div>
 
-            <div className="grid grid-cols-3 gap-6 grow h-auto content-start">
+            <div className="grid grid-cols-4 gap-3 grow h-auto content-start">
                 <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
 
-                    <div className="grid grid-rows-3 gap-2 items-center">
+                    <div className="grid grid-rows-3 items-center">
                         <div className="flex content-center items-center justify-start">
                             <div className="grow">
                                 <Image
@@ -230,12 +244,12 @@ export default function Expense() {
                                 />
                             </div>
 
-                            <div>
+                            {/* <div>
                                 <fa.FaChevronRight size={18} className="text-gray-400 group-hover:text-gray-800" />
-                            </div>
+                            </div> */}
                         </div>
 
-                        <div className="font-medium text-base text-gray-400">
+                        <div className="font-medium pt-1.5 text-base text-gray-400">
                             Release
                         </div>
 
@@ -248,7 +262,7 @@ export default function Expense() {
 
                 <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
 
-                    <div className="grid grid-rows-3 gap-2 items-center">
+                    <div className="grid grid-rows-3 items-center">
                         <div className="flex content-center items-center justify-start">
                             <div className="grow">
                                 <Image
@@ -260,12 +274,12 @@ export default function Expense() {
                                 />
                             </div>
 
-                            <div>
+                            {/* <div>
                                 <fa.FaChevronRight size={18} className="text-gray-400 group-hover:text-gray-800" />
-                            </div>
+                            </div> */}
                         </div>
 
-                        <div className="font-medium text-base text-gray-400">
+                        <div className="font-medium pt-1.5 text-base text-gray-400">
                             Restock
                         </div>
 
@@ -276,9 +290,9 @@ export default function Expense() {
 
                 </a>
 
-                <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
+                {/* <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
 
-                    <div className="grid grid-rows-3 gap-2 items-center">
+                    <div className="grid grid-rows-3 items-center">
                         <div className="flex content-center items-center justify-start">
                             <div className="grow">
                                 <Image
@@ -289,13 +303,9 @@ export default function Expense() {
                                     height={100}
                                 />
                             </div>
-
-                            <div>
-                                <fa.FaChevronRight size={18} className="text-gray-400 group-hover:text-gray-800" />
-                            </div>
                         </div>
 
-                        <div className="font-medium text-base text-gray-400">
+                        <div className="font-medium pt-1.5 text-base text-gray-400">
                             Transfer
                         </div>
 
@@ -304,13 +314,10 @@ export default function Expense() {
                         </div>
                     </div>
 
-                </a>
-            </div>
-
-            <div className="grid grid-cols-2 gap-6 grow h-auto content-start mt-6">
+                </a> */}
 
                 <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
-                    <div className="grid grid-rows-3 gap-2 items-center">
+                    <div className="grid grid-rows-3 items-center">
                         <div className="flex content-center items-center justify-start">
                             <div className="grow">
                                 <Image
@@ -322,12 +329,12 @@ export default function Expense() {
                                 />
                             </div>
 
-                            <div>
+                            {/* <div>
                                 <fa.FaChevronRight size={18} className="text-gray-400 group-hover:text-gray-800" />
-                            </div>
+                            </div> */}
                         </div>
 
-                        <div className="font-medium text-base text-gray-400">
+                        <div className="font-medium pt-1.5 text-base text-gray-400">
                             Asset Quantity
                         </div>
 
@@ -338,7 +345,7 @@ export default function Expense() {
                 </a>
 
                 <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
-                    <div className="grid grid-rows-3 gap-2 items-center">
+                    <div className="grid grid-rows-3 items-center">
                         <div className="flex content-center items-center justify-start">
                             <div className="grow">
                                 <Image
@@ -350,12 +357,12 @@ export default function Expense() {
                                 />
                             </div>
 
-                            <div>
+                            {/* <div>
                                 <fa.FaChevronRight size={18} className="text-gray-400 group-hover:text-gray-800" />
-                            </div>
+                            </div> */}
                         </div>
 
-                        <div className="font-medium text-base text-gray-400">
+                        <div className="font-medium pt-1.5 text-base text-gray-400">
                             Assets Valuasi
                         </div>
 
@@ -367,9 +374,34 @@ export default function Expense() {
 
             </div>
 
-            <div className="mb-20 mt-6">
+            <div className="rounded-lg mt-4 gap-3 w-auto flex flex-row text-center content-center">
+                <div className="flex flex-warp">
+                    <input className="h-[45px] border-0 w-[300px] pr-3 pl-5  text-gray-700 focus:outline-none rounded-l-lg" type="text" placeholder="Cari Produk"
+                        value={filterText}
+                        onChange={(e) => setFilterText(e.target.value)}
+                    />
+
+                    <button type="button" className="rounded-r-lg bg-white h-[45px] text-gray-700 font-medium px-5">
+                        <div className="my-auto">
+                            <fa.FaSearch size={17} className="text-gray-700" />
+                        </div>
+                    </button>
+                </div>
+
+                <select
+                    value={Warehouse}
+                    onChange={(e) => {
+                        setWarehouse(e.target.value);
+                    }}
+                    className={`appearance-none border h-[45px] w-[20%] px-5 text-gray-700 focus:outline-none rounded-lg`}>
+                    <option value="all">All Warehouse</option>
+                    {list_warehouse}
+                </select>
+            </div>
+
+            <div className="mb-20 mt-3">
                 <DataTable
-                    className="items-center"
+                    className="items-center text-center"
                     columns={columns}
                     data={filteredItems}
                     pagination
