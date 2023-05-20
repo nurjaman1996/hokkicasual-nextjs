@@ -15,6 +15,12 @@ import useSWR from 'swr';
 import axios from 'axios';
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
+let Rupiah = new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    maximumFractionDigits: 0,
+});
+
 export default function NotaBarang() {
     // const [dataProduct, setData] = useState(dataProduct_.product);
     const [date, setDate] = useState(format(new Date(), "yyyy-MM-dd"));
@@ -33,6 +39,14 @@ export default function NotaBarang() {
 
     const { data, error, isLoading, mutate } = useSWR(`https://api.hokkiscasual.com/notabarang/${Query}/${Store}/${date}`, fetcher);
 
+    const { data: report_data, error: report_error, isLoading: report_isLoading, mutate: report_mutate } = useSWR(`https://api.hokkiscasual.com/get_nota/${Store}/${date}`, fetcher);
+
+    if (!report_isLoading && !report_error) {
+        var nota_paid = Rupiah.format(report_data.nota_paid);
+        var nota_pending = Rupiah.format(report_data.nota_pending);
+        var qty_paid = report_data.qty_paid;
+        var qty_pending = report_data.qty_pending;
+    }
 
 
     const { data: brand_data, error: brand_error, isLoading: brand_isLoading, mutate: brand_mutate } = useSWR(`https://api.hokkiscasual.com/getbrand`, fetcher);
@@ -119,6 +133,7 @@ export default function NotaBarang() {
         }).then(function (response) {
             // console.log(response.data);
             mutate();
+            report_mutate();
         });
 
         console.log(data);
@@ -162,7 +177,7 @@ export default function NotaBarang() {
         }).then(function (response) {
             // console.log(response.data);
             mutate();
-
+            report_mutate();
             setdelModal(false);
 
             toast.success("Data telah dihapus", {
@@ -172,10 +187,6 @@ export default function NotaBarang() {
             });
         });
     }
-
-
-
-    const [editModal, seteditModal] = React.useState(false);
 
     const list_produk: any = [];
 
@@ -265,7 +276,11 @@ export default function NotaBarang() {
                             </td>
                             <td className="p-0 pt-4 h-full">
                                 <div className="flex flex-warp gap-4 justify-center items-center h-full bg-white pt-2 md:pt-4 md:pb-[15px] px-4 rounded-r-lg">
-                                    <button className="text-blue-500">
+                                    <button
+                                        onClick={() => {
+                                            showeditModal(data_produk.id, data_produk.produk, data_produk.m_price, data_produk.payment, data_produk.qty);
+                                        }}
+                                        className="text-blue-500">
                                         <i className="fi fi-rr-edit text-center text-lg"></i>
                                     </button>
                                     <button
@@ -286,15 +301,52 @@ export default function NotaBarang() {
         })
     }
 
+    const [editModal, seteditModal] = React.useState(false);
+    const [edit_produk, setedit_produk] = React.useState("");
+    const [edit_hargabeli, setedit_hargabeli] = React.useState("");
+    const [edit_payment, setedit_payment] = React.useState("");
+    const [edit_qty, setedit_qty] = React.useState("");
+    const [id, setid] = React.useState(null);
 
+    function showeditModal(id: any, produk: any, hargabeli: any, payment: any, qty: any) {
+        setid(id);
+        setedit_produk(produk);
+        setedit_hargabeli(hargabeli);
+        setedit_payment(payment);
+        setedit_qty(qty);
+
+        seteditModal(true);
+    }
+
+    const onSubmitUpdate = async (data: any) => {
+        await axios.post(`https://api.hokkiscasual.com/editnota`, {
+            id: id,
+            edit_produk: edit_produk,
+            edit_hargabeli: edit_hargabeli,
+            edit_payment: edit_payment,
+            edit_qty: edit_qty,
+        }).then(function (response) {
+            // console.log(response.data);
+            mutate();
+            report_mutate();
+
+            toast.success("Data telah diupdate", {
+                position: toast.POSITION.TOP_RIGHT,
+                pauseOnHover: false,
+                autoClose: 2000,
+            });
+
+            seteditModal(false);
+        });
+    };
 
     return (
         <div className="p-5">
-            <div className="font-bold text-3xl border-b border-[#2125291A] h-16 mb-7">
+            <div className="font-bold text-2xl border-b border-[#2125291A] h-10 mb-3">
                 Daftar Nota Barang
             </div>
 
-            <div className="grid grid-cols-4 gap-6 grow h-auto content-start mb-6">
+            <div className="grid grid-cols-4 gap-3 grow h-auto content-start mb-5">
                 <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
 
                     <div className="grid grid-rows-3 h-[90px] items-center">
@@ -319,7 +371,7 @@ export default function NotaBarang() {
                         </div>
 
                         <div className="font-bold text-xl text-green-600">
-                            Rp 10.562.120
+                            {nota_paid ? nota_paid : 0}
                         </div>
                     </div>
 
@@ -349,7 +401,7 @@ export default function NotaBarang() {
                         </div>
 
                         <div className="font-bold text-xl text-green-600">
-                            51 Pcs
+                            {qty_paid ? qty_paid : 0}
                         </div>
                     </div>
 
@@ -379,7 +431,7 @@ export default function NotaBarang() {
                         </div>
 
                         <div className="font-bold text-xl text-red-400">
-                            Rp 3.562.250
+                            {nota_pending ? nota_pending : 0}
                         </div>
                     </div>
 
@@ -409,14 +461,14 @@ export default function NotaBarang() {
                         </div>
 
                         <div className="font-bold text-xl text-red-400">
-                            25 Pcs
+                            {qty_pending ? qty_pending : 0}
                         </div>
                     </div>
 
                 </a>
             </div>
 
-            <div className="flex flex-wrap items-center content-center mb-6 gap-5">
+            <div className="flex flex-wrap items-center content-center mb-6 gap-3">
                 <div className="shadow rounded-lg w-auto flex flex-row text-center content-center">
                     <input
                         onChange={(e) => {
@@ -452,9 +504,9 @@ export default function NotaBarang() {
                     </select>
                 </div>
 
-                <div className="shadow rounded-lg ml-auto w-[290px] flex flex-row items-center justify-end">
+                <div className="shadow rounded-lg ml-auto w-[290px] flex flex-row items-center justify-end bg-white ">
                     <Flatpickr
-                        className="text-gray-500 h-[45px] text-start py-2 px-4 w-full text-sm rounded-lg focus:outline-none"
+                        className="text-gray-500 h-[45px] text-start py-2 px-4 w-full text-sm rounded-l-lg focus:outline-none"
                         value={date}
                         placeholder="Select Date Range"
                         options={{
@@ -467,7 +519,7 @@ export default function NotaBarang() {
                         }}
                     />
 
-                    <i className="fi fi-rr-calendar w-[1.12rem] h-[1.12rem] text-center text-gray-500 text-[1.12rem] leading-4 absolute mr-4"></i>
+                    <i className="fi fi-rr-calendar w-[1.12rem] h-[1.12rem] text-center text-gray-500 text-[1.12rem] leading-4 bg-white mr-4"></i>
                 </div>
 
 
@@ -678,6 +730,89 @@ export default function NotaBarang() {
                     </>
                 ) : null
             }
+
+            {editModal ? (
+                <>
+                    <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+                        <div className="relative w-auto my-6 mx-auto max-w-3xl ">
+                            {/*content*/}
+                            <div className="border-0 rounded-lg shadow-lg relative flex flex-col bg-white outline-none focus:outline-none w-[500px]">
+                                {/*header*/}
+                                <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
+                                    <span className="text-xl font-semibold">
+                                        Edit Barang Luar
+                                    </span>
+                                </div>
+                                {/*body*/}
+                                <div className="relative p-6 flex-auto">
+
+                                    <div className="text-sm">
+                                        <label>Nama Produk</label>
+                                        <input
+                                            onChange={(e) => {
+                                                setedit_produk(e.target.value);
+                                            }}
+                                            value={edit_produk}
+                                            className="h-auto rounded-lg w-full bg-white py-2 px-5 mt-2 text-gray-700 focus:outline-none border"
+                                            type="text"
+                                            placeholder="Masukan Nama Produk" />
+                                    </div>
+
+                                    <div className="text-sm mt-6">
+                                        <label>Harga Beli</label>
+                                        <input
+                                            onChange={(e) => {
+                                                setedit_hargabeli(e.target.value);
+                                            }}
+                                            value={edit_hargabeli}
+                                            className="h-auto rounded-lg w-full bg-white py-2 px-5 mt-2 text-gray-700 focus:outline-none border"
+                                            type="text"
+                                            placeholder="Masukan Harga Beli" />
+                                    </div>
+
+                                    <div className="text-sm mt-6">
+                                        <label>Status Pembayaran</label>
+                                        <div className="mt-2 flex flex-wrap items-center justify-end">
+                                            <select
+                                                onChange={(e) => {
+                                                    setedit_payment(e.target.value)
+                                                }}
+                                                value={edit_payment}
+                                                className="appearance-none h-auto cursor-pointer rounded-lg w-full bg-white py-2 px-5 focus:outline-none border text-sm" placeholder="Pilih Store">
+                                                <option value="">Pilih Payment</option>
+                                                <option value="PAID">PAID</option>
+                                                <option value="PENDING">PENDING</option>
+
+                                            </select>
+                                            <i className="fi fi-rr-angle-small-down w-[1.12rem] h-[1.12rem] text-center text-gray-500 text-[1.12rem] leading-4 absolute mr-5"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                {/*footer*/}
+                                <div className="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
+                                    <button
+                                        className="text-red-500 background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                                        type="button"
+                                        onClick={() => {
+                                            seteditModal(false);
+                                        }}
+                                    >
+                                        Close
+                                    </button>
+                                    <button
+                                        className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
+                                        type="button"
+                                        onClick={handleSubmit(onSubmitUpdate)}
+                                    >
+                                        Save Changes
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+                </>
+            ) : null}
 
             {
                 delModal ? (

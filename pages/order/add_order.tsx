@@ -236,7 +236,9 @@ export default function AddOrder() {
                         qty: 1,
                         img: response.data.barcode_product[0].img,
                         source: "Barang Gudang",
-                        id_ware: "WARE-" + data[2]
+                        id_ware: "WARE-" + data[2],
+                        payment: "PAID",
+
                     }
                     setRowsData([...rowsData, rowsInput]);
                     settotalQty(totalQty + 1);
@@ -273,7 +275,8 @@ export default function AddOrder() {
                 qty: qty,
                 img: img,
                 source: source,
-                id_ware: id_ware
+                id_ware: id_ware,
+                payment: "PAID",
             }
             setRowsData([...rowsData, rowsInput]);
             settotalQty(totalQty + qty);
@@ -294,8 +297,8 @@ export default function AddOrder() {
         }
     }
 
-    function addProdukluar(produk: any, idproduk: any, size: any, harga_beli: any, img: any, qty: any, source: any, qty_ready: any, id_ware: any) {
-        if (produk === "" || size === "" || id_ware === "") {
+    function addProdukluar(payment: any, produk: any, idproduk: any, size: any, harga_beli: any, img: any, qty: any, source: any, qty_ready: any, id_ware: any) {
+        if (produk === "" || size === "" || id_ware === "" || payment === "") {
             toast.warning("Mohon Isi Data dengan Lengkap", {
                 position: toast.POSITION.TOP_RIGHT,
                 pauseOnHover: false,
@@ -311,7 +314,8 @@ export default function AddOrder() {
                 qty: qty,
                 img: img,
                 source: source,
-                id_ware: id_ware
+                id_ware: id_ware,
+                payment: payment,
             }
             setRowsData([...rowsData, rowsInput]);
             settotalQty(totalQty + qty);
@@ -449,6 +453,7 @@ export default function AddOrder() {
     const [addproduk_qty, setaddproduk_qty] = React.useState(1);
     const [addproduk_supplier, setaddproduk_supplier] = React.useState("");
     const [addproduk_hargabeli, setaddproduk_hargabeli] = React.useState("0");
+    const [addproduk_payment, setaddproduk_payment] = React.useState("");
 
     function setQtymanual(type: any) {
         if (type === "plus") {
@@ -493,6 +498,8 @@ export default function AddOrder() {
                 autoClose: 2000,
             });
         } else {
+            setTombolTambahOrder(true);
+
             await axios.post(`https://api.hokkiscasual.com/saveSales`, {
                 data: rowsData,
                 id_pesanan: data.id_pesanan,
@@ -507,7 +514,6 @@ export default function AddOrder() {
                     autoClose: 2000,
                     onClose: () => router.replace('/order/shipping'),
                 });
-                setTombolTambahOrder(true);
             });
         }
     };
@@ -710,6 +716,23 @@ export default function AddOrder() {
                                                 type="text"
                                                 placeholder="Masukan Harga Beli" />
                                         </div>
+
+                                        <div className="text-sm">
+                                            <label>Status Pembayaran</label>
+                                            <div className="mt-2 flex flex-wrap items-center justify-end">
+                                                <select
+                                                    onChange={(e) => {
+                                                        setaddproduk_payment(e.target.value)
+                                                    }}
+                                                    className="appearance-none h-auto cursor-pointer rounded-lg w-full bg-white py-2 px-5 focus:outline-none border text-sm" placeholder="Pilih Store">
+                                                    <option value="">Pilih Payment</option>
+                                                    <option value="PAID">PAID</option>
+                                                    <option value="PENDING">PENDING</option>
+
+                                                </select>
+                                                <i className="fi fi-rr-angle-small-down w-[1.12rem] h-[1.12rem] text-center text-gray-500 text-[1.12rem] leading-4 absolute mr-5"></i>
+                                            </div>
+                                        </div>
                                     </div>
 
 
@@ -721,7 +744,7 @@ export default function AddOrder() {
 
                                         <button
                                             onClick={() => {
-                                                addProdukluar(addproduk_produk, "NOTA", addproduk_size, addproduk_hargabeli, "default", addproduk_qty, "Barang Luar", "nolimit", addproduk_supplier)
+                                                addProdukluar(addproduk_payment, addproduk_produk, "NOTA", addproduk_size, addproduk_hargabeli, "default", addproduk_qty, "Barang Luar", "nolimit", addproduk_supplier)
                                             }}
                                             type="button"
                                             className="rounded-lg bg-blue-600 hover:bg-blue-800 h-[45px] w-[100%] text-white ">
