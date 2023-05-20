@@ -81,11 +81,11 @@ export default function Expense() {
             selector: (row: { assets: any }) => row.assets,
             width: "150px"
         },
-        {
-            name: 'Action',
-            selector: (row: { action: any }) => row.action,
-            width: "90px"
-        },
+        // {
+        //     name: 'Action',
+        //     selector: (row: { action: any }) => row.action,
+        //     width: "90px"
+        // },
 
     ];
 
@@ -128,13 +128,13 @@ export default function Expense() {
                         sold: data_asset.sold ? data_asset.sold : 0,
                         stock: data_asset.stock ? data_asset.stock : 0,
                         assets: Rupiah.format(data_asset.assets),
-                        action: (
-                            <div className="flex flex-warp gap-4">
-                                <button className="text-blue-500">
-                                    <i className="fi fi-rr-eye text-center text-xl"></i>
-                                </button>
-                            </div>
-                        ),
+                        // action: (
+                        //     <div className="flex flex-warp gap-4">
+                        //         <button className="text-blue-500">
+                        //             <i className="fi fi-rr-eye text-center text-xl"></i>
+                        //         </button>
+                        //     </div>
+                        // ),
                     },
                 )
             )
