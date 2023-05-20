@@ -17,54 +17,74 @@ import axios from 'axios';
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
+let Rupiah = new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    maximumFractionDigits: 0,
+});
+
 export default function Expense() {
     const [date, setDate] = useState(format(new Date(), 'yyyy-MM-dd'));
 
     const columns: any = [
         {
             name: 'No',
-            selector: (row: { tanggal: any }) => row.tanggal,
+            selector: (row: { no: any }) => row.no,
         },
         {
             name: 'Nama Produk',
-            selector: (row: { id_expense: any }) => row.id_expense,
-            width: "350px"
+            selector: (row: { produk: any }) => row.produk,
+            width: "230px"
+        },
+        {
+            name: 'Gudang',
+            selector: (row: { warehouse: any }) => row.warehouse,
+            width: "130px"
         },
         {
             name: 'ID Produk',
-            selector: (row: { deskripsi: any }) => row.deskripsi,
+            selector: (row: { id_produk: any }) => row.id_produk,
+            width: "130px"
         },
         {
             name: 'Release',
-            selector: (row: { amount: any }) => row.amount,
+            selector: (row: { release: any }) => row.release,
+            width: "90px"
         },
         {
             name: 'Restock',
-            selector: (row: { qty: any }) => row.qty,
+            selector: (row: { restock: any }) => row.restock,
+            width: "90px"
         },
         {
             name: 'Transfer In',
-            selector: (row: { total_amount: any }) => row.total_amount,
+            selector: (row: { transfer_in: any }) => row.transfer_in,
+            width: "100px"
         },
         {
             name: 'Transfer Out',
-            selector: (row: { total_amount: any }) => row.total_amount,
+            selector: (row: { transfer_out: any }) => row.transfer_out,
+            width: "100px"
         },
         {
             name: 'Sold',
-            selector: (row: { total_amount: any }) => row.total_amount,
+            selector: (row: { sold: any }) => row.sold,
+            width: "90px"
         },
         {
             name: 'Stock',
-            selector: (row: { total_amount: any }) => row.total_amount,
+            selector: (row: { stock: any }) => row.stock,
+            width: "90px"
         },
         {
             name: 'Assets',
-            selector: (row: { total_amount: any }) => row.total_amount,
+            selector: (row: { assets: any }) => row.assets,
+            width: "150px"
         },
         {
             name: 'Action',
             selector: (row: { action: any }) => row.action,
+            width: "90px"
         },
 
     ];
@@ -81,9 +101,45 @@ export default function Expense() {
         })
     }
 
-    const list_expense: any = [];
+    const list_produk: any = [];
 
-    const { data, error, isLoading, mutate } = useSWR(`https://api.hokkiscasual.com/getexpense`, fetcher);
+    const { data, error, isLoading, mutate } = useSWR(`https://api.hokkiscasual.com/get_asset/${Warehouse}`, fetcher);
+
+    if (!isLoading && !error) {
+        var release = data.release;
+        var restock = data.restock;
+        var tf_in = data.tf_in;
+        var tf_out = data.tf_out;
+        var qty_assets = data.qty_assets;
+        var nominal_assets = Rupiah.format(data.nominal_assets);
+
+        data.data_asset.map((data_asset: any, index: number) => {
+            return (
+                list_produk.push(
+                    {
+                        no: index + 1,
+                        produk: data_asset.produk,
+                        warehouse: data_asset.warehouse,
+                        id_produk: data_asset.id_produk,
+                        release: data_asset.release ? data_asset.release : 0,
+                        restock: data_asset.restock ? data_asset.restock : 0,
+                        transfer_in: data_asset.transfer_in ? data_asset.transfer_in : 0,
+                        transfer_out: data_asset.transfer_out ? data_asset.transfer_out : 0,
+                        sold: data_asset.sold ? data_asset.sold : 0,
+                        stock: data_asset.stock ? data_asset.stock : 0,
+                        assets: Rupiah.format(data_asset.assets),
+                        action: (
+                            <div className="flex flex-warp gap-4">
+                                <button className="text-blue-500">
+                                    <i className="fi fi-rr-eye text-center text-xl"></i>
+                                </button>
+                            </div>
+                        ),
+                    },
+                )
+            )
+        })
+    }
 
     const { register, resetField, setValue, handleSubmit, watch, formState: { errors } } = useForm({
         defaultValues: {
@@ -155,7 +211,7 @@ export default function Expense() {
 
     function showdeleteModal(id: any, index: number) {
         setid(id)
-        setDeskripsi(list_expense[index].deskripsi)
+        setDeskripsi(list_produk[index].deskripsi)
         setdelModal(true)
     }
 
@@ -175,38 +231,11 @@ export default function Expense() {
         setdelModal(false)
     }
 
-    if (!isLoading && !error) {
-        data.data_expense.map((data_expense: any, index: number) => {
-            return (
-                list_expense.push(
-                    {
-                        id: index,
-                        tanggal: data_expense.tanggal,
-                        id_expense: data_expense.id_expense,
-                        deskripsi: data_expense.deskripsi,
-                        amount: data_expense.amount,
-                        qty: data_expense.qty,
-                        total_amount: data_expense.total_amount,
-                        action: (
-                            <div className="flex flex-warp gap-4">
-                                <button className="text-blue-500" onClick={() => showeditModal(data_expense.id, data_expense.deskripsi, data_expense.amount, data_expense.qty, data_expense.total_amount, index)}>
-                                    <i className="fi fi-rr-edit text-center text-xl"></i>
-                                </button>
-                            </div>
-                        ),
-                    },
-                )
-            )
-        })
-    }
-
     const [filterText, setFilterText] = React.useState("");
 
-    const filteredItems = list_expense.filter((list_expense: any) => {
+    const filteredItems = list_produk.filter((list_produk: any) => {
         return (
-            list_expense.tanggal.toLocaleLowerCase().includes(filterText.toLocaleLowerCase()) ||
-            list_expense.id_expense.toLocaleLowerCase().includes(filterText.toLocaleLowerCase()) ||
-            list_expense.deskripsi.toLocaleLowerCase().includes(filterText.toLocaleLowerCase())
+            list_produk.produk.toLocaleLowerCase().includes(filterText.toLocaleLowerCase())
         );
     });
 
@@ -229,7 +258,7 @@ export default function Expense() {
                 Assets (FIFO METHOD)
             </div>
 
-            <div className="grid grid-cols-4 gap-3 grow h-auto content-start">
+            <div className="grid grid-cols-6 gap-3 grow h-auto content-start">
                 <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
 
                     <div className="grid grid-rows-3 items-center">
@@ -254,7 +283,7 @@ export default function Expense() {
                         </div>
 
                         <div className="font-bold text-xl text-black">
-                            235
+                            {release ? release : 0}
                         </div>
                     </div>
 
@@ -284,14 +313,13 @@ export default function Expense() {
                         </div>
 
                         <div className="font-bold text-xl text-black">
-                            152
+                            {restock ? restock : 0}
                         </div>
                     </div>
 
                 </a>
 
-                {/* <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
-
+                <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
                     <div className="grid grid-rows-3 items-center">
                         <div className="flex content-center items-center justify-start">
                             <div className="grow">
@@ -306,15 +334,38 @@ export default function Expense() {
                         </div>
 
                         <div className="font-medium pt-1.5 text-base text-gray-400">
-                            Transfer
+                            Transfer In
                         </div>
 
                         <div className="font-bold text-xl text-black">
-                            56
+                            {tf_in ? tf_in : 0}
                         </div>
                     </div>
+                </a>
 
-                </a> */}
+                <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
+                    <div className="grid grid-rows-3 items-center">
+                        <div className="flex content-center items-center justify-start">
+                            <div className="grow">
+                                <Image
+                                    className="w-[36px] h-[36px] max-w-full max-h-full"
+                                    src="/transfer.png"
+                                    alt="Picture of the author"
+                                    width={100}
+                                    height={100}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="font-medium pt-1.5 text-base text-gray-400">
+                            Transfer Out
+                        </div>
+
+                        <div className="font-bold text-xl text-black">
+                            {tf_out ? tf_out : 0}
+                        </div>
+                    </div>
+                </a>
 
                 <a className="hover:shadow-[0px_3px_11px_1px_#2125291A] rounded-xl h-auto bg-white px-5 py-5 group">
                     <div className="grid grid-rows-3 items-center">
@@ -339,7 +390,7 @@ export default function Expense() {
                         </div>
 
                         <div className="font-bold text-xl text-black">
-                            102
+                            {qty_assets ? qty_assets : 0}
                         </div>
                     </div>
                 </a>
@@ -367,7 +418,7 @@ export default function Expense() {
                         </div>
 
                         <div className="font-bold text-xl text-black">
-                            Rp 2.562.435.123
+                            {nominal_assets ? nominal_assets : 0}
                         </div>
                     </div>
                 </a>
